@@ -43,26 +43,28 @@ const Contact = () => {
       icon: FiMail,
       title: 'Email',
       value: 'ashishs8927@gmail.com',
-      href: 'ashishs8927@gmail.com'
+      href: 'ashishs8927@gmail.com',
+      clickable: false
     },
     {
       icon: FiPhone,
       title: 'Phone',
       value: '+91 6266928927',
-      href: '+91 6266928927'
+      href: '+91 6266928927',
+      clickable: false
     },
     {
       icon: FiMapPin,
       title: 'Location',
       value: 'Punjab, IN',
-      href: 'https://maps.google.comhttps://www.google.com/maps/place/Lovely+Professional+University/@31.255386,75.6869764,15z/data=!4m21!1m14!4m13!1m4!2m2!1d75.7039104!2d31.2475648!4e1!1m6!1m2!1s0x391a5f5e9c489cf3:0x4049a5409d53c300!2sLovely+Professional+University,+Jalandhar+-+Delhi,+Grand+Trunk+Rd,+Phagwara,+Punjab+144411!2m2!1d75.7048678!2d31.2553921!5i2!3m5!1s0x391a5f5e9c489cf3:0x4049a5409d53c300!8m2!3d31.2553921!4d75.7048678!16s%2Fm%2F02wbfhd?entry=ttu&g_ep=EgoyMDI1MTEyMy4xIKXMDSoASAFQAw%3D%3D'
+      href: 'https://maps.app.goo.gl/581uqNKjwx1VnFWP7'
     }
   ];
 
   const socialLinks = [
     { icon: FaGithub, href: 'https://github.com/ashish9753', label: 'GitHub' },
     { icon: FaLinkedin, href: 'https://www.linkedin.com/in/ashish2208/', label: 'LinkedIn' },
-    { icon: FaInstagram, href: 'https://instagram.com/ashissharma.2208', label: 'Instagram' }
+    { icon: FaInstagram, href: 'https://instagram.com/ashishsharma.2208', label: 'Instagram' }
   ];
 
   const handleInputChange = (e) => {
@@ -150,27 +152,34 @@ const Contact = () => {
 
               {/* Contact Details */}
               <div className="space-y-6">
-                {contactInfo.map((info, index) => (
-                  <motion.a
-                    key={info.title}
-                    href={info.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center space-x-4 p-4 bg-gray-900/50 rounded-xl border border-gray-700 hover:border-gray-600 transition-all duration-300 group"
-                    whileHover={{ scale: 1.02, x: 10 }}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                  >
-                    <div className="p-3 bg-gradient-to-r from-blue-500/20 to-green-500/20 rounded-lg group-hover:from-blue-500/30 group-hover:to-green-500/30 transition-all duration-300">
-                      <info.icon className="text-xl text-blue-400" />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-medium">{info.title}</h4>
-                      <p className="text-gray-400">{info.value}</p>
-                    </div>
-                  </motion.a>
-                ))}
+                {contactInfo.map((info, index) => {
+                  const Component = info.clickable !== false ? motion.a : motion.div;
+                  const props = info.clickable !== false ? {
+                    href: info.href,
+                    target: "_blank",
+                    rel: "noopener noreferrer"
+                  } : {};
+                  
+                  return (
+                    <Component
+                      key={info.title}
+                      {...props}
+                      className="flex items-center space-x-4 p-4 bg-gray-900/50 rounded-xl border border-gray-700 hover:border-gray-600 transition-all duration-300 group"
+                      whileHover={{ scale: 1.02, x: 10 }}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                    >
+                      <div className="p-3 bg-gradient-to-r from-blue-500/20 to-green-500/20 rounded-lg group-hover:from-blue-500/30 group-hover:to-green-500/30 transition-all duration-300">
+                        <info.icon className="text-xl text-blue-400" />
+                      </div>
+                      <div>
+                        <h4 className="text-white font-medium">{info.title}</h4>
+                        <p className="text-gray-400">{info.value}</p>
+                      </div>
+                    </Component>
+                  );
+                })}
               </div>
 
               {/* Social Links */}
