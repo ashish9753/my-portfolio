@@ -67,12 +67,21 @@ const Navbar = () => {
     { name: 'Contact', href: '#contact', id: 'contact', icon: FiMail },
   ];
 
-  const scrollToSection = (href) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsOpen(false);
-    }
+  const scrollToSection = (sectionId) => {
+    setIsOpen(false);
+    setTimeout(() => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const offset = 64; // navbar height
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
 
   return (
@@ -95,7 +104,7 @@ const Navbar = () => {
               href="#home"
               onClick={(e) => {
                 e.preventDefault();
-                scrollToSection('#home');
+                scrollToSection('home');
               }}
               className="text-2xl font-bold text-gradient"
             >
@@ -114,7 +123,7 @@ const Navbar = () => {
                     href={item.href}
                     onClick={(e) => {
                       e.preventDefault();
-                      scrollToSection(item.href);
+                      scrollToSection(item.id);
                     }}
                     className={`px-3 py-2 text-sm font-medium transition-all duration-200 relative group ${
                       isActive 
@@ -141,11 +150,12 @@ const Navbar = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden z-50">
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white p-2"
+              className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white p-2 relative z-50"
+              aria-label="Toggle menu"
             >
               {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </motion.button>
@@ -162,6 +172,7 @@ const Navbar = () => {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
             className="md:hidden bg-black/95 backdrop-blur-md"
+            style={{ touchAction: 'auto' }}
           >
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {navItems.map((item, index) => {
@@ -173,9 +184,9 @@ const Navbar = () => {
                     href={item.href}
                     onClick={(e) => {
                       e.preventDefault();
-                      scrollToSection(item.href);
+                      scrollToSection(item.id);
                     }}
-                    className={`block px-3 py-2 text-base font-medium transition-all duration-200 flex items-center space-x-2 relative ${
+                    className={`block px-3 py-2 text-base font-medium transition-all duration-200 flex items-center space-x-2 relative cursor-pointer ${
                       isActive 
                         ? 'text-white bg-gradient-to-r from-blue-500/20 to-green-500/20 border-l-2 border-blue-500' 
                         : 'text-gray-300 hover:text-white hover:bg-gray-800/50'
@@ -184,6 +195,7 @@ const Navbar = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                     whileTap={{ scale: 0.95 }}
+                    style={{ touchAction: 'auto' }}
                   >
                     <IconComponent size={20} className={isActive ? 'text-blue-400' : ''} />
                     <span>{item.name}</span>
