@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import emailjs from '@emailjs/browser';
 import { FiMail, FiPhone, FiMapPin, FiSend, FiUser, FiMessageSquare, FiCheck } from 'react-icons/fi';
 import { FaGithub, FaLinkedin, FaTwitter, FaInstagram } from 'react-icons/fa';
 
@@ -78,42 +77,39 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      // EmailJS configuration from environment variables
-      const serviceID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-      const templateID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
-      // Check if EmailJS is configured
-      if (!serviceID || !templateID || !publicKey) {
-        throw new Error('EmailJS not configured. Please check your environment variables.');
-      }
-
-      const templateParams = {
-        from_name: formData.name,
-        from_email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-        to_email: 'ashishs8927@gmail.com'
-      };
-
-      // Send email using EmailJS
-      await emailjs.send(serviceID, templateID, templateParams, publicKey);
+      // Use FormSubmit.co - a free form submission service
+      const formSubmitURL = 'https://formsubmit.co/ashishs8927@gmail.com';
       
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormData({ name: '', email: '', subject: '', message: '' });
-      
-      // Reset success message after 5 seconds
-      setTimeout(() => setIsSubmitted(false), 5000);
-    } catch (error) {
-      console.error('Failed to send email:', error);
-      setIsSubmitting(false);
-      
-      if (error.message.includes('EmailJS not configured')) {
-        alert('Contact form is not yet configured. Please contact me directly at ashishs8927@gmail.com');
+      const formDataToSubmit = new FormData();
+      formDataToSubmit.append('name', formData.name);
+      formDataToSubmit.append('email', formData.email);
+      formDataToSubmit.append('subject', formData.subject);
+      formDataToSubmit.append('message', formData.message);
+      formDataToSubmit.append('_captcha', 'false'); // Disable captcha
+      formDataToSubmit.append('_template', 'table'); // Use table template
+
+      const response = await fetch(formSubmitURL, {
+        method: 'POST',
+        body: formDataToSubmit,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setIsSubmitting(false);
+        setIsSubmitted(true);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        
+        // Reset success message after 5 seconds
+        setTimeout(() => setIsSubmitted(false), 5000);
       } else {
-        alert('Failed to send message. Please try again or contact me directly at ashishs8927@gmail.com');
+        throw new Error('Form submission failed');
       }
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      setIsSubmitting(false);
+      alert('Failed to send message. Please try again or contact me directly at ashishs8927@gmail.com');
     }
   };
 
