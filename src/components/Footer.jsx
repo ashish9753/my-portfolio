@@ -108,7 +108,9 @@ const Footer = () => {
               <div className="flex items-center space-x-2">
                 <FiMail className="text-blue-400" />
                 <a
-                  href="mailto:ashis@example.com"
+                  href="mailto:ashishs8927@gmail.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   ashishs8927@gmail.com

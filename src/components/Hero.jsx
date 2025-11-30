@@ -224,6 +224,8 @@ const Hero = () => {
           
           <motion.a
             href="/Ashish Sharma CV.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center px-8 py-4 border-2 border-gray-600 text-gray-300 font-medium rounded-lg hover:border-white hover:text-white transform transition-all duration-200 hover:scale-105 group"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

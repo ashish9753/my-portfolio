@@ -158,6 +158,8 @@ const Contact = () => {
                   <motion.a
                     key={info.title}
                     href={info.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center space-x-4 p-4 bg-gray-900/50 rounded-xl border border-gray-700 hover:border-gray-600 transition-all duration-300 group"
                     whileHover={{ scale: 1.02, x: 10 }}
                     initial={{ opacity: 0, x: -20 }}
