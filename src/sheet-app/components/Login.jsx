@@ -38,7 +38,7 @@ function Login({ setAuth }) {
       });
 
       // Redirect to home
-      navigate('/');
+      navigate('/sheet');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
@@ -103,7 +103,7 @@ function Login({ setAuth }) {
 
         <p className="mt-6 text-center text-gray-400">
           Don't have an account?{' '}
-          <Link to="/signup" className="text-blue-500 hover:underline font-medium">
+          <Link to="/sheet/signup" className="text-blue-500 hover:underline font-medium">
             Sign up
           </Link>
         </p>
