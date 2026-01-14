@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiMenu, FiX, FiHome, FiUser, FiCode, FiBriefcase, FiMail } from 'react-icons/fi';
+import { FiMenu, FiX, FiHome, FiUser, FiCode, FiBriefcase, FiMail, FiBook } from 'react-icons/fi';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -146,6 +147,38 @@ const Navbar = () => {
                   </motion.a>
                 );
               })}
+              
+              {/* DSA Sheet Link - Highlighted */}
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+              >
+                <Link to="/sheet">
+                  <motion.button
+                    className="px-4 py-2 text-sm font-semibold bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white rounded-full shadow-lg relative overflow-hidden group"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                    <span className="relative flex items-center space-x-2">
+                      <FiBook className="animate-pulse" />
+                      <span>DSA Sheet</span>
+                    </span>
+                    <motion.span
+                      className="absolute inset-0 rounded-full"
+                      animate={{
+                        boxShadow: [
+                          '0 0 10px rgba(168, 85, 247, 0.5)',
+                          '0 0 20px rgba(236, 72, 153, 0.5)',
+                          '0 0 10px rgba(168, 85, 247, 0.5)',
+                        ],
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                  </motion.button>
+                </Link>
+              </motion.div>
             </div>
           </div>
 
@@ -202,6 +235,32 @@ const Navbar = () => {
                   </motion.a>
                 );
               })}
+              
+              {/* DSA Sheet Link - Mobile */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.6 }}
+                className="mt-2"
+              >
+                <Link to="/sheet" onClick={() => setIsOpen(false)}>
+                  <motion.div
+                    className="block px-3 py-3 text-base font-semibold bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white rounded-lg shadow-lg flex items-center space-x-2 justify-center"
+                    whileTap={{ scale: 0.95 }}
+                    animate={{
+                      boxShadow: [
+                        '0 0 10px rgba(168, 85, 247, 0.5)',
+                        '0 0 20px rgba(236, 72, 153, 0.5)',
+                        '0 0 10px rgba(168, 85, 247, 0.5)',
+                      ],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <FiBook size={20} className="animate-pulse" />
+                    <span>DSA Sheet</span>
+                  </motion.div>
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
         )}
