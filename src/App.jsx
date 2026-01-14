@@ -1,4 +1,5 @@
 import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero.jsx';
@@ -7,8 +8,10 @@ import Skills from './components/Skills.jsx';
 import Projects from './components/Projects.jsx';
 import Contact from './components/Contact.jsx';
 import Footer from './components/Footer.jsx';
+import SheetApp from './sheet-app/SheetApp.jsx';
 
-function App() {
+// Portfolio Homepage Component
+function Portfolio() {
   return (
     <motion.div 
       className="App bg-black text-white min-h-screen"
@@ -24,6 +27,18 @@ function App() {
       <Contact />
       <Footer />
     </motion.div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      {/* Portfolio Routes */}
+      <Route path="/" element={<Portfolio />} />
+      
+      {/* Sheet App Routes */}
+      <Route path="/sheet/*" element={<SheetApp />} />
+    </Routes>
   );
 }
 
