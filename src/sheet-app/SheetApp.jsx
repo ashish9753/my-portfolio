@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './components/HomePage';
-import TopicPage from './components/TopicPage';
+import ArraySheet from './pages/ArraySheet';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import './App.css';
@@ -71,10 +71,10 @@ function SheetApp() {
         } 
       />
       <Route 
-        path="/:topic" 
+        path="/Array" 
         element={
           <ProtectedRoute>
-            <TopicPage auth={auth} setAuth={setAuth} />
+            <ArraySheet auth={auth} setAuth={setAuth} />
           </ProtectedRoute>
         } 
       />

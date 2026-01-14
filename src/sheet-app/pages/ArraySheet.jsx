@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Footer from './Footer';
+import Footer from '../components/Footer';
 
-function TopicPage({ auth, setAuth }) {
-  const { topic } = useParams();
+function ArraySheet({ auth, setAuth }) {
+  const topic = 'Array'; // Hardcoded for Array page
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ function TopicPage({ auth, setAuth }) {
   useEffect(() => {
     fetchQuestions();
     fetchStats();
-  }, [topic]);
+  }, []);
 
   const fetchQuestions = async () => {
     try {
@@ -208,7 +208,7 @@ function TopicPage({ auth, setAuth }) {
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="mb-8 flex justify-between items-center">
           <div>
-            <Link to="/" className="text-gray-400 hover:text-white mb-4 inline-block">
+            <Link to="/sheet" className="text-gray-400 hover:text-white mb-4 inline-block">
               ← Back to Topics
             </Link>
             
@@ -294,4 +294,4 @@ function TopicPage({ auth, setAuth }) {
   );
 }
 
-export default TopicPage;
+export default ArraySheet;

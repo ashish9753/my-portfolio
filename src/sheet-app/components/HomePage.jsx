@@ -366,7 +366,7 @@ function HomePage({ auth, setAuth }) {
           {topics.map((topic) => (
             <Link
               key={topic.name}
-              to={`/${topic.name}`}
+              to={topic.name}
               className={`bg-[#1a1a1a] rounded-lg p-6 border-2 ${topic.borderColor} ${topic.hoverBg} hover:scale-105 transition-all duration-300`}
             >
               <h2 className={`text-2xl font-bold mb-2 ${topic.color}`}>
