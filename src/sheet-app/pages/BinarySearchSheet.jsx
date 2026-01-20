@@ -9,6 +9,11 @@ function BinarySearchSheet({ auth, setAuth }) {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandedSections, setExpandedSections] = useState({
+    Easy: false,
+    Medium: false,
+    Hard: false
+  });
   const [stats, setStats] = useState({
     total: 0,
     completed: 0,
@@ -101,6 +106,13 @@ function BinarySearchSheet({ auth, setAuth }) {
 
   const completedCount = questions.filter(q => q.completed).length;
   const progressPercentage = questions.length > 0 ? Math.round((completedCount / questions.length) * 100) : 0;
+
+  const toggleSection = (difficulty) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [difficulty]: !prev[difficulty]
+    }));
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -233,9 +245,21 @@ function BinarySearchSheet({ auth, setAuth }) {
 
           return (
             <div key={difficulty} className="mb-8">
-              <h2 className={`text-xl font-bold mb-4 pb-2 border-b ${difficultyColors[difficulty]}`}>
-                {difficulty} ({difficultyQuestions.filter(q => q.completed).length}/{difficultyQuestions.length})
+              <h2 
+                onClick={() => toggleSection(difficulty)}
+                className={`text-xl font-bold mb-4 pb-2 border-b ${difficultyColors[difficulty]} cursor-pointer flex items-center justify-between hover:opacity-80 transition-opacity`}
+              >
+                <span>{difficulty} ({difficultyQuestions.filter(q => q.completed).length}/{difficultyQuestions.length})</span>
+                <svg 
+                  className={`w-6 h-6 transition-transform duration-300 ${expandedSections[difficulty] ? 'rotate-180' : ''}`}
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </h2>
+              {expandedSections[difficulty] && (
               <div className="space-y-3">
                 {difficultyQuestions.map((question, index) => (
                   <div
@@ -290,8 +314,7 @@ function BinarySearchSheet({ auth, setAuth }) {
                     </div>
                   </div>
                 ))}
-              </div>
-            </div>
+              </div>              )}            </div>
           );
         })}
       </div>
