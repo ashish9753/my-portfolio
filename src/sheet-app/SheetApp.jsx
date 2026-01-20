@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import ArraySheet from './pages/ArraySheet';
+import BinarySearchSheet from './pages/BinarySearchSheet';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import './App.css';
@@ -75,6 +76,14 @@ function SheetApp() {
         element={
           <ProtectedRoute>
             <ArraySheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/Binary Search" 
+        element={
+          <ProtectedRoute>
+            <BinarySearchSheet auth={auth} setAuth={setAuth} />
           </ProtectedRoute>
         } 
       />

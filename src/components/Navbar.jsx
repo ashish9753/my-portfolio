@@ -219,7 +219,7 @@ const Navbar = () => {
                       e.preventDefault();
                       scrollToSection(item.id);
                     }}
-                    className={`block px-3 py-2 text-base font-medium transition-all duration-200 flex items-center space-x-2 relative cursor-pointer ${
+                    className={`px-3 py-2 text-base font-medium transition-all duration-200 flex items-center space-x-2 relative cursor-pointer ${
                       isActive 
                         ? 'text-white bg-gradient-to-r from-blue-500/20 to-green-500/20 border-l-2 border-blue-500' 
                         : 'text-gray-300 hover:text-white hover:bg-gray-800/50'
@@ -245,7 +245,7 @@ const Navbar = () => {
               >
                 <Link to="/sheet" onClick={() => setIsOpen(false)}>
                   <motion.div
-                    className="block px-3 py-3 text-base font-semibold bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white rounded-lg shadow-lg flex items-center space-x-2 justify-center"
+                    className="px-3 py-3 text-base font-semibold bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white rounded-lg shadow-lg flex items-center space-x-2 justify-center"
                     whileTap={{ scale: 0.95 }}
                     animate={{
                       boxShadow: [

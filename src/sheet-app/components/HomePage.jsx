@@ -87,6 +87,13 @@ function HomePage({ auth, setAuth }) {
       color: 'text-[#00ff00]',
       borderColor: 'border-[#00ff00]',
       hoverBg: 'hover:bg-[#00ff00]/10'
+    },
+    {
+      name: 'Binary Search',
+      description: 'Master binary search on 1D, 2D arrays, and search space',
+      color: 'text-[#00d9ff]',
+      borderColor: 'border-[#00d9ff]',
+      hoverBg: 'hover:bg-[#00d9ff]/10'
     }
     // Add more topics here in the future
   ];
