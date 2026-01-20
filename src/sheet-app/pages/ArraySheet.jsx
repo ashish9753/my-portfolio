@@ -226,7 +226,6 @@ function ArraySheet({ auth, setAuth }) {
           if (difficultyQuestions.length === 0) return null;
 
           const difficultyColors = {
-          const difficultyColors = {
             Easy: 'text-green-500 border-green-500',
             Medium: 'text-yellow-500 border-yellow-500',
             Hard: 'text-red-500 border-red-500'
