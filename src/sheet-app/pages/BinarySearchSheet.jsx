@@ -151,30 +151,30 @@ function BinarySearchSheet({ auth, setAuth }) {
       </header>
 
       {/* Stats Bar */}
-      <div className="bg-black/30 border-b border-gray-800">
+      <div className="bg-[#0a0a0a] border-b border-[#2a2a2a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
               <div className="text-gray-400 text-sm">Total</div>
               <div className="text-2xl font-bold text-white">{questions.length}</div>
             </div>
-            <div className="bg-gray-900/50 p-4 rounded-lg border border-[#00ff00]/30">
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
               <div className="text-gray-400 text-sm">Completed</div>
               <div className="text-2xl font-bold text-[#00ff00]">{completedCount}</div>
             </div>
-            <div className="bg-gray-900/50 p-4 rounded-lg border border-green-500/30">
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
               <div className="text-gray-400 text-sm">Easy</div>
               <div className="text-2xl font-bold text-green-500">
                 {groupedQuestions.Easy.filter(q => q.completed).length}/{groupedQuestions.Easy.length}
               </div>
             </div>
-            <div className="bg-gray-900/50 p-4 rounded-lg border border-yellow-500/30">
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
               <div className="text-gray-400 text-sm">Medium</div>
               <div className="text-2xl font-bold text-yellow-500">
                 {groupedQuestions.Medium.filter(q => q.completed).length}/{groupedQuestions.Medium.length}
               </div>
             </div>
-            <div className="bg-gray-900/50 p-4 rounded-lg border border-red-500/30">
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
               <div className="text-gray-400 text-sm">Hard</div>
               <div className="text-2xl font-bold text-red-500">
                 {groupedQuestions.Hard.filter(q => q.completed).length}/{groupedQuestions.Hard.length}
@@ -188,7 +188,7 @@ function BinarySearchSheet({ auth, setAuth }) {
               <span>Progress</span>
               <span>{progressPercentage}%</span>
             </div>
-            <div className="w-full bg-gray-800 rounded-full h-2">
+            <div className="w-full bg-[#2a2a2a] rounded-full h-2">
               <div 
                 className="bg-[#00ff00] h-2 rounded-full transition-all duration-300"
                 style={{ width: `${progressPercentage}%` }}
@@ -206,7 +206,7 @@ function BinarySearchSheet({ auth, setAuth }) {
             placeholder="Search questions..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 pl-12 text-white placeholder-gray-500 focus:outline-none focus:border-[#00ff00] transition-colors"
+            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-12 text-white placeholder-gray-500 focus:outline-none focus:border-[#00ff00] transition-colors"
           />
           <svg
             className="w-5 h-5 text-gray-500 absolute left-4 top-3.5"
@@ -240,8 +240,8 @@ function BinarySearchSheet({ auth, setAuth }) {
                 {difficultyQuestions.map((question, index) => (
                   <div
                     key={question._id}
-                    className={`bg-gray-900/50 border rounded-lg p-4 hover:bg-gray-900/70 transition-all ${
-                      question.completed ? 'border-[#00ff00]/50' : 'border-gray-800'
+                    className={`bg-[#1a1a1a] border rounded-lg p-4 hover:bg-[#252525] transition-all ${
+                      question.completed ? 'border-[#00ff00]/50' : 'border-[#2a2a2a]'
                     }`}
                   >
                     <div className="flex items-start space-x-4">
