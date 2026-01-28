@@ -10,9 +10,9 @@ function SortingSheet({ auth, setAuth }) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSections, setExpandedSections] = useState({
-    Easy: true,
-    Medium: true,
-    Hard: true
+    Easy: false,
+    Medium: false,
+    Hard: false
   });
   const [stats, setStats] = useState({
     total: 0,
