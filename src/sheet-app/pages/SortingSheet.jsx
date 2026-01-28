@@ -51,8 +51,7 @@ function SortingSheet({ auth, setAuth }) {
 
   const fetchQuestions = async () => {
     try {
-      setLoading(true);
-      const response = await axios.get(`${API_URL}/${topic}`, getAuthHeaders());
+      const response = await axios.get(`${API_URL}?topic=${topic}`, getAuthHeaders());
       setQuestions(response.data);
       setLoading(false);
     } catch (error) {
@@ -66,7 +65,7 @@ function SortingSheet({ auth, setAuth }) {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get(`${API_URL}/stats/${topic}`, getAuthHeaders());
+      const response = await axios.get(`${API_URL}/stats/summary`, getAuthHeaders());
       setStats(response.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
