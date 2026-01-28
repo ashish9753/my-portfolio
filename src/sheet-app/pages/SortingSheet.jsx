@@ -10,9 +10,9 @@ function SortingSheet({ auth, setAuth }) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSections, setExpandedSections] = useState({
-    Easy: false,
-    Medium: false,
-    Hard: false
+    Easy: true,
+    Medium: true,
+    Hard: true
   });
   const [stats, setStats] = useState({
     total: 0,
@@ -76,34 +76,20 @@ function SortingSheet({ auth, setAuth }) {
     }
   };
 
-  const toggleCompletion = async (id, currentStatus) => {
+  const handleCheckboxChange = async (id, currentStatus) => {
     try {
-      await axios.patch(
-        `${API_URL}/${id}/toggle`,
-        {},
-        getAuthHeaders()
-      );
+      await axios.patch(`${API_URL}/${id}`, {
+        completed: !currentStatus
+      }, getAuthHeaders());
       
-      // Update local state
       setQuestions(questions.map(q => 
         q._id === id ? { ...q, completed: !currentStatus } : q
       ));
       
-      // Refresh stats
       fetchStats();
     } catch (error) {
-      console.error('Error toggling completion:', error);
-      if (error.response?.status === 401) {
-        handleAuthError();
-      }
+      console.error('Error updating question:', error);
     }
-  };
-
-  const toggleSection = (difficulty) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [difficulty]: !prev[difficulty]
-    }));
   };
 
   const groupedQuestions = {
@@ -112,143 +98,190 @@ function SortingSheet({ auth, setAuth }) {
     Hard: questions.filter(q => q.difficulty === 'Hard')
   };
 
-  const filteredQuestions = (difficulty) => {
-    return groupedQuestions[difficulty].filter(q =>
+  const filterQuestions = (questionsArray) => {
+    if (!searchQuery.trim()) return questionsArray;
+    return questionsArray.filter(q => 
       q.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
 
-  const getDifficultyCount = (difficulty) => {
-    const total = groupedQuestions[difficulty].length;
-    const completed = groupedQuestions[difficulty].filter(q => q.completed).length;
-    return `${completed}/${total}`;
+  const completedCount = questions.filter(q => q.completed).length;
+  const progressPercentage = questions.length > 0 ? Math.round((completedCount / questions.length) * 100) : 0;
+
+  const toggleSection = (difficulty) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [difficulty]: !prev[difficulty]
+    }));
   };
 
-  const progressPercentage = stats.total > 0 ? (stats.completed / stats.total * 100).toFixed(1) : 0;
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setAuth({
+      isAuthenticated: false,
+      user: null,
+      token: null
+    });
+    navigate('/login');
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-[#00ff00] text-xl">Loading questions...</div>
+        <div className="text-[#00ff00] text-xl">Loading Sorting questions...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#e0e0e0]">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
       {/* Header */}
-      <header className="border-b border-[#333] bg-[#111] sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      <header className="border-b border-gray-800 bg-black/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <Link to="/sheet" className="text-[#00ff00] hover:text-[#00d900] transition-colors">
-              ← Back to Home
-            </Link>
-            <h1 className="text-2xl font-bold text-[#ff00ff]">Sorting Questions</h1>
-            <div className="text-sm">
-              <span className="text-[#888]">Welcome, </span>
-              <span className="text-[#00ff00]">{auth.user?.name || 'User'}</span>
+            <div className="flex items-center space-x-4">
+              <Link to="/sheet" className="text-[#00ff00] hover:text-[#00ff00]/80 transition-colors">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+              </Link>
+              <h1 className="text-2xl font-bold">
+                <span className="text-[#00ff00]">Sorting</span> Sheet
+              </h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-gray-400">{auth.user?.username}</span>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Progress Bar */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="bg-[#111] border border-[#333] rounded-lg p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-[#ff00ff]">Progress</h2>
-            <span className="text-[#00ff00] font-bold">{stats.completed}/{stats.total} Completed</span>
-          </div>
-          <div className="w-full bg-[#222] rounded-full h-4 overflow-hidden">
-            <div 
-              className="bg-gradient-to-r from-[#ff00ff] to-[#00ff00] h-full transition-all duration-500"
-              style={{ width: `${progressPercentage}%` }}
-            ></div>
-          </div>
-          <div className="text-right mt-2 text-[#888]">{progressPercentage}%</div>
-          
-          {/* Difficulty Stats */}
-          <div className="grid grid-cols-3 gap-4 mt-6">
-            <div className="bg-[#0a0a0a] border border-[#00ff00] rounded p-3 text-center">
-              <div className="text-[#00ff00] font-semibold">Easy</div>
-              <div className="text-2xl font-bold">{getDifficultyCount('Easy')}</div>
+      {/* Stats Bar */}
+      <div className="bg-[#0a0a0a] border-b border-[#2a2a2a]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
+              <div className="text-gray-400 text-sm">Total</div>
+              <div className="text-2xl font-bold text-white">{questions.length}</div>
             </div>
-            <div className="bg-[#0a0a0a] border border-[#ffaa00] rounded p-3 text-center">
-              <div className="text-[#ffaa00] font-semibold">Medium</div>
-              <div className="text-2xl font-bold">{getDifficultyCount('Medium')}</div>
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
+              <div className="text-gray-400 text-sm">Completed</div>
+              <div className="text-2xl font-bold text-[#00ff00]">{completedCount}</div>
             </div>
-            <div className="bg-[#0a0a0a] border border-[#ff0000] rounded p-3 text-center">
-              <div className="text-[#ff0000] font-semibold">Hard</div>
-              <div className="text-2xl font-bold">{getDifficultyCount('Hard')}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Search Bar */}
-      <div className="max-w-7xl mx-auto px-4 mb-6">
-        <input
-          type="text"
-          placeholder="Search questions..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-[#e0e0e0] focus:outline-none focus:border-[#ff00ff] transition-colors"
-        />
-      </div>
-
-      {/* Questions List */}
-      <div className="max-w-7xl mx-auto px-4 pb-8 space-y-4">
-        {['Easy', 'Medium', 'Hard'].map(difficulty => (
-          <div key={difficulty} className="bg-[#111] border border-[#333] rounded-lg overflow-hidden">
-            {/* Section Header */}
-            <button
-              onClick={() => toggleSection(difficulty)}
-              className="w-full px-6 py-4 flex justify-between items-center hover:bg-[#1a1a1a] transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <span className={`text-lg font-semibold ${
-                  difficulty === 'Easy' ? 'text-[#00ff00]' : 
-                  difficulty === 'Medium' ? 'text-[#ffaa00]' : 
-                  'text-[#ff0000]'
-                }`}>
-                  {difficulty}
-                </span>
-                <span className="text-[#888]">
-                  {getDifficultyCount(difficulty)}
-                </span>
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
+              <div className="text-gray-400 text-sm">Easy</div>
+              <div className="text-2xl font-bold text-green-500">
+                {groupedQuestions.Easy.filter(q => q.completed).length}/{groupedQuestions.Easy.length}
               </div>
-              <span className="text-[#888]">
-                {expandedSections[difficulty] ? '▼' : '▶'}
-              </span>
-            </button>
+            </div>
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
+              <div className="text-gray-400 text-sm">Medium</div>
+              <div className="text-2xl font-bold text-yellow-500">
+                {groupedQuestions.Medium.filter(q => q.completed).length}/{groupedQuestions.Medium.length}
+              </div>
+            </div>
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
+              <div className="text-gray-400 text-sm">Hard</div>
+              <div className="text-2xl font-bold text-red-500">
+                {groupedQuestions.Hard.filter(q => q.completed).length}/{groupedQuestions.Hard.length}
+              </div>
+            </div>
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="mt-4">
+            <div className="flex justify-betwsm:px-6 lg:px-8 pb-12">
+        {['Easy', 'Medium', 'Hard'].map((difficulty) => {
+          const difficultyQuestions = filterQuestions(groupedQuestions[difficulty]);
+          if (difficultyQuestions.length === 0) return null;
 
-            {/* Questions */}
-            {expandedSections[difficulty] && (
-              <div className="border-t border-[#333]">
-                {filteredQuestions(difficulty).length === 0 ? (
-                  <div className="px-6 py-8 text-center text-[#888]">
-                    No questions found
+          const difficultyColors = {
+            Easy: 'text-green-500 border-green-500',
+            Medium: 'text-yellow-500 border-yellow-500',
+            Hard: 'text-red-500 border-red-500'
+          };
+
+          return (
+            <div key={difficulty} className="mb-8">
+              <h2 
+                onClick={() => toggleSection(difficulty)}
+                className={`text-xl font-bold mb-4 pb-2 border-b ${difficultyColors[difficulty]} cursor-pointer flex items-center justify-between hover:opacity-80 transition-opacity`}
+              >
+                <span>{difficulty} ({difficultyQuestions.filter(q => q.completed).length}/{difficultyQuestions.length})</span>
+                <svg 
+                  className={`w-6 h-6 transition-transform duration-300 ${expandedSections[difficulty] ? 'rotate-180' : ''}`}
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </h2>
+              {expandedSections[difficulty] && (
+              <div className="space-y-3">
+                {difficultyQuestions.map((question, index) => (
+                  <div
+                    key={question._id}
+                    className={`bg-[#1a1a1a] border rounded-lg p-4 hover:bg-[#252525] transition-all ${
+                      question.completed ? 'border-[#00ff00]/50' : 'border-[#2a2a2a]'
+                    }`}
+                  >
+                    <div className="flex items-start space-x-4">
+                      <input
+                        type="checkbox"
+                        checked={question.completed}
+                        onChange={() => handleCheckboxChange(question._id, question.completed)}
+                        className="mt-1 w-5 h-5 rounded border-gray-600 text-[#00ff00] focus:ring-[#00ff00] focus:ring-offset-0 cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between">
+                          <h3 className={`font-medium ${question.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+                            {index + 1}. {question.name}
+                          </h3>
+                          <span className={`text-sm px-3 py-1 rounded-full ${
+                            difficulty === 'Easy' ? 'bg-green-500/20 text-green-400' :
+                            difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                            'bg-red-500/20 text-red-400'
+                          }`}>
+                            {difficulty}
+                          </span>
+                        </div>
+                        <div className="flex space-x-4 mt-2">
+                          {question.leetcodeLink && (
+                            <a
+                              href={question.leetcodeLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-orange-400 hover:text-orange-300 transition-colors"
+                            >
+                              LeetCode →
+                            </a>
+                          )}
+                          {question.gfgLink && (
+                            <a
+                              href={question.gfgLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-green-400 hover:text-green-300 transition-colors"
+                            >
+                              GFG →
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  filteredQuestions(difficulty).map((question, index) => (
-                    <div
-                      key={question._id}
-                      className="px-6 py-4 border-b border-[#222] last:border-b-0 hover:bg-[#1a1a1a] transition-colors"
-                    >
-                      <div className="flex items-center gap-4">
-                        {/* Checkbox */}
-                        <input
-                          type="checkbox"
-                          checked={question.completed}
-                          onChange={() => toggleCompletion(question._id, question.completed)}
-                          className="w-5 h-5 cursor-pointer accent-[#ff00ff]"
-                        />
-
-                        {/* Question Number */}
-                        <span className="text-[#888] font-mono min-w-[40px]">
-                          {index + 1}.
-                        </span>
-
+                ))}
+              </div>              )}            </div>
+          );
+        }
                         {/* Question Name */}
                         <span className={`flex-1 ${question.completed ? 'line-through text-[#666]' : 'text-[#e0e0e0]'}`}>
                           {question.name}
