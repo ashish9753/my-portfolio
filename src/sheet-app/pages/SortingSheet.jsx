@@ -197,7 +197,43 @@ function SortingSheet({ auth, setAuth }) {
           
           {/* Progress Bar */}
           <div className="mt-4">
-            <div className="flex justify-betwsm:px-6 lg:px-8 pb-12">
+            <div className="flex justify-between text-sm text-gray-400 mb-2">
+              <span>Progress</span>
+              <span>{progressPercentage}%</span>
+            </div>
+            <div className="w-full bg-[#2a2a2a] rounded-full h-2">
+              <div 
+                className="bg-[#00ff00] h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search questions..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-12 text-white placeholder-gray-500 focus:outline-none focus:border-[#00ff00] transition-colors"
+          />
+          <svg
+            className="w-5 h-5 text-gray-500 absolute left-4 top-3.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Questions List */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {['Easy', 'Medium', 'Hard'].map((difficulty) => {
           const difficultyQuestions = filterQuestions(groupedQuestions[difficulty]);
           if (difficultyQuestions.length === 0) return null;
@@ -281,43 +317,7 @@ function SortingSheet({ auth, setAuth }) {
                 ))}
               </div>              )}            </div>
           );
-        }
-                        {/* Question Name */}
-                        <span className={`flex-1 ${question.completed ? 'line-through text-[#666]' : 'text-[#e0e0e0]'}`}>
-                          {question.name}
-                        </span>
-
-                        {/* Links */}
-                        <div className="flex gap-3">
-                          {question.leetcodeLink && (
-                            <a
-                              href={question.leetcodeLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-4 py-2 bg-[#1a1a1a] border border-[#ffa116] text-[#ffa116] rounded hover:bg-[#ffa116] hover:text-[#000] transition-all"
-                            >
-                              LeetCode
-                            </a>
-                          )}
-                          {question.gfgLink && (
-                            <a
-                              href={question.gfgLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-4 py-2 bg-[#1a1a1a] border border-[#00ff00] text-[#00ff00] rounded hover:bg-[#00ff00] hover:text-[#000] transition-all"
-                            >
-                              GFG
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+        })}
       </div>
 
       <Footer />
