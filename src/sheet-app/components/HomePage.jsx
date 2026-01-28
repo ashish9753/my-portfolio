@@ -14,7 +14,7 @@ function HomePage({ auth, setAuth }) {
   const [activity, setActivity] = useState({});
   const navigate = useNavigate();
 
-  const API_URL = 'https://dsa-sheet-backend-34xk.onrender.com/api/questions';
+  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
 
   useEffect(() => {
     fetchStats();
