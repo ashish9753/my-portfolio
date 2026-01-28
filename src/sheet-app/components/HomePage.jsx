@@ -82,6 +82,13 @@ function HomePage({ auth, setAuth }) {
 
   const topics = [
     {
+      name: 'Sorting',
+      description: 'Master sorting algorithms and techniques',
+      color: 'text-[#ff00ff]',
+      borderColor: 'border-[#ff00ff]',
+      hoverBg: 'hover:bg-[#ff00ff]/10'
+    },
+    {
       name: 'Array',
       description: 'Master array manipulation, searching, and sorting',
       color: 'text-[#00ff00]',

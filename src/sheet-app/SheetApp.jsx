@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './components/HomePage';
+import SortingSheet from './pages/SortingSheet';
 import ArraySheet from './pages/ArraySheet';
 import BinarySearchSheet from './pages/BinarySearchSheet';
 import Login from './components/Login';
@@ -68,6 +69,14 @@ function SheetApp() {
         element={
           <ProtectedRoute>
             <HomePage auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/Sorting" 
+        element={
+          <ProtectedRoute>
+            <SortingSheet auth={auth} setAuth={setAuth} />
           </ProtectedRoute>
         } 
       />
