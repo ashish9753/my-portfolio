@@ -45,7 +45,7 @@ function Signup({ setAuth }) {
     setLoading(true);
 
     try {
-      const response = await axios.post('https://dsa-sheet-backend-roan.vercel.app/api/auth/signup', {
+      const response = await axios.post('https://dsa-sheet-backend-7r7i.onrender.com/api/auth/signup', {
         username: formData.username,
         email: formData.email,
         password: formData.password
