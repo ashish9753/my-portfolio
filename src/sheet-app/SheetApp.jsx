@@ -5,6 +5,7 @@ import SortingSheet from './pages/SortingSheet';
 import ArraySheet from './pages/ArraySheet';
 import BinarySearchSheet from './pages/BinarySearchSheet';
 import DPSheet from './pages/DPSheet';
+import SystemDesignSheet from '../Core-Concept-CS/SystemDesignSheet';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import './App.css';
@@ -102,6 +103,14 @@ function SheetApp() {
         element={
           <ProtectedRoute>
             <DPSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/System Design" 
+        element={
+          <ProtectedRoute>
+            <SystemDesignSheet auth={auth} setAuth={setAuth} />
           </ProtectedRoute>
         } 
       />

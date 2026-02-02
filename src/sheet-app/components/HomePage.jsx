@@ -444,17 +444,19 @@ function HomePage({ auth, setAuth }) {
         {/* System Design */}
         <div className="mt-12 mb-8">
           <h2 className="text-2xl font-bold mb-6 text-white">System Design</h2>
-          <div className="bg-[#1a1a1a] rounded-lg p-8 border-l-4 border-yellow-500 hover:bg-[#1f1f1f] transition-all duration-300">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold mb-3 text-yellow-400">System Design Sheet</h3>
-                <p className="text-gray-400 mb-4">Master HLD from Basics to Advanced</p>
+          <Link to="/sheet/System Design" className="block">
+            <div className="bg-[#1a1a1a] rounded-lg p-8 border-l-4 border-yellow-500 hover:bg-[#1f1f1f] transition-all duration-300">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold mb-3 text-yellow-400">System Design Sheet</h3>
+                  <p className="text-gray-400 mb-4">Master HLD from Basics to Advanced</p>
+                </div>
+                <button className="py-3 px-8 bg-transparent border-2 border-yellow-500 text-yellow-500 rounded-lg hover:bg-yellow-500 hover:text-black transition-colors duration-300 font-semibold">
+                  Start Learning
+                </button>
               </div>
-              <button className="py-3 px-8 bg-transparent border-2 border-yellow-500 text-yellow-500 rounded-lg hover:bg-yellow-500 hover:text-black transition-colors duration-300 font-semibold">
-                Start Learning
-              </button>
             </div>
-          </div>
+          </Link>
         </div>
 
         <Footer />      </div>
