@@ -46,12 +46,14 @@ function SystemDesignSheet({ auth, setAuth }) {
   const fetchConcepts = async () => {
     try {
       const response = await axios.get(`${API_URL}?topic=${topic}`, getAuthHeaders());
-      setConcepts(response.data);
+      // Sort by sequenceNo to maintain consistent ordering
+      const sortedConcepts = response.data.sort((a, b) => (a.sequenceNo || 0) - (b.sequenceNo || 0));
+      setConcepts(sortedConcepts);
       setLoading(false);
       
       // Auto-expand all sections
       const sections = {};
-      response.data.forEach(concept => {
+      sortedConcepts.forEach(concept => {
         sections[concept.subTopic] = true;
       });
       setExpandedSections(sections);
@@ -164,27 +166,6 @@ function SystemDesignSheet({ auth, setAuth }) {
           </div>
         </div>
       </header>
-
-      {/* Topic Tabs */}
-      <div className="bg-[#0a0a0a] border-b border-[#2a2a2a]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-2 overflow-x-auto py-3">
-            {topics.map(topic => (
-              <button
-                key={topic}
-                onClick={() => setSelectedTopic(topic)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-                  selectedTopic === topic
-                    ? 'bg-[#00ff00] text-black font-semibold'
-                    : 'bg-[#1a1a1a] text-gray-300 hover:bg-[#252525] border border-[#2a2a2a]'
-                }`}
-              >
-                {topic}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* Stats Bar */}
       <div className="bg-[#0a0a0a] border-b border-[#2a2a2a]">

@@ -52,7 +52,9 @@ function SortingSheet({ auth, setAuth }) {
   const fetchQuestions = async () => {
     try {
       const response = await axios.get(`${API_URL}?topic=${topic}`, getAuthHeaders());
-      setQuestions(response.data);
+      // Sort by sequenceNo to maintain consistent ordering
+      const sortedQuestions = response.data.sort((a, b) => (a.sequenceNo || 0) - (b.sequenceNo || 0));
+      setQuestions(sortedQuestions);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching questions:', error);

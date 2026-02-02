@@ -46,12 +46,14 @@ function CNSheet({ auth, setAuth }) {
   const fetchConcepts = async () => {
     try {
       const response = await axios.get(`${API_URL}?topic=${topic}`, getAuthHeaders());
-      setConcepts(response.data);
+      // Sort by sequenceNo to maintain consistent ordering
+      const sortedConcepts = response.data.sort((a, b) => (a.sequenceNo || 0) - (b.sequenceNo || 0));
+      setConcepts(sortedConcepts);
       setLoading(false);
       
       // Auto-expand all sections
       const sections = {};
-      response.data.forEach(concept => {
+      sortedConcepts.forEach(concept => {
         sections[concept.subTopic] = true;
       });
       setExpandedSections(sections);
