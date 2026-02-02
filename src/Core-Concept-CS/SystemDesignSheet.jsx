@@ -133,53 +133,69 @@ function SystemDesignSheet({ auth, setAuth }) {
     }));
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setAuth({
+      isAuthenticated: false,
+      user: null,
+      token: null
+    });
+    navigate('/login');
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p>Loading concepts...</p>
-        </div>
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="text-[#00ff00] text-xl">Loading {selectedTopic} concepts...</div>
       </div>
     );
   }
 
+  const completedCount = concepts.filter(c => c.completed).length;
+  const progressPercentage = concepts.length > 0 ? Math.round((completedCount / concepts.length) * 100) : 0;
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 sticky top-0 z-10">
+      <header className="border-b border-gray-800 bg-black/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <Link to="/sheet" className="text-purple-400 hover:text-purple-300">
-                ← Back to Sheet
+              <Link to="/sheet" className="text-[#00ff00] hover:text-[#00ff00]/80 transition-colors">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
               </Link>
-              <h1 className="text-2xl font-bold">{selectedTopic} Concepts</h1>
+              <h1 className="text-2xl font-bold">
+                <span className="text-[#00ff00]">{selectedTopic}</span> Concepts
+              </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="text-sm">
-                <span className="text-gray-400">Progress: </span>
-                <span className="text-purple-400 font-semibold">
-                  {stats.completed}/{stats.total} ({stats.percentage}%)
-                </span>
-              </div>
+              <span className="text-gray-400">{auth.user?.username}</span>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
       </header>
 
       {/* Topic Tabs */}
-      <div className="bg-gray-800 border-b border-gray-700">
+      <div className="bg-[#0a0a0a] border-b border-[#2a2a2a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-1 overflow-x-auto py-2">
+          <div className="flex space-x-2 overflow-x-auto py-3">
             {topics.map(topic => (
               <button
                 key={topic}
                 onClick={() => setSelectedTopic(topic)}
                 className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
                   selectedTopic === topic
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    ? 'bg-[#00ff00] text-black font-semibold'
+                    : 'bg-[#1a1a1a] text-gray-300 hover:bg-[#252525] border border-[#2a2a2a]'
                 }`}
               >
                 {topic}
@@ -189,19 +205,63 @@ function SystemDesignSheet({ auth, setAuth }) {
         </div>
       </div>
 
+      {/* Stats Bar */}
+      <div className="bg-[#0a0a0a] border-b border-[#2a2a2a]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
+              <div className="text-gray-400 text-sm">Total</div>
+              <div className="text-2xl font-bold text-white">{stats.total}</div>
+            </div>
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
+              <div className="text-gray-400 text-sm">Completed</div>
+              <div className="text-2xl font-bold text-[#00ff00]">{stats.completed}</div>
+            </div>
+            <div className="bg-[#1a1a1a] p-4 rounded-lg border border-[#2a2a2a]">
+              <div className="text-gray-400 text-sm">Progress</div>
+              <div className="text-2xl font-bold text-[#00ff00]">{stats.percentage}%</div>
+            </div>
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="mt-4">
+            <div className="flex justify-between text-sm text-gray-400 mb-2">
+              <span>Overall Progress</span>
+              <span>{progressPercentage}%</span>
+            </div>
+            <div className="w-full bg-[#2a2a2a] rounded-full h-2">
+              <div 
+                className="bg-[#00ff00] h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Search Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <input
-          type="text"
-          placeholder="Search concepts..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500"
-        />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search concepts..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-12 text-white placeholder-gray-500 focus:outline-none focus:border-[#00ff00] transition-colors"
+          />
+          <svg
+            className="w-5 h-5 text-gray-500 absolute left-4 top-3.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
       </div>
 
       {/* Concepts List */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {Object.entries(groupedBySubTopic).map(([subTopic, subTopicConcepts]) => {
           const filteredConcepts = filterConcepts(subTopicConcepts);
           if (filteredConcepts.length === 0) return null;
@@ -210,129 +270,76 @@ function SystemDesignSheet({ auth, setAuth }) {
           const totalCount = filteredConcepts.length;
 
           return (
-            <div key={subTopic} className="mb-6">
+            <div key={subTopic} className="mb-8">
               {/* Section Header */}
-              <div
-                className="bg-gray-800 rounded-lg p-4 cursor-pointer hover:bg-gray-750 transition-colors"
+              <h2 
                 onClick={() => toggleSection(subTopic)}
+                className="text-xl font-bold mb-4 pb-2 border-b text-[#00ff00] border-[#00ff00] cursor-pointer flex items-center justify-between hover:opacity-80 transition-opacity"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <svg
-                      className={`w-5 h-5 transform transition-transform ${
-                        expandedSections[subTopic] ? 'rotate-90' : ''
-                      }`}
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <h2 className="text-xl font-semibold">{subTopic}</h2>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <span className="text-sm text-gray-400">
-                      {completedCount} / {totalCount}
-                    </span>
-                    <div className="w-32 bg-gray-700 rounded-full h-2">
-                      <div
-                        className="bg-purple-600 h-2 rounded-full transition-all"
-                        style={{ width: `${(completedCount / totalCount) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                <span>{subTopic} ({completedCount}/{totalCount})</span>
+                <svg 
+                  className={`w-6 h-6 transition-transform duration-300 ${expandedSections[subTopic] ? 'rotate-180' : ''}`}
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </h2>
 
-              {/* Concepts Table */}
+              {/* Concepts List */}
               {expandedSections[subTopic] && (
-                <div className="mt-2 bg-gray-800 rounded-lg overflow-hidden">
-                  <table className="w-full">
-                    <thead className="bg-gray-700">
-                      <tr>
-                        <th className="px-4 py-3 text-left w-16">Status</th>
-                        <th className="px-4 py-3 text-left">Problem</th>
-                        <th className="px-4 py-3 text-center w-48">Resource</th>
-                        <th className="px-4 py-3 text-center w-24">Note</th>
-                        <th className="px-4 py-3 text-center w-24">Revision</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-700">
-                      {filteredConcepts.map((concept, index) => (
-                        <tr
-                          key={concept._id}
-                          className={`hover:bg-gray-750 transition-colors ${
-                            concept.completed ? 'bg-gray-800/50' : ''
-                          }`}
-                        >
-                          <td className="px-4 py-3">
-                            <input
-                              type="checkbox"
-                              checked={concept.completed || false}
-                              onChange={() => handleCheckboxChange(concept._id, concept.completed)}
-                              className="w-5 h-5 rounded border-gray-600 text-purple-600 focus:ring-purple-500 cursor-pointer"
-                            />
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className={concept.completed ? 'line-through text-gray-500' : ''}>
-                              {concept.name}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-center">
-                            <div className="flex items-center justify-center space-x-2">
-                              {concept.youtubeLink && concept.youtubeLink !== '' ? (
-                                <a
-                                  href={concept.youtubeLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-red-500 hover:text-red-400"
-                                  title="YouTube"
-                                >
-                                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                                  </svg>
-                                </a>
-                              ) : (
-                                <span className="text-gray-600">---</span>
-                              )}
-                              {concept.notesLink && concept.notesLink !== '' ? (
-                                <a
-                                  href={concept.notesLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-gray-400 hover:text-gray-300"
-                                  title="Notes"
-                                >
-                                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
-                                  </svg>
-                                </a>
-                              ) : (
-                                <span className="text-gray-600">---</span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 text-center">
-                            <button className="text-gray-400 hover:text-gray-300">
-                              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                              </svg>
-                            </button>
-                          </td>
-                          <td className="px-4 py-3 text-center">
-                            <button className="text-gray-400 hover:text-yellow-400">
-                              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                              </svg>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="space-y-3">
+                  {filteredConcepts.map((concept, index) => (
+                    <div
+                      key={concept._id}
+                      className={`bg-[#1a1a1a] border rounded-lg p-4 hover:bg-[#252525] transition-all ${
+                        concept.completed ? 'border-[#00ff00]/50' : 'border-[#2a2a2a]'
+                      }`}
+                    >
+                      <div className="flex items-start space-x-4">
+                        <input
+                          type="checkbox"
+                          checked={concept.completed || false}
+                          onChange={() => handleCheckboxChange(concept._id, concept.completed)}
+                          className="mt-1 w-5 h-5 rounded border-gray-600 text-[#00ff00] focus:ring-[#00ff00] focus:ring-offset-0 cursor-pointer"
+                        />
+                        <div className="flex-1">
+                          <h3 className={`font-medium ${concept.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+                            {index + 1}. {concept.name}
+                          </h3>
+                          <div className="flex space-x-4 mt-2">
+                            {concept.youtubeLink && concept.youtubeLink !== '' && (
+                              <a
+                                href={concept.youtubeLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-red-400 hover:text-red-300 transition-colors flex items-center space-x-1"
+                              >
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                </svg>
+                                <span>YouTube →</span>
+                              </a>
+                            )}
+                            {concept.notesLink && concept.notesLink !== '' && (
+                              <a
+                                href={concept.notesLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-blue-400 hover:text-blue-300 transition-colors flex items-center space-x-1"
+                              >
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+                                </svg>
+                                <span>Notes →</span>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
