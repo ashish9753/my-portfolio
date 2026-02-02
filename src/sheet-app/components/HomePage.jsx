@@ -101,6 +101,13 @@ function HomePage({ auth, setAuth }) {
       color: 'text-[#00d9ff]',
       borderColor: 'border-[#00d9ff]',
       hoverBg: 'hover:bg-[#00d9ff]/10'
+    },
+    {
+      name: 'DP',
+      description: 'Master Dynamic Programming patterns and optimization',
+      color: 'text-[#ffd700]',
+      borderColor: 'border-[#ffd700]',
+      hoverBg: 'hover:bg-[#ffd700]/10'
     }
     // Add more topics here in the future
   ];
