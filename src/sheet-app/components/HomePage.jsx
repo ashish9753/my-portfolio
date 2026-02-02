@@ -403,13 +403,60 @@ function HomePage({ auth, setAuth }) {
         <div className="mt-12 p-6 bg-[#1a1a1a] rounded-lg border border-[#2a2a2a]">
           <h3 className="text-xl font-semibold mb-4 text-gray-300">Coming Soon</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {['Strings', 'Linked List', 'Stacks & Queues', 'Trees', 'Graphs', 'Dynamic Programming', 'Greedy'].map((topic) => (
+            {['Strings', 'Linked List', 'Stacks & Queues', 'Trees', 'Graphs', 'Greedy'].map((topic) => (
               <div key={topic} className="bg-[#0a0a0a] p-3 rounded border border-[#2a2a2a] text-gray-500 text-center">
                 {topic}
               </div>
             ))}
           </div>
         </div>
+
+        {/* Core CS Subjects */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold mb-6 text-white">Core CS Subjects</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-blue-500 hover:bg-[#1f1f1f] transition-all duration-300">
+              <h3 className="text-xl font-bold mb-2 text-blue-400">CN Sheet</h3>
+              <p className="text-gray-400 text-sm mb-4">Most Asked Computer Networks Interview Questions</p>
+              <button className="w-full py-2 px-4 bg-transparent border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white transition-colors duration-300">
+                Start Learning
+              </button>
+            </div>
+            
+            <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-purple-500 hover:bg-[#1f1f1f] transition-all duration-300">
+              <h3 className="text-xl font-bold mb-2 text-purple-400">DBMS Sheet</h3>
+              <p className="text-gray-400 text-sm mb-4">Most Asked DBMS Interview Questions</p>
+              <button className="w-full py-2 px-4 bg-transparent border border-purple-500 text-purple-500 rounded hover:bg-purple-500 hover:text-white transition-colors duration-300">
+                Start Learning
+              </button>
+            </div>
+            
+            <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-green-500 hover:bg-[#1f1f1f] transition-all duration-300">
+              <h3 className="text-xl font-bold mb-2 text-green-400">OS Sheet</h3>
+              <p className="text-gray-400 text-sm mb-4">Most Asked Operating System Interview Questions</p>
+              <button className="w-full py-2 px-4 bg-transparent border border-green-500 text-green-500 rounded hover:bg-green-500 hover:text-white transition-colors duration-300">
+                Start Learning
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* System Design */}
+        <div className="mt-12 mb-8">
+          <h2 className="text-2xl font-bold mb-6 text-white">System Design</h2>
+          <div className="bg-[#1a1a1a] rounded-lg p-8 border-l-4 border-yellow-500 hover:bg-[#1f1f1f] transition-all duration-300">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold mb-3 text-yellow-400">System Design Sheet</h3>
+                <p className="text-gray-400 mb-4">Master HLD from Basics to Advanced</p>
+              </div>
+              <button className="py-3 px-8 bg-transparent border-2 border-yellow-500 text-yellow-500 rounded-lg hover:bg-yellow-500 hover:text-black transition-colors duration-300 font-semibold">
+                Start Learning
+              </button>
+            </div>
+          </div>
+        </div>
+
         <Footer />      </div>
     </div>
   );
