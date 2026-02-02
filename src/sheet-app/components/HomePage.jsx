@@ -415,29 +415,35 @@ function HomePage({ auth, setAuth }) {
         <div className="mt-12">
           <h2 className="text-2xl font-bold mb-6 text-white">Core CS Subjects</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-blue-500 hover:bg-[#1f1f1f] transition-all duration-300">
-              <h3 className="text-xl font-bold mb-2 text-blue-400">CN Sheet</h3>
-              <p className="text-gray-400 text-sm mb-4">Most Asked Computer Networks Interview Questions</p>
-              <button className="w-full py-2 px-4 bg-transparent border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white transition-colors duration-300">
-                Start Learning
-              </button>
-            </div>
+            <Link to="/sheet/Computer Networks" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-blue-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-blue-400">CN Sheet</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked Computer Networks Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white transition-colors duration-300">
+                  Start Learning
+                </button>
+              </div>
+            </Link>
             
-            <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-purple-500 hover:bg-[#1f1f1f] transition-all duration-300">
-              <h3 className="text-xl font-bold mb-2 text-purple-400">DBMS Sheet</h3>
-              <p className="text-gray-400 text-sm mb-4">Most Asked DBMS Interview Questions</p>
-              <button className="w-full py-2 px-4 bg-transparent border border-purple-500 text-purple-500 rounded hover:bg-purple-500 hover:text-white transition-colors duration-300">
-                Start Learning
-              </button>
-            </div>
+            <Link to="/sheet/DBMS" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-purple-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-purple-400">DBMS Sheet</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked DBMS Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-purple-500 text-purple-500 rounded hover:bg-purple-500 hover:text-white transition-colors duration-300">
+                  Start Learning
+                </button>
+              </div>
+            </Link>
             
-            <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-green-500 hover:bg-[#1f1f1f] transition-all duration-300">
-              <h3 className="text-xl font-bold mb-2 text-green-400">OS Sheet</h3>
-              <p className="text-gray-400 text-sm mb-4">Most Asked Operating System Interview Questions</p>
-              <button className="w-full py-2 px-4 bg-transparent border border-green-500 text-green-500 rounded hover:bg-green-500 hover:text-white transition-colors duration-300">
-                Start Learning
-              </button>
-            </div>
+            <Link to="/sheet/Operating System" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-green-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-green-400">OS Sheet</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked Operating System Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-green-500 text-green-500 rounded hover:bg-green-500 hover:text-white transition-colors duration-300">
+                  Start Learning
+                </button>
+              </div>
+            </Link>
           </div>
         </div>
 

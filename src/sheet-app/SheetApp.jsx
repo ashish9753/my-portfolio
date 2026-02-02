@@ -6,6 +6,9 @@ import ArraySheet from './pages/ArraySheet';
 import BinarySearchSheet from './pages/BinarySearchSheet';
 import DPSheet from './pages/DPSheet';
 import SystemDesignSheet from '../Core-Concept-CS/SystemDesignSheet';
+import CNSheet from '../Core-Concept-CS/CNSheet';
+import OSSheet from '../Core-Concept-CS/OSSheet';
+import DBMSSheet from '../Core-Concept-CS/DBMSSheet';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import './App.css';
@@ -111,6 +114,30 @@ function SheetApp() {
         element={
           <ProtectedRoute>
             <SystemDesignSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/Computer Networks" 
+        element={
+          <ProtectedRoute>
+            <CNSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/Operating System" 
+        element={
+          <ProtectedRoute>
+            <OSSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/DBMS" 
+        element={
+          <ProtectedRoute>
+            <DBMSSheet auth={auth} setAuth={setAuth} />
           </ProtectedRoute>
         } 
       />

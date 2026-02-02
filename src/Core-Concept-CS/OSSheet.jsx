@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../sheet-app/components/Footer';
 
-function SystemDesignSheet({ auth, setAuth }) {
-  const topic = 'System Design'; // Hardcoded for System Design page
+function OSSheet({ auth, setAuth }) {
+  const topic = 'Operating System'; // Hardcoded for OS page
   const navigate = useNavigate();
   const [concepts, setConcepts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -128,7 +128,7 @@ function SystemDesignSheet({ auth, setAuth }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-[#00ff00] text-xl">Loading System Design concepts...</div>
+        <div className="text-[#00ff00] text-xl">Loading Operating System concepts...</div>
       </div>
     );
   }
@@ -149,7 +149,7 @@ function SystemDesignSheet({ auth, setAuth }) {
                 </svg>
               </Link>
               <h1 className="text-2xl font-bold">
-                <span className="text-[#00ff00]">System Design</span> Concepts
+                <span className="text-[#00ff00]">Operating System</span> Concepts
               </h1>
             </div>
             <div className="flex items-center space-x-4">
@@ -164,27 +164,6 @@ function SystemDesignSheet({ auth, setAuth }) {
           </div>
         </div>
       </header>
-
-      {/* Topic Tabs */}
-      <div className="bg-[#0a0a0a] border-b border-[#2a2a2a]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-2 overflow-x-auto py-3">
-            {topics.map(topic => (
-              <button
-                key={topic}
-                onClick={() => setSelectedTopic(topic)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-                  selectedTopic === topic
-                    ? 'bg-[#00ff00] text-black font-semibold'
-                    : 'bg-[#1a1a1a] text-gray-300 hover:bg-[#252525] border border-[#2a2a2a]'
-                }`}
-              >
-                {topic}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* Stats Bar */}
       <div className="bg-[#0a0a0a] border-b border-[#2a2a2a]">
@@ -333,4 +312,4 @@ function SystemDesignSheet({ auth, setAuth }) {
   );
 }
 
-export default SystemDesignSheet;
+export default OSSheet;
