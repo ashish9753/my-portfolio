@@ -51,10 +51,10 @@ function SystemDesignSheet({ auth, setAuth }) {
       setConcepts(sortedConcepts);
       setLoading(false);
       
-      // Auto-expand all sections
+      // Auto-collapse all sections by default
       const sections = {};
       sortedConcepts.forEach(concept => {
-        sections[concept.subTopic] = true;
+        sections[concept.subTopic] = false;
       });
       setExpandedSections(sections);
     } catch (error) {
