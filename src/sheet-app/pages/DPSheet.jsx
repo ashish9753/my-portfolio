@@ -22,7 +22,7 @@ function DPSheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/dp-questions';
+  const API_URL = 'http://Dsa-backend-env.eba-mxqqpgkr.ap-south-1.elasticbeanstalk.com/api/dp-questions';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
