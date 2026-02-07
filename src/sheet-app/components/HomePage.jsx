@@ -102,6 +102,13 @@ function HomePage({ auth, setAuth }) {
       hoverBg: 'hover:bg-[#00d9ff]/10'
     },
     {
+      name: 'String',
+      description: 'Master string algorithms, pattern matching, and text processing',
+      color: 'text-[#ff6b35]',
+      borderColor: 'border-[#ff6b35]',
+      hoverBg: 'hover:bg-[#ff6b35]/10'
+    },
+    {
       name: 'DP',
       description: 'Master Dynamic Programming patterns and optimization',
       color: 'text-[#ffd700]',
