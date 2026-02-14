@@ -12,12 +12,63 @@ function HomePage({ auth, setAuth }) {
     hardCompleted: 0
   });
   const [activity, setActivity] = useState({});
+  const [countdown, setCountdown] = useState(60);
   const navigate = useNavigate();
 
   const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
   useEffect(() => {
     fetchStats();
     fetchActivity();
+  }, []);
+
+  // Auto-refresh every 60 seconds
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      fetchStats();
+      fetchActivity();
+      setCountdown(60); // Reset countdown after refresh
+    }, 60000); // 60 seconds
+
+    return () => clearInterval(refreshInterval);
+  }, []);
+
+  // Countdown timer
+  useEffect(() => {
+    const countdownInterval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          return 60; // Reset to 60 when it reaches 0
+        }
+        return prev - 1;
+      });
+    }, 1000); // Every 1 second
+
+    return () => clearInterval(countdownInterval);
+  }, []);
+
+  // Auto-refresh every 60 seconds
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      fetchStats();
+      fetchActivity();
+      setCountdown(60); // Reset countdown after refresh
+    }, 60000); // 60 seconds
+
+    return () => clearInterval(refreshInterval);
+  }, []);
+
+  // Countdown timer
+  useEffect(() => {
+    const countdownInterval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          return 60; // Reset to 60 when it reaches 0
+        }
+        return prev - 1;
+      });
+    }, 1000); // Every 1 second
+
+    return () => clearInterval(countdownInterval);
   }, []);
 
   const fetchStats = async () => {
@@ -281,7 +332,7 @@ function HomePage({ auth, setAuth }) {
         </div>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Series Available */}
           <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#2a2a2a]">
             <div className="flex items-center gap-4">
@@ -308,6 +359,21 @@ function HomePage({ auth, setAuth }) {
               <div>
                 <div className="text-4xl font-bold">{stats.completed}/{stats.total}</div>
                 <div className="text-gray-400">Questions Completed</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Auto-refresh Countdown */}
+          <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#2a2a2a]">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd"/>
+                </svg>
+              </div>
+              <div>
+                <div className="text-4xl font-bold text-green-400">{countdown}s</div>
+                <div className="text-gray-400">Next Refresh</div>
               </div>
             </div>
           </div>
