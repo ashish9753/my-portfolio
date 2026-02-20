@@ -160,6 +160,13 @@ function HomePage({ auth, setAuth }) {
       hoverBg: 'hover:bg-[#ff6b35]/10'
     },
     {
+      name: 'LinkedList',
+      description: 'Master linked list operations, pointers, and node manipulation',
+      color: 'text-[#9d4edd]',
+      borderColor: 'border-[#9d4edd]',
+      hoverBg: 'hover:bg-[#9d4edd]/10'
+    },
+    {
       name: 'DP',
       description: 'Master Dynamic Programming patterns and optimization',
       color: 'text-[#ffd700]',
@@ -475,7 +482,7 @@ function HomePage({ auth, setAuth }) {
         <div className="mt-12 p-6 bg-[#1a1a1a] rounded-lg border border-[#2a2a2a]">
           <h3 className="text-xl font-semibold mb-4 text-gray-300">Coming Soon</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {['Strings', 'Linked List', 'Stacks & Queues', 'Trees', 'Graphs', 'Greedy'].map((topic) => (
+            {['Strings', 'Stacks & Queues', 'Trees', 'Graphs', 'Greedy'].map((topic) => (
               <div key={topic} className="bg-[#0a0a0a] p-3 rounded border border-[#2a2a2a] text-gray-500 text-center">
                 {topic}
               </div>

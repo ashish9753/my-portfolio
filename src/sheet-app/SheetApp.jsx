@@ -5,6 +5,7 @@ import SortingSheet from './pages/SortingSheet';
 import ArraySheet from './pages/ArraySheet';
 import BinarySearchSheet from './pages/BinarySearchSheet';
 import StringSheet from './pages/StringSheet';
+import LinkedListSheet from './pages/LinkedListSheet';
 import DPSheet from './pages/DPSheet';
 import SystemDesignSheet from '../Core-Concept-CS/SystemDesignSheet';
 import CNSheet from '../Core-Concept-CS/CNSheet';
@@ -107,6 +108,14 @@ function SheetApp() {
         element={
           <ProtectedRoute>
             <StringSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/LinkedList" 
+        element={
+          <ProtectedRoute>
+            <LinkedListSheet auth={auth} setAuth={setAuth} />
           </ProtectedRoute>
         } 
       />
