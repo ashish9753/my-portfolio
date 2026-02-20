@@ -4,7 +4,7 @@ import axios from 'axios';
 import Footer from '../components/Footer';
 
 function LinkedListSheet({ auth, setAuth }) {
-  const topic = 'linkedlist'; // Hardcoded for LinkedList page
+  const topic = 'LinkedList'; // Hardcoded for LinkedList page
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
