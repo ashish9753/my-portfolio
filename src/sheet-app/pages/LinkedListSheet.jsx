@@ -4,7 +4,7 @@ import axios from 'axios';
 import Footer from '../components/Footer';
 
 function LinkedListSheet({ auth, setAuth }) {
-  const topic = 'LinkedList'; // Hardcoded for LinkedList page
+  const topic = 'linkedlist'; // Hardcoded for LinkedList page
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,7 @@ function LinkedListSheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/linkedlist-questions';
+  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
@@ -51,7 +51,7 @@ function LinkedListSheet({ auth, setAuth }) {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get(API_URL, getAuthHeaders());
+      const response = await axios.get(`${API_URL}?topic=${topic}`, getAuthHeaders());
       // Sort by sequenceNo to maintain consistent ordering
       const sortedQuestions = response.data.sort((a, b) => (a.sequenceNo || 0) - (b.sequenceNo || 0));
       setQuestions(sortedQuestions);
@@ -67,7 +67,7 @@ function LinkedListSheet({ auth, setAuth }) {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get(`${API_URL}/stats`, getAuthHeaders());
+      const response = await axios.get(`${API_URL}/stats/summary`, getAuthHeaders());
       setStats(response.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -324,9 +324,6 @@ function LinkedListSheet({ auth, setAuth }) {
       <Footer />
     </div>
   );
-}
-
-export default LinkedListSheet;
 }
 
 export default LinkedListSheet;
