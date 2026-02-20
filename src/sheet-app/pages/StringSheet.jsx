@@ -4,7 +4,6 @@ import axios from 'axios';
 import Footer from '../components/Footer';
 
 function StringSheet({ auth, setAuth }) {
-  const topic = 'String'; // Hardcoded for String page
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +21,7 @@ function StringSheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
+  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/string-questions';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
@@ -51,9 +50,8 @@ function StringSheet({ auth, setAuth }) {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get(`${API_URL}?topic=${topic}`, getAuthHeaders());
-      const sortedQuestions = response.data.sort((a, b) => (a.sequenceNo || 0) - (b.sequenceNo || 0));
-      setQuestions(sortedQuestions);
+      const response = await axios.get(API_URL, getAuthHeaders());
+      setQuestions(response.data);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching questions:', error);
