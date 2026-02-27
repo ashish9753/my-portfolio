@@ -10,9 +10,9 @@ function LinkedListSheet({ auth, setAuth }) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSections, setExpandedSections] = useState({
-    Easy: true,
-    Medium: true,
-    Hard: true
+    Easy: false,
+    Medium: false,
+    Hard: false
   });
   const [stats, setStats] = useState({
     total: 0,
@@ -51,17 +51,13 @@ function LinkedListSheet({ auth, setAuth }) {
 
   const fetchQuestions = async () => {
     try {
-      console.log('Fetching LinkedList questions from:', API_URL);
-      const response = await axios.get(API_URL, getAuthHeaders());
-      console.log('LinkedList questions response:', response.data);
+      const response = await axios.get(`${API_URL}?topic=${topic}`, getAuthHeaders());
       // Sort by sequenceNo to maintain consistent ordering
       const sortedQuestions = response.data.sort((a, b) => (a.sequenceNo || 0) - (b.sequenceNo || 0));
       setQuestions(sortedQuestions);
-      console.log(`✅ Successfully loaded ${sortedQuestions.length} LinkedList questions`);
       setLoading(false);
     } catch (error) {
-      console.error('❌ Error fetching LinkedList questions:', error);
-      console.error('Error details:', error.response?.data || error.message);
+      console.error('Error fetching LinkedList questions:', error);
       if (error.response?.status === 401) {
         handleAuthError();
       }
@@ -71,13 +67,10 @@ function LinkedListSheet({ auth, setAuth }) {
 
   const fetchStats = async () => {
     try {
-      console.log('Fetching LinkedList stats from:', `${API_URL}/stats`);
-      const response = await axios.get(`${API_URL}/stats`, getAuthHeaders());
-      console.log('LinkedList stats response:', response.data);
+      const response = await axios.get(`${API_URL}/stats/summary`, getAuthHeaders());
       setStats(response.data);
     } catch (error) {
-      console.error('❌ Error fetching LinkedList stats:', error);
-      console.error('Stats error details:', error.response?.data || error.message);
+      console.error('Error fetching LinkedList stats:', error);
       if (error.response?.status === 401) {
         handleAuthError();
       }
@@ -106,16 +99,7 @@ function LinkedListSheet({ auth, setAuth }) {
     Hard: questions.filter(q => q.difficulty === 'Hard')
   };
 
-  // Debug: Log grouped questions
-  useEffect(() => {
-    if (questions.length > 0) {
-      console.log('📊 LinkedList Questions by difficulty:');
-      console.log(`Easy: ${groupedQuestions.Easy.length} questions`);
-      console.log(`Medium: ${groupedQuestions.Medium.length} questions`);
-      console.log(`Hard: ${groupedQuestions.Hard.length} questions`);
-      console.log('Total questions:', questions.length);
-    }
-  }, [questions]);
+
 
   const filterQuestions = (questionsArray) => {
     if (!searchQuery.trim()) return questionsArray;
