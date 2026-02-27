@@ -151,7 +151,9 @@ function JSSheet({ auth, setAuth }) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [openAnswers, setOpenAnswers] = useState({});
-  const [collapsedSections, setCollapsedSections] = useState({});
+  const [collapsedSections, setCollapsedSections] = useState(
+    () => revisionSections.reduce((acc, _, i) => ({ ...acc, [i]: true }), {})
+  );
   const questionRefs = useRef({});
 
   const [lastRead, setLastRead] = useState(() => {
@@ -182,11 +184,15 @@ function JSSheet({ auth, setAuth }) {
 
   const jumpToLastRead = () => {
     if (!lastRead) return;
-    const el = questionRefs.current[lastRead.key];
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setOpenAnswers(prev => ({ ...prev, [lastRead.key]: true }));
-    }
+    // Parse section index from key ("sIdx-qIdx") and expand that section first
+    const sectionIdx = parseInt(lastRead.key.split('-')[0], 10);
+    setCollapsedSections(prev => ({ ...prev, [sectionIdx]: false }));
+    setOpenAnswers(prev => ({ ...prev, [lastRead.key]: true }));
+    // Wait for section to render, then scroll
+    setTimeout(() => {
+      const el = questionRefs.current[lastRead.key];
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 80);
   };
 
   const clearLastRead = () => {
@@ -214,7 +220,7 @@ function JSSheet({ auth, setAuth }) {
     <div className="min-h-screen bg-[#0a0a0a] text-white">
       {/* Header */}
       <header className="border-b border-[#1f1f1f] bg-[#0a0a0a]/95 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16 py-5 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Link to="/sheet" className="text-yellow-400 hover:text-yellow-300 transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,7 +228,7 @@ function JSSheet({ auth, setAuth }) {
               </svg>
             </Link>
             <div>
-              <h1 className="text-xl font-bold leading-tight">
+              <h1 className="text-2xl font-bold leading-tight">
                 <span className="text-yellow-400">JavaScript</span> Revision
               </h1>
               <p className="text-xs text-gray-500">{totalQuestions} questions · {revisionSections.length} sections</p>
@@ -235,7 +241,7 @@ function JSSheet({ auth, setAuth }) {
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
+      <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16 py-8 space-y-8">
         {/* Search */}
         <div className="relative">
           <svg className="w-4 h-4 text-gray-500 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,7 +252,7 @@ function JSSheet({ auth, setAuth }) {
             placeholder="Search any question or keyword..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-[#141414] border border-[#2a2a2a] rounded-xl px-4 py-3 pl-11 pr-10 text-white placeholder-gray-600 focus:outline-none focus:border-yellow-400/60 transition-colors text-sm"
+            className="w-full bg-[#141414] border border-[#2a2a2a] rounded-xl px-5 py-4 pl-12 pr-11 text-white placeholder-gray-600 focus:outline-none focus:border-yellow-400/60 transition-colors text-base"
           />
           {searchQuery && (
             <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors text-lg leading-none">×</button>
@@ -260,9 +266,9 @@ function JSSheet({ auth, setAuth }) {
             { label: 'Revealed', value: revealedCount, color: 'text-emerald-400' },
             { label: 'Topics', value: revisionSections.length, color: 'text-sky-400' },
           ].map(s => (
-            <div key={s.label} className="bg-[#111] border border-[#1f1f1f] rounded-xl p-4 text-center">
-              <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
-              <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
+            <div key={s.label} className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6 text-center">
+              <div className={`text-4xl font-bold ${s.color}`}>{s.value}</div>
+              <div className="text-sm text-gray-500 mt-1">{s.label}</div>
             </div>
           ))}
         </div>
@@ -296,17 +302,17 @@ function JSSheet({ auth, setAuth }) {
         {/* Sections */}
         {filteredSections.map((section, sIdx) => {
           const originalIdx = revisionSections.findIndex(s => s.title === section.title);
-          const isCollapsed = collapsedSections[originalIdx];
+          const isCollapsed = q ? false : collapsedSections[originalIdx];
           return (
             <div key={sIdx}>
               {/* Section header */}
               <button
                 onClick={() => toggleSection(originalIdx)}
-                className="w-full flex items-center justify-between py-3 group"
+                className="w-full flex items-center justify-between py-4 group"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-yellow-400 font-bold text-base">{section.title}</span>
-                  <span className="text-xs text-gray-600 bg-[#1a1a1a] px-2 py-0.5 rounded-full">{section.questions.length}Q</span>
+                  <span className="text-yellow-400 font-bold text-lg">{section.title}</span>
+                  <span className="text-sm text-gray-500 bg-[#1a1a1a] px-2.5 py-0.5 rounded-full">{section.questions.length}Q</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-px bg-[#1f1f1f] w-20 hidden sm:block" />
@@ -328,23 +334,43 @@ function JSSheet({ auth, setAuth }) {
                       <div
                         key={key}
                         ref={el => questionRefs.current[key] = el}
-                        className={`border-b transition-colors ${isLastRead ? 'border-yellow-400/20' : 'border-[#161616]'}`}
+                        className={`border-b transition-all rounded-sm ${
+                          isOpen
+                            ? 'bg-yellow-400/[0.06] border-yellow-400/20'
+                            : isLastRead
+                            ? 'border-yellow-400/15'
+                            : 'border-[#161616]'
+                        }`}
                       >
-                        <button
-                          onClick={() => toggleAnswer(key, item.q, section.title)}
-                          className="w-full flex items-center justify-between px-1 py-3 text-left group hover:bg-white/[0.02] transition-colors rounded"
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            {isLastRead && <span className="text-yellow-400 text-xs flex-shrink-0">📌</span>}
-                            <span className={`text-sm ${isLastRead ? 'text-yellow-200' : 'text-gray-200'} group-hover:text-white transition-colors`}>{item.q}</span>
-                          </div>
-                          <svg className={`w-3.5 h-3.5 text-gray-600 flex-shrink-0 ml-3 transition-transform duration-200 ${isOpen ? 'rotate-180 text-yellow-400' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => toggleAnswer(key, item.q, section.title)}
+                            className="flex-1 flex items-center justify-between px-2 py-5 text-left hover:bg-white/[0.03] transition-colors rounded"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              {isLastRead && <span className="text-yellow-400 text-xs flex-shrink-0">📌</span>}
+                              <span className={`text-[17px] leading-snug ${isLastRead ? 'text-yellow-200' : 'text-gray-200'}`}>{item.q}</span>
+                            </div>
+                            <svg className={`w-3.5 h-3.5 text-gray-600 flex-shrink-0 ml-3 transition-transform duration-200 ${isOpen ? 'rotate-180 text-yellow-400' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                          <a
+                            href={`https://chatgpt.com/?q=${encodeURIComponent(`${item.q} in short.`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Ask ChatGPT"
+                            className="flex-shrink-0 p-2 mr-1 text-red-400 hover:text-red-300 hover:scale-125 transition-all duration-300 rounded animate-spin [animation-duration:6s]"
+                            onClick={e => e.stopPropagation()}
+                          >
+                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.648zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.843-3.371 2.019-1.168a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.4-.679zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.496 4.496 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.603 1.497v2.999l-2.597 1.5-2.603-1.495z"/>
+                            </svg>
+                          </a>
+                        </div>
                         {isOpen && (
-                          <div className="px-1 pb-3 pt-0.5">
-                            <p className="text-sm text-yellow-300/80 pl-0 leading-relaxed">
+                          <div className="px-1 pb-5 pt-2">
+                            <p className="text-[16px] text-yellow-300/80 px-2 pb-1 leading-relaxed">
                               <span className="text-yellow-500 mr-1">→</span>{item.a}
                             </p>
                           </div>
