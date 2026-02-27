@@ -491,34 +491,81 @@ function HomePage({ auth, setAuth }) {
         </div>
 
         {/* Core CS Subjects */}
-        <div className="mt-12">
+        <div className="mt-12 mb-8">
           <h2 className="text-2xl font-bold mb-6 text-white">Core CS Subjects</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* 1. System Design (LLD + HLD) */}
+            <Link to="/sheet/System Design" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-yellow-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-yellow-400">System Design (LLD + HLD)</h3>
+                <p className="text-gray-400 text-sm mb-4">Master Low & High Level Design from Basics to Advanced</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-yellow-500 text-yellow-500 rounded hover:bg-yellow-500 hover:text-black transition-colors duration-300">
+                  Start Learning
+                </button>
+              </div>
+            </Link>
+
+            {/* 2. DevOps */}
+            <Link to="/sheet/DevOps" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-orange-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-orange-400">DevOps</h3>
+                <p className="text-gray-400 text-sm mb-4">Docker, Kubernetes, CI/CD, Cloud & More</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-orange-500 text-orange-500 rounded hover:bg-orange-500 hover:text-white transition-colors duration-300">
+                  Start Learning
+                </button>
+              </div>
+            </Link>
+
+            {/* 3. DBMS (+ MySQL) */}
+            <Link to="/sheet/DBMS" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-purple-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-purple-400">DBMS (+ MySQL)</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked DBMS & MySQL Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-purple-500 text-purple-500 rounded hover:bg-purple-500 hover:text-white transition-colors duration-300">
+                  Start Learning
+                </button>
+              </div>
+            </Link>
+
+            {/* 4. Operating System */}
+            <Link to="/sheet/Operating System" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-green-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-green-400">Operating System</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked Operating System Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-green-500 text-green-500 rounded hover:bg-green-500 hover:text-white transition-colors duration-300">
+                  Start Learning
+                </button>
+              </div>
+            </Link>
+
+            {/* 5. Computer Networks */}
             <Link to="/sheet/Computer Networks" className="block">
               <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-blue-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
-                <h3 className="text-xl font-bold mb-2 text-blue-400">CN Sheet</h3>
+                <h3 className="text-xl font-bold mb-2 text-blue-400">Computer Networks</h3>
                 <p className="text-gray-400 text-sm mb-4">Most Asked Computer Networks Interview Questions</p>
                 <button className="w-full py-2 px-4 bg-transparent border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white transition-colors duration-300">
                   Start Learning
                 </button>
               </div>
             </Link>
-            
-            <Link to="/sheet/DBMS" className="block">
-              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-purple-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
-                <h3 className="text-xl font-bold mb-2 text-purple-400">DBMS Sheet</h3>
-                <p className="text-gray-400 text-sm mb-4">Most Asked DBMS Interview Questions</p>
-                <button className="w-full py-2 px-4 bg-transparent border border-purple-500 text-purple-500 rounded hover:bg-purple-500 hover:text-white transition-colors duration-300">
+
+            {/* 6. OOPS */}
+            <Link to="/sheet/OOPS" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-pink-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-pink-400">OOPS</h3>
+                <p className="text-gray-400 text-sm mb-4">Object Oriented Programming Concepts & Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-pink-500 text-pink-500 rounded hover:bg-pink-500 hover:text-white transition-colors duration-300">
                   Start Learning
                 </button>
               </div>
             </Link>
-            
-            <Link to="/sheet/Operating System" className="block">
-              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-green-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
-                <h3 className="text-xl font-bold mb-2 text-green-400">OS Sheet</h3>
-                <p className="text-gray-400 text-sm mb-4">Most Asked Operating System Interview Questions</p>
-                <button className="w-full py-2 px-4 bg-transparent border border-green-500 text-green-500 rounded hover:bg-green-500 hover:text-white transition-colors duration-300">
+
+            {/* 7. Software Engineering */}
+            <Link to="/sheet/Software Engineering" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-cyan-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-cyan-400">Software Engineering</h3>
+                <p className="text-gray-400 text-sm mb-4">SDLC, Design Patterns, Agile & Software Architecture concepts</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-cyan-500 text-cyan-500 rounded hover:bg-cyan-500 hover:text-white transition-colors duration-300">
                   Start Learning
                 </button>
               </div>
@@ -526,22 +573,67 @@ function HomePage({ auth, setAuth }) {
           </div>
         </div>
 
-        {/* System Design */}
+        {/* MERN Interview Preparations */}
         <div className="mt-12 mb-8">
-          <h2 className="text-2xl font-bold mb-6 text-white">System Design</h2>
-          <Link to="/sheet/System Design" className="block">
-            <div className="bg-[#1a1a1a] rounded-lg p-8 border-l-4 border-yellow-500 hover:bg-[#1f1f1f] transition-all duration-300">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <h3 className="text-2xl font-bold mb-3 text-yellow-400">System Design Sheet</h3>
-                  <p className="text-gray-400 mb-4">Master HLD from Basics to Advanced</p>
-                </div>
-                <button className="py-3 px-8 bg-transparent border-2 border-yellow-500 text-yellow-500 rounded-lg hover:bg-yellow-500 hover:text-black transition-colors duration-300 font-semibold">
-                  Start Learning
-                </button>
+          <h2 className="text-2xl font-bold mb-6 text-white">MERN Interview Preparations</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Link to="/sheet/HTML" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-orange-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-orange-400">HTML</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked HTML Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-orange-500 text-orange-500 rounded hover:bg-orange-500 hover:text-white transition-colors duration-300">Start Learning</button>
               </div>
-            </div>
-          </Link>
+            </Link>
+            <Link to="/sheet/CSS" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-sky-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-sky-400">CSS + TailwindCSS</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked CSS & TailwindCSS Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-sky-500 text-sky-500 rounded hover:bg-sky-500 hover:text-white transition-colors duration-300">Start Learning</button>
+              </div>
+            </Link>
+            <Link to="/sheet/JavaScript" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-yellow-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-yellow-400">JavaScript</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked JavaScript Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-yellow-500 text-yellow-500 rounded hover:bg-yellow-500 hover:text-black transition-colors duration-300">Start Learning</button>
+              </div>
+            </Link>
+            <Link to="/sheet/MongoDB" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-green-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-green-400">MongoDB</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked MongoDB Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-green-500 text-green-500 rounded hover:bg-green-500 hover:text-white transition-colors duration-300">Start Learning</button>
+              </div>
+            </Link>
+            <Link to="/sheet/React" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-cyan-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-cyan-400">React</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked React Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-cyan-500 text-cyan-500 rounded hover:bg-cyan-500 hover:text-white transition-colors duration-300">Start Learning</button>
+              </div>
+            </Link>
+            <Link to="/sheet/NodeJS" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-lime-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-lime-400">Node.js</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked Node.js Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-lime-500 text-lime-500 rounded hover:bg-lime-500 hover:text-black transition-colors duration-300">Start Learning</button>
+              </div>
+            </Link>
+            <Link to="/sheet/MySQL" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-blue-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-blue-400">MySQL</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked MySQL Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white transition-colors duration-300">Start Learning</button>
+              </div>
+            </Link>
+            <Link to="/sheet/PostgreSQL" className="block">
+              <div className="bg-[#1a1a1a] rounded-lg p-6 border-l-4 border-indigo-500 hover:bg-[#1f1f1f] transition-all duration-300 h-full">
+                <h3 className="text-xl font-bold mb-2 text-indigo-400">PostgreSQL</h3>
+                <p className="text-gray-400 text-sm mb-4">Most Asked PostgreSQL Interview Questions</p>
+                <button className="w-full py-2 px-4 bg-transparent border border-indigo-500 text-indigo-500 rounded hover:bg-indigo-500 hover:text-white transition-colors duration-300">Start Learning</button>
+              </div>
+            </Link>
+          </div>
         </div>
 
         <Footer />      </div>

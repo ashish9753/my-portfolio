@@ -7,10 +7,21 @@ import BinarySearchSheet from './pages/BinarySearchSheet';
 import StringSheet from './pages/StringSheet';
 import LinkedListSheet from './pages/LinkedListSheet';
 import DPSheet from './pages/DPSheet';
-import SystemDesignSheet from '../../../PortFolio/My PortFolio/src/Core-Concept-CS/SystemDesignSheet';
-import CNSheet from '../../../PortFolio/My PortFolio/src/Core-Concept-CS/CNSheet';
-import OSSheet from '../../../PortFolio/My PortFolio/src/Core-Concept-CS/OSSheet';
-import DBMSSheet from '../../../PortFolio/My PortFolio/src/Core-Concept-CS/DBMSSheet';
+import SystemDesignSheet from '../Core-Concept-CS/SystemDesignSheet';
+import CNSheet from '../Core-Concept-CS/CNSheet';
+import OSSheet from '../Core-Concept-CS/OSSheet';
+import DBMSSheet from '../Core-Concept-CS/DBMSSheet';
+import DevOpsSheet from '../Core-Concept-CS/DevOpsSheet';
+import OOPSSheet from '../Core-Concept-CS/OOPSSheet';
+import SoftwareEngineeringSheet from '../Core-Concept-CS/SoftwareEngineeringSheet';
+import HTMLSheet from '../MERN-Interview-Prep/HTMLSheet';
+import CSSSheet from '../MERN-Interview-Prep/CSSSheet';
+import JSSheet from '../MERN-Interview-Prep/JSSheet';
+import MongoDBSheet from '../MERN-Interview-Prep/MongoDBSheet';
+import ReactSheet from '../MERN-Interview-Prep/ReactSheet';
+import NodeJSSheet from '../MERN-Interview-Prep/NodeJSSheet';
+import MySQLSheet from '../MERN-Interview-Prep/MySQLSheet';
+import PostgreSQLSheet from '../MERN-Interview-Prep/PostgreSQLSheet';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import './App.css';
@@ -159,6 +170,38 @@ function SheetApp() {
           </ProtectedRoute>
         } 
       />
+      <Route 
+        path="/DevOps" 
+        element={
+          <ProtectedRoute>
+            <DevOpsSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/OOPS" 
+        element={
+          <ProtectedRoute>
+            <OOPSSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/Software Engineering" 
+        element={
+          <ProtectedRoute>
+            <SoftwareEngineeringSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route path="/HTML" element={<ProtectedRoute><HTMLSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
+      <Route path="/CSS" element={<ProtectedRoute><CSSSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
+      <Route path="/JavaScript" element={<ProtectedRoute><JSSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
+      <Route path="/MongoDB" element={<ProtectedRoute><MongoDBSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
+      <Route path="/React" element={<ProtectedRoute><ReactSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
+      <Route path="/NodeJS" element={<ProtectedRoute><NodeJSSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
+      <Route path="/MySQL" element={<ProtectedRoute><MySQLSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
+      <Route path="/PostgreSQL" element={<ProtectedRoute><PostgreSQLSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
     </Routes>
   );
 }
