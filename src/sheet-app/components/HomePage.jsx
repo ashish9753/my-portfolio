@@ -167,6 +167,13 @@ function HomePage({ auth, setAuth }) {
       hoverBg: 'hover:bg-[#9d4edd]/10'
     },
     {
+      name: 'Recursion',
+      description: 'Master recursion, backtracking, and recursive problem-solving techniques',
+      color: 'text-[#fb7185]',
+      borderColor: 'border-[#fb7185]',
+      hoverBg: 'hover:bg-[#fb7185]/10'
+    },
+    {
       name: 'DP',
       description: 'Master Dynamic Programming patterns and optimization',
       color: 'text-[#ffd700]',
@@ -350,7 +357,7 @@ function HomePage({ auth, setAuth }) {
               </div>
               <div>
                 <div className="text-4xl font-bold">{topics.length}</div>
-                <div className="text-gray-400">Series Available</div>
+                <div className="text-gray-400">DSA Series Available</div>
               </div>
             </div>
           </div>

@@ -7,6 +7,7 @@ import BinarySearchSheet from './pages/BinarySearchSheet';
 import StringSheet from './pages/StringSheet';
 import LinkedListSheet from './pages/LinkedListSheet';
 import DPSheet from './pages/DPSheet';
+import RecursionSheet from './pages/RecursionSheet';
 import SystemDesignSheet from '../Core-Concept-CS/SystemDesignSheet';
 import CNSheet from '../Core-Concept-CS/CNSheet';
 import OSSheet from '../Core-Concept-CS/OSSheet';
@@ -135,6 +136,14 @@ function SheetApp() {
         element={
           <ProtectedRoute>
             <DPSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/Recursion" 
+        element={
+          <ProtectedRoute>
+            <RecursionSheet auth={auth} setAuth={setAuth} />
           </ProtectedRoute>
         } 
       />
