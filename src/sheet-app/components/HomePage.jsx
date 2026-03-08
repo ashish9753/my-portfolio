@@ -529,14 +529,8 @@ function HomePage({ auth, setAuth }) {
         </div>
 
         <div className="mt-12 p-6 bg-[#1a1a1a] rounded-lg border border-[#2a2a2a]">
-          <h3 className="text-xl font-semibold mb-4 text-gray-300">Coming Soon</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {['Strings', 'Stacks & Queues', 'Trees', 'Graphs', 'Greedy'].map((topic) => (
-              <div key={topic} className="bg-[#0a0a0a] p-3 rounded border border-[#2a2a2a] text-gray-500 text-center">
-                {topic}
-              </div>
-            ))}
-          </div>
+          <h3 className="text-xl font-semibold mb-4 text-white justify-center item-center flex">For Your Interview Preparations ↓</h3>
+          
         </div>
 
         {/* Core CS Subjects */}
