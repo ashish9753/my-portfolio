@@ -174,6 +174,48 @@ function HomePage({ auth, setAuth }) {
       hoverBg: 'hover:bg-[#fb7185]/10'
     },
     {
+      name: 'BitManipulation',
+      description: 'Master bit manipulation tricks, bitwise operations, and binary arithmetic',
+      color: 'text-[#00bfff]',
+      borderColor: 'border-[#00bfff]',
+      hoverBg: 'hover:bg-[#00bfff]/10'
+    },
+    {
+      name: 'StackAndQueues',
+      description: 'Master stack and queue operations, monotonic stacks, and sliding window techniques',
+      color: 'text-[#f97316]',
+      borderColor: 'border-[#f97316]',
+      hoverBg: 'hover:bg-[#f97316]/10'
+    },
+    {
+      name: 'SlidingWindow',
+      description: 'Master sliding window and two pointer patterns for subarray and substring problems',
+      color: 'text-[#a78bfa]',
+      borderColor: 'border-[#a78bfa]',
+      hoverBg: 'hover:bg-[#a78bfa]/10'
+    },
+    {
+      name: 'Heaps',
+      description: 'Master heaps, priority queues, and heap-based algorithms',
+      color: 'text-[#34d399]',
+      borderColor: 'border-[#34d399]',
+      hoverBg: 'hover:bg-[#34d399]/10'
+    },
+    {
+      name: 'Greedy',
+      description: 'Master greedy strategies, interval scheduling, and optimization problems',
+      color: 'text-[#fb923c]',
+      borderColor: 'border-[#fb923c]',
+      hoverBg: 'hover:bg-[#fb923c]/10'
+    },
+    {
+      name: 'Graphs',
+      description: 'Master graph traversal, shortest paths, topological sort, and advanced graph algorithms',
+      color: 'text-[#60a5fa]',
+      borderColor: 'border-[#60a5fa]',
+      hoverBg: 'hover:bg-[#60a5fa]/10'
+    },
+    {
       name: 'DP',
       description: 'Master Dynamic Programming patterns and optimization',
       color: 'text-[#ffd700]',

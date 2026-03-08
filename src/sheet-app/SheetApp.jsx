@@ -8,6 +8,12 @@ import StringSheet from './pages/StringSheet';
 import LinkedListSheet from './pages/LinkedListSheet';
 import DPSheet from './pages/DPSheet';
 import RecursionSheet from './pages/RecursionSheet';
+import BitManipulationSheet from './pages/BitManipulationSheet';
+import StackAndQueuesSheet from './pages/StackAndQueuesSheet';
+import SlidingWindowSheet from './pages/SlidingWindowSheet';
+import HeapsSheet from './pages/HeapsSheet';
+import GreedySheet from './pages/GreedySheet';
+import GraphsSheet from './pages/GraphsSheet';
 import SystemDesignSheet from '../Core-Concept-CS/SystemDesignSheet';
 import CNSheet from '../Core-Concept-CS/CNSheet';
 import OSSheet from '../Core-Concept-CS/OSSheet';
@@ -128,6 +134,54 @@ function SheetApp() {
         element={
           <ProtectedRoute>
             <LinkedListSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/BitManipulation" 
+        element={
+          <ProtectedRoute>
+            <BitManipulationSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/StackAndQueues" 
+        element={
+          <ProtectedRoute>
+            <StackAndQueuesSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/SlidingWindow" 
+        element={
+          <ProtectedRoute>
+            <SlidingWindowSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/Heaps" 
+        element={
+          <ProtectedRoute>
+            <HeapsSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/Greedy" 
+        element={
+          <ProtectedRoute>
+            <GreedySheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/Graphs" 
+        element={
+          <ProtectedRoute>
+            <GraphsSheet auth={auth} setAuth={setAuth} />
           </ProtectedRoute>
         } 
       />
