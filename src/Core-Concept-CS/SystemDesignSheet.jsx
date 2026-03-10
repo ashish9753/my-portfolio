@@ -70,100 +70,100 @@ const revisionSections = [
   {
     title: '📘 Step 1: Fundamentals',
     questions: [
-      { q: 'Serverless vs Serverful?', a: '' },
-      { q: 'Horizontal vs Vertical Scaling?', a: '' },
-      { q: 'What are Threads?', a: '' },
-      { q: 'What are Pages?', a: '' },
-      { q: 'How does the Internet work?', a: '' },
+      { q: 'Serverless vs Serverful?', a: 'Serverless: Cloud provider manages servers automatically (AWS Lambda). Serverful: We manage servers ourselves (Node.js on EC2 / VPS).' },
+      { q: 'Horizontal vs Vertical Scaling?', a: 'Vertical Scaling: Increase power of one machine (CPU/RAM). Horizontal Scaling: Add more machines/servers.' },
+      { q: 'What are Threads?', a: 'A thread is the smallest unit of execution inside a process. Multiple threads allow parallel tasks.' },
+      { q: 'What are Pages?', a: 'A page is a fixed-size block of memory used in virtual memory management.' },
+      { q: 'How does the Internet work?', a: 'Client → DNS resolves domain → request sent via HTTP/HTTPS over TCP/IP → server processes → response returned.' },
     ]
   },
   {
     title: '📘 Step 2: Databases',
     questions: [
-      { q: 'SQL vs NoSQL Databases?', a: '' },
-      { q: 'In-memory Databases?', a: '' },
-      { q: 'Data Replication & Migration?', a: '' },
-      { q: 'Data Partitioning?', a: '' },
-      { q: 'Sharding?', a: '' },
+      { q: 'SQL vs NoSQL Databases?', a: 'SQL: Relational, structured tables, ACID. NoSQL: Non-relational, flexible schema, high scalability. Example: MySQL vs MongoDB.' },
+      { q: 'In-memory Databases?', a: 'Databases storing data in RAM for very fast access. Example: Redis, Memcached.' },
+      { q: 'Data Replication & Migration?', a: 'Copying data to multiple servers for fault tolerance and high availability.' },
+      { q: 'Data Partitioning?', a: 'Splitting database into smaller parts to improve performance.' },
+      { q: 'Sharding?', a: 'Horizontal partitioning where different servers store different data portions.' },
     ]
   },
   {
     title: '📘 Step 3: Consistency vs Availability',
     questions: [
-      { q: 'Data Consistency & its levels?', a: '' },
-      { q: 'Isolation & its levels?', a: '' },
-      { q: 'CAP Theorem?', a: '' },
+      { q: 'Data Consistency & its levels?', a: 'All users see same data at the same time. Levels: Strong, Eventual, Causal.' },
+      { q: 'Isolation & its levels?', a: 'Control how transactions interact. Levels: Read Uncommitted, Read Committed, Repeatable Read, Serializable.' },
+      { q: 'CAP Theorem?', a: 'A distributed system can guarantee only two of three: Consistency, Availability, Partition Tolerance.' },
     ]
   },
   {
     title: '📘 Step 4: Cache',
     questions: [
-      { q: 'What is Cache? (Redis, Memcached)', a: '' },
-      { q: 'Write Policies: Write-back, Write-through & Write-around?', a: '' },
-      { q: 'Replacement Policies: LFU, LRU, Segmented LRU etc.?', a: '' },
-      { q: 'Content Delivery Networks (CDNs)?', a: '' },
+      { q: 'What is Cache? (Redis, Memcached)', a: 'Temporary storage to speed up data retrieval. Examples: Redis, Memcached.' },
+      { q: 'Write Policies: Write-back, Write-through & Write-around?', a: 'Write-through: Write to cache + DB simultaneously. Write-back: Write to cache first, DB later. Write-around: Write directly to DB.' },
+      { q: 'Replacement Policies: LFU, LRU, Segmented LRU etc.?', a: 'How cache removes old data: LRU (Least Recently Used), LFU (Least Frequently Used), SLRU (Segmented LRU).' },
+      { q: 'Content Delivery Networks (CDNs)?', a: 'Distributed servers delivering content from nearest location. Example: Cloudflare.' },
     ]
   },
   {
     title: '📘 Step 5: Networking',
     questions: [
-      { q: 'TCP vs UDP?', a: '' },
-      { q: 'What is HTTP (1/2/3) & HTTPS?', a: '' },
-      { q: 'WebSockets?', a: '' },
-      { q: 'WebRTC & Video Streaming?', a: '' },
+      { q: 'TCP vs UDP?', a: 'TCP: Reliable, connection-oriented. UDP: Fast, connectionless. Examples: TCP → HTTP, UDP → Streaming.' },
+      { q: 'What is HTTP (1/2/3) & HTTPS?', a: 'HTTP = protocol for web communication. HTTPS = HTTP + SSL encryption. Versions: HTTP/1.1, HTTP/2 (multiplexing), HTTP/3 (QUIC).' },
+      { q: 'WebSockets?', a: 'Protocol for real-time bidirectional communication. Example: chat apps.' },
+      { q: 'WebRTC & Video Streaming?', a: 'Technology for real-time video/audio communication in browsers. Example: Zoom, Meet.' },
     ]
   },
   {
     title: '📘 Step 6: Load Balancers',
     questions: [
-      { q: 'Load Balancing Algorithms (Stateless & Stateful)?', a: '' },
-      { q: 'Consistent Hashing?', a: '' },
-      { q: 'Proxy & Reverse Proxy?', a: '' },
-      { q: 'Rate Limiting?', a: '' },
+      { q: 'Load Balancing Algorithms (Stateless & Stateful)?', a: 'Round Robin, Least Connections, IP Hash.' },
+      { q: 'Consistent Hashing?', a: 'Distributes requests across servers while minimizing redistribution when nodes change.' },
+      { q: 'Proxy & Reverse Proxy?', a: 'Proxy: client-side intermediary. Reverse Proxy: server-side traffic manager (Nginx).' },
+      { q: 'Rate Limiting?', a: 'Limit number of requests per user to prevent abuse.' },
     ]
   },
   {
     title: '📘 Step 7: Message Queues',
     questions: [
-      { q: 'Asynchronous Processing (Kafka, RabbitMQ)?', a: '' },
-      { q: 'Publisher-Subscriber Model?', a: '' },
+      { q: 'Asynchronous Processing (Kafka, RabbitMQ)?', a: 'Tasks processed in background using queues. Examples: Kafka, RabbitMQ.' },
+      { q: 'Publisher-Subscriber Model?', a: 'Publisher sends message → multiple subscribers receive it.' },
     ]
   },
   {
     title: '📘 Step 8: Monoliths vs Microservices',
     questions: [
-      { q: 'Why Microservices?', a: '' },
-      { q: 'Concept of "Single Point of Failure"?', a: '' },
-      { q: 'Avoiding Cascading Failures?', a: '' },
-      { q: 'Containerization (Docker)?', a: '' },
-      { q: 'Migrating to Microservices?', a: '' },
+      { q: 'Why Microservices?', a: 'Independent services → easier scaling and deployment.' },
+      { q: 'Concept of "Single Point of Failure"?', a: 'If one component fails and system stops, it\'s a SPOF.' },
+      { q: 'Avoiding Cascading Failures?', a: 'Failure in one service triggers failures in others.' },
+      { q: 'Containerization (Docker)?', a: 'Package application + dependencies together. Example: Docker.' },
+      { q: 'Migrating to Microservices?', a: 'Break monolith into independent services gradually.' },
     ]
   },
   {
     title: '📘 Step 9: Monitoring & Logging',
     questions: [
-      { q: 'Logging Events & Monitoring Metrics?', a: '' },
-      { q: 'Anomaly Detection?', a: '' },
+      { q: 'Logging Events & Monitoring Metrics?', a: 'Track system events and performance. Tools: ELK stack, Prometheus, Grafana.' },
+      { q: 'Anomaly Detection?', a: 'Detect unusual system behavior automatically.' },
     ]
   },
   {
     title: '📘 Step 10: Security',
     questions: [
-      { q: 'Tokens for Authentication?', a: '' },
-      { q: 'SSO & OAuth?', a: '' },
-      { q: 'Access Control Lists & Rule Engines?', a: '' },
-      { q: 'Encryption?', a: '' },
+      { q: 'Tokens for Authentication?', a: 'Authentication using JWT tokens.' },
+      { q: 'SSO & OAuth?', a: 'SSO: login once access multiple apps. OAuth: secure third-party authorization.' },
+      { q: 'Access Control Lists & Rule Engines?', a: 'Permissions using roles and policies. Example: RBAC.' },
+      { q: 'Encryption?', a: 'Protect data using cryptography. Examples: AES (symmetric), RSA (asymmetric).' },
     ]
   },
   {
     title: '📘 Step 11: System Design Tradeoffs',
     questions: [
-      { q: 'Push vs Pull Architecture?', a: '' },
-      { q: 'Consistency vs Availability?', a: '' },
-      { q: 'SQL vs NoSQL Databases?', a: '' },
-      { q: 'Memory vs Latency?', a: '' },
-      { q: 'Throughput vs Latency?', a: '' },
-      { q: 'Accuracy vs Latency?', a: '' },
+      { q: 'Push vs Pull Architecture?', a: 'Push → server sends updates. Pull → client requests updates.' },
+      { q: 'Consistency vs Availability?', a: 'Strong consistency reduces availability in distributed systems.' },
+      { q: 'SQL vs NoSQL Databases?', a: 'SQL → structured & consistent. NoSQL → scalable & flexible.' },
+      { q: 'Memory vs Latency?', a: 'More memory (cache) → lower latency.' },
+      { q: 'Throughput vs Latency?', a: 'Higher throughput may increase latency.' },
+      { q: 'Accuracy vs Latency?', a: 'Faster systems may sacrifice accuracy.' },
     ]
   },
   {
