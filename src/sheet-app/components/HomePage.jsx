@@ -236,8 +236,10 @@ function HomePage({ auth, setAuth }) {
     {
       title: 'DevOps',
       description: 'Docker, Kubernetes, CI/CD, Cloud & More',
-      cta: 'Coming Soon',
-      available: false
+      cta: 'Start Learning',
+      to: '/sheet/DevOps',
+      available: true,
+      accent: 'orange'
     },
     {
       title: 'DBMS (+ MySQL)',
@@ -336,6 +338,11 @@ function HomePage({ auth, setAuth }) {
       border: 'border-green-500',
       title: 'text-green-400',
       button: 'border-green-500 text-green-500 hover:bg-green-500 hover:text-white'
+    },
+    orange: {
+      border: 'border-orange-500',
+      title: 'text-orange-400',
+      button: 'border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white'
     }
   };
 
@@ -344,20 +351,20 @@ function HomePage({ auth, setAuth }) {
       return (
         <div
           key={module.title}
-          className="bg-[#1a1a1a] rounded-lg p-6 border border-gray-600 h-full cursor-not-allowed select-none opacity-90"
+          className="bg-[#111318] rounded-xl p-6 border border-[#334155] h-full cursor-not-allowed select-none"
           aria-disabled="true"
         >
           <div className="flex items-start justify-between gap-3 mb-4">
             <h3 className="text-xl font-bold text-gray-100">{module.title}</h3>
-            <span className="rounded-full border border-gray-500 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gray-300">
-              Soon
+            <span className="rounded-full border border-[#475569] px-3 py-1 text-xs font-semibold tracking-[0.2em] text-gray-300">
+              SOON
             </span>
           </div>
           <p className="text-gray-400 text-sm mb-6">{module.description}</p>
           <button
             type="button"
             disabled
-            className="w-full py-2 px-4 bg-gray-700 text-gray-200 border border-gray-600 rounded cursor-not-allowed"
+            className="w-full py-2.5 px-4 bg-[#364152] text-gray-200 border border-[#475569] rounded-md cursor-not-allowed text-base font-semibold"
           >
             {module.cta}
           </button>
