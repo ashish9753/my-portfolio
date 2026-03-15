@@ -18,11 +18,16 @@
 	0%,
 	100% {
 		transform: scale(1);
-		filter: brightness(1) drop-shadow(0 0 10px rgba(192, 192, 192, 0.45));
+		opacity: 1;
+		filter: brightness(1) drop-shadow(0 0 10px rgba(192, 192, 192, 0.5));
 	}
 	50% {
-		transform: scale(1.06);
-		filter: brightness(1.25) drop-shadow(0 0 24px rgba(230, 230, 230, 0.85));
+		transform: scale(1.12);
+		opacity: 0.55;
+		filter: brightness(1.2) drop-shadow(0 0 22px rgba(232, 232, 232, 0.9));
+	}
+	70% {
+		opacity: 0.75;
 	}
 }
 
@@ -92,8 +97,9 @@
 }
 
 .badge-anim-silver {
-	animation: badgeSilverShimmer 2.4s ease-in-out infinite;
+	animation: badgeSilverShimmer 1.25s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 	transform-origin: center;
+	will-change: transform, opacity, filter;
 }
 
 .badge-anim-gold {

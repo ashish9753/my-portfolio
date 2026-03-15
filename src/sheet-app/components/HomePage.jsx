@@ -421,16 +421,16 @@ function HomePage({ auth, setAuth }) {
     image: badgeByAchievement[achievements[currentLevel]?.name] || 'Bronze.png'
   };
   const badgeAnimationByAchievement = {
-    Bronze: 'badge-anim-bronze',
+    Bronze: 'badge-anim-silver',
     Silver: 'badge-anim-silver',
-    Gold: 'badge-anim-gold',
-    Platinum: 'badge-anim-platinum',
-    Diamond: 'badge-anim-diamond',
-    Grandmaster: 'badge-anim-grandmaster'
+    Gold: 'badge-anim-silver',
+    Platinum: 'badge-anim-silver',
+    Diamond: 'badge-anim-silver',
+    Grandmaster: 'badge-anim-silver'
   };
 
   // Contribution Heatmap Component
-  const ContributionHeatmap = ({ activity, currentBadge }) => {
+  const ContributionHeatmap = ({ activity, currentBadge, username }) => {
     const [hoveredDay, setHoveredDay] = useState(null);
 
     // Generate last 365 days
@@ -543,6 +543,9 @@ function HomePage({ auth, setAuth }) {
               alt={`${currentBadge.name} badge`}
               className={`w-36 h-42 mx-auto object-contain ${badgeAnimationByAchievement[currentBadge.name] || 'badge-anim-bronze'}`}
             />
+            <p className="mt-2 text-xs text-gray-300">
+              Earned by <span className="font-semibold text-white">{username || 'User'}</span>
+            </p>
           </div>
         </div>
 
@@ -712,7 +715,7 @@ function HomePage({ auth, setAuth }) {
               </div>
             </div>
           </div>
-          <ContributionHeatmap activity={activity} currentBadge={currentBadge} />
+          <ContributionHeatmap activity={activity} currentBadge={currentBadge} username={auth.user?.username} />
         </div>
 
         {/* Topics Grid */}
