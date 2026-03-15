@@ -408,9 +408,29 @@ function HomePage({ auth, setAuth }) {
   };
 
   const currentLevel = getCurrentLevel();
+  const badgeByAchievement = {
+    Bronze: 'Bronze.png',
+    Silver: 'Silver.png',
+    Gold: 'Gold.png',
+    Platinum: 'Platinum.png',
+    Diamond: 'Diamond.png',
+    Grandmaster: 'GrandMaster.png'
+  };
+  const currentBadge = {
+    name: achievements[currentLevel]?.name || 'Bronze',
+    image: badgeByAchievement[achievements[currentLevel]?.name] || 'Bronze.png'
+  };
+  const badgeAnimationByAchievement = {
+    Bronze: 'badge-anim-bronze',
+    Silver: 'badge-anim-silver',
+    Gold: 'badge-anim-gold',
+    Platinum: 'badge-anim-platinum',
+    Diamond: 'badge-anim-diamond',
+    Grandmaster: 'badge-anim-grandmaster'
+  };
 
   // Contribution Heatmap Component
-  const ContributionHeatmap = ({ activity }) => {
+  const ContributionHeatmap = ({ activity, currentBadge }) => {
     const [hoveredDay, setHoveredDay] = useState(null);
 
     // Generate last 365 days
@@ -426,6 +446,10 @@ function HomePage({ auth, setAuth }) {
     };
 
     const days = generateDays();
+    const todayDateKey = new Date().toDateString();
+    const todayDateStr = days.find((day) => day.toDateString() === todayDateKey)?.toISOString().split('T')[0];
+    const todayCount = todayDateStr ? activity[todayDateStr] || 0 : 0;
+    const hasCompletedToday = todayCount > 0;
 
     // Get activity level (0-4) based on count
     const getLevel = (count) => {
@@ -461,52 +485,72 @@ function HomePage({ auth, setAuth }) {
     };
 
     return (
-      <div className="relative overflow-x-auto">
-        {/* Month labels */}
-        <div className="flex gap-[3px] mb-3 ml-[52px] text-[11px] text-gray-500 font-medium">
-          {weeks.map((_, index) => (
-            <div key={index} className="w-[13px] text-center">
-              {getMonthLabel(index)}
+      <div className="relative">
+        <div className="flex items-end justify-between gap-5">
+          <div className="flex-1 min-w-0 overflow-x-auto">
+            {/* Month labels */}
+            <div className="flex gap-[3px] mb-3 ml-[52px] text-[11px] text-gray-500 font-medium">
+              {weeks.map((_, index) => (
+                <div key={index} className="w-[13px] text-center">
+                  {getMonthLabel(index)}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <div className="flex gap-[3px]">
-          {/* Day labels */}
-          <div className="flex flex-col gap-[3px] text-[11px] text-gray-500 pr-3 w-[48px] text-left font-medium">
-            <div className="h-[13px] flex items-center">Mon</div>
-            <div className="h-[13px]"></div>
-            <div className="h-[13px] flex items-center">Wed</div>
-            <div className="h-[13px]"></div>
-            <div className="h-[13px] flex items-center">Fri</div>
-            <div className="h-[13px]"></div>
-            <div className="h-[13px] flex items-center">Sun</div>
-          </div>
-
-          {/* Heatmap grid */}
-          <div className="flex gap-[3px]">
-            {weeks.map((week, weekIndex) => (
-              <div key={weekIndex} className="flex flex-col gap-[3px]">
-                {week.map((day, dayIndex) => {
-                  const dateStr = day.toISOString().split('T')[0];
-                  const count = activity[dateStr] || 0;
-                  const level = getLevel(count);
-
-                  return (
-                    <div
-                      key={dayIndex}
-                      className="w-[13px] h-[13px] rounded-[2px] cursor-pointer transition-all hover:ring-2 hover:ring-white/30 hover:scale-110"
-                      style={{ backgroundColor: getColor(level) }}
-                      onMouseEnter={() => setHoveredDay({ date: day, count })}
-                      onMouseLeave={() => setHoveredDay(null)}
-                      title={`${dateStr}: ${count} questions`}
-                    />
-                  );
-                })}
+            <div className="flex gap-[3px]">
+              {/* Day labels */}
+              <div className="flex flex-col gap-[3px] text-[11px] text-gray-500 pr-3 w-[48px] text-left font-medium">
+                <div className="h-[13px] flex items-center">Mon</div>
+                <div className="h-[13px]"></div>
+                <div className="h-[13px] flex items-center">Wed</div>
+                <div className="h-[13px]"></div>
+                <div className="h-[13px] flex items-center">Fri</div>
+                <div className="h-[13px]"></div>
+                <div className="h-[13px] flex items-center">Sun</div>
               </div>
-            ))}
+
+              {/* Heatmap grid */}
+              <div className="flex gap-[3px]">
+                {weeks.map((week, weekIndex) => (
+                  <div key={weekIndex} className="flex flex-col gap-[3px]">
+                    {week.map((day, dayIndex) => {
+                      const dateStr = day.toISOString().split('T')[0];
+                      const count = activity[dateStr] || 0;
+                      const level = getLevel(count);
+                      const isToday = day.toDateString() === todayDateKey;
+                      const shouldBlinkToday = isToday && count === 0;
+
+                      return (
+                        <div
+                          key={dayIndex}
+                          className={`w-[13px] h-[13px] rounded-[2px] cursor-pointer transition-all hover:ring-2 hover:ring-white/30 hover:scale-110 ${shouldBlinkToday ? 'today-empty-blink' : ''}`}
+                          style={{ backgroundColor: getColor(level) }}
+                          onMouseEnter={() => setHoveredDay({ date: day, count })}
+                          onMouseLeave={() => setHoveredDay(null)}
+                          title={`${dateStr}: ${count} questions`}
+                        />
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="shrink-0 min-w-[150px] text-center">
+            <img
+              src={`/Badges/${currentBadge.image}`}
+              alt={`${currentBadge.name} badge`}
+              className={`w-36 h-42 mx-auto object-contain ${badgeAnimationByAchievement[currentBadge.name] || 'badge-anim-bronze'}`}
+            />
           </div>
         </div>
+
+        {!hasCompletedToday && (
+          <p className="mt-3 text-sm font-semibold text-red-400">
+            No question completed today
+          </p>
+        )}
 
         {/* Tooltip */}
         {hoveredDay && (
@@ -668,7 +712,7 @@ function HomePage({ auth, setAuth }) {
               </div>
             </div>
           </div>
-          <ContributionHeatmap activity={activity} />
+          <ContributionHeatmap activity={activity} currentBadge={currentBadge} />
         </div>
 
         {/* Topics Grid */}

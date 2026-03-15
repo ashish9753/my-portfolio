@@ -1,3 +1,134 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes badgeBronzeFloat {
+	0%,
+	100% {
+		transform: translateY(0px) rotate(-2deg);
+		filter: drop-shadow(0 0 10px rgba(205, 127, 50, 0.5));
+	}
+	50% {
+		transform: translateY(-10px) rotate(2deg);
+		filter: drop-shadow(0 0 20px rgba(205, 127, 50, 0.8));
+	}
+}
+
+@keyframes badgeSilverShimmer {
+	0%,
+	100% {
+		transform: scale(1);
+		filter: brightness(1) drop-shadow(0 0 10px rgba(192, 192, 192, 0.45));
+	}
+	50% {
+		transform: scale(1.06);
+		filter: brightness(1.25) drop-shadow(0 0 24px rgba(230, 230, 230, 0.85));
+	}
+}
+
+@keyframes badgeGoldPulse {
+	0%,
+	100% {
+		transform: scale(1) rotate(0deg);
+		filter: drop-shadow(0 0 14px rgba(255, 215, 0, 0.55));
+	}
+	33% {
+		transform: scale(1.08) rotate(-2deg);
+		filter: drop-shadow(0 0 24px rgba(255, 215, 0, 0.95));
+	}
+	66% {
+		transform: scale(1.04) rotate(2deg);
+		filter: drop-shadow(0 0 18px rgba(255, 170, 0, 0.8));
+	}
+}
+
+@keyframes badgePlatinumBreath {
+	0%,
+	100% {
+		transform: translateY(0px) scale(1);
+		filter: drop-shadow(0 0 12px rgba(229, 228, 226, 0.5));
+	}
+	50% {
+		transform: translateY(-7px) scale(1.09);
+		filter: drop-shadow(0 0 28px rgba(250, 250, 250, 0.95));
+	}
+}
+
+@keyframes badgeDiamondTwinkle {
+	0%,
+	100% {
+		transform: rotate(0deg) scale(1);
+		filter: drop-shadow(0 0 15px rgba(122, 224, 255, 0.6));
+	}
+	25% {
+		transform: rotate(-3deg) scale(1.08);
+		filter: drop-shadow(0 0 26px rgba(122, 224, 255, 0.95));
+	}
+	50% {
+		transform: rotate(3deg) scale(1.02);
+		filter: drop-shadow(0 0 18px rgba(135, 206, 250, 0.75));
+	}
+	75% {
+		transform: rotate(-1deg) scale(1.07);
+		filter: drop-shadow(0 0 30px rgba(173, 240, 255, 1));
+	}
+}
+
+@keyframes badgeGrandmasterAura {
+	0%,
+	100% {
+		transform: translateY(0px) scale(1) rotate(-1deg);
+		filter: hue-rotate(0deg) drop-shadow(0 0 18px rgba(217, 70, 239, 0.8));
+	}
+	50% {
+		transform: translateY(-12px) scale(1.12) rotate(1deg);
+		filter: hue-rotate(18deg) drop-shadow(0 0 34px rgba(236, 72, 153, 0.95));
+	}
+}
+
+.badge-anim-bronze {
+	animation: badgeBronzeFloat 3.4s ease-in-out infinite;
+	transform-origin: center;
+}
+
+.badge-anim-silver {
+	animation: badgeSilverShimmer 2.4s ease-in-out infinite;
+	transform-origin: center;
+}
+
+.badge-anim-gold {
+	animation: badgeGoldPulse 2.1s ease-in-out infinite;
+	transform-origin: center;
+}
+
+.badge-anim-platinum {
+	animation: badgePlatinumBreath 2.8s ease-in-out infinite;
+	transform-origin: center;
+}
+
+.badge-anim-diamond {
+	animation: badgeDiamondTwinkle 1.9s ease-in-out infinite;
+	transform-origin: center;
+}
+
+.badge-anim-grandmaster {
+	animation: badgeGrandmasterAura 1.8s ease-in-out infinite;
+	transform-origin: center;
+}
+
+@keyframes todayEmptyBlink {
+	0%,
+	100% {
+		border-color: rgba(239, 68, 68, 0.2);
+		box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+	}
+	50% {
+		border-color: rgba(239, 68, 68, 1);
+		box-shadow: 0 0 8px 1px rgba(239, 68, 68, 0.9);
+	}
+}
+
+.today-empty-blink {
+	border: 1px solid rgba(239, 68, 68, 0.4);
+	animation: todayEmptyBlink 1s ease-in-out infinite;
+}
