@@ -242,6 +242,100 @@ function DevOpsSheet({ auth, setAuth }) {
 
 	const totalVisible = filteredSections.reduce((s, sec) => s + sec.questions.length, 0);
 
+	const examplesByQuestion = {
+		'pwd': ['pwd', '# /home/ashish'],
+		'ls': ['ls', '# project1  notes.txt'],
+		'cd': ['cd project1', 'pwd', '# /home/ashish/project1'],
+		'touch': ['touch file.txt', 'ls', '# file.txt'],
+		'mkdir': ['mkdir test', 'ls', '# file.txt  test'],
+		'rmdir': ['rmdir test', 'ls', '# file.txt'],
+		'rm': ['rm file.txt', 'ls', '# (empty)'],
+		'cp': ['touch a.txt', 'cp a.txt b.txt', 'ls', '# a.txt  b.txt'],
+		'mv': ['mv a.txt new.txt', 'ls', '# new.txt  b.txt'],
+		'find': ['find . -name "new.txt"', '# ./new.txt'],
+		'tree': ['tree', '# .', '# ├── new.txt', '# └── b.txt'],
+		'ln': ['ln -s new.txt link.txt', 'ls', '# new.txt  b.txt  link.txt'],
+		'cat': ['cat new.txt', '# (empty)'],
+		'more / less': ['less new.txt', '# (opens file viewer)'],
+		'head / tail': ['head -n 1 new.txt', '# first line', 'tail -n 1 new.txt', '# last line'],
+		'grep': ['grep "hello" new.txt', '# hello world'],
+		'sed': ["sed 's/hello/hi/g' new.txt", '# hi world'],
+		'awk': ["awk '{print $1}' new.txt", '# hello'],
+		'sort': ['sort file.txt', '# sorted lines'],
+		'wc': ['wc file.txt', '# 5  20  100 file.txt'],
+		'useradd / userdel': ['sudo useradd ashish'],
+		'passwd': ['sudo passwd ashish'],
+		'id': ['id', '# uid=1000 gid=1000'],
+		'chmod': ['chmod 755 new.txt'],
+		'chown': ['sudo chown ashish new.txt'],
+		'ps': ['ps', '# PID CMD'],
+		'top': ['top', '# (live processes)'],
+		'kill': ['kill 1234'],
+		'systemctl': ['sudo systemctl start nginx'],
+		'df': ['df -h', '# disk usage'],
+		'du': ['du -sh .', '# 10M .'],
+		'free': ['free -m', '# memory usage'],
+		'uptime': ['uptime', '# 2 hours'],
+		'ifconfig / ip': ['ip a', '# network info'],
+		'netstat': ['netstat -tuln', '# show open ports'],
+		'ss': ['ss -l', '# socket stats'],
+		'ping': ['ping google.com', '# replies'],
+		'traceroute': ['traceroute google.com', '# route path'],
+		'telnet': ['telnet example.com 80', '# connected'],
+		'ssh': ['ssh user@192.168.1.1'],
+		'scp': ['scp file.txt user@host:/home/'],
+		'curl / wget': ['curl https://example.com', 'wget https://example.com/file.zip', '# downloading...'],
+		'journalctl': ['journalctl'],
+		'dmesg': ['dmesg'],
+		'strace': ['strace ls', '# system calls'],
+		'lsof': ['lsof -i :80'],
+		'nc': ['nc -l 1234', '# listening'],
+		'tcpdump': ['tcpdump -i eth0', '# packets'],
+		'rpm': ['rpm -ivh file.rpm', '# installed'],
+		'yum list / dnf list': ['dnf list installed', '# packages list'],
+		'yum search / dnf search': ['dnf search nginx', '# search result'],
+		'yum install / dnf install': ['sudo yum install nginx'],
+		'yum remove / dnf remove': ['sudo yum remove nginx'],
+		'yum update / dnf update': ['sudo yum update'],
+		'cut': ['cut -d " " -f1 file.txt'],
+		'join': ['join file1.txt file2.txt', '# merged output'],
+		'split': ['split -l 5 file.txt', '# xaa, xab files created'],
+		'paste': ['paste file1.txt file2.txt', '# merged lines'],
+		'rev': ['rev file.txt', '# reversed lines'],
+		'uniq': ['uniq file.txt'],
+		'diff': ['diff a.txt b.txt'],
+		'tar': ['tar -cvf file.tar folder/'],
+		'gzip / gunzip': ['gzip file.txt', 'gunzip file.txt.gz', '# file.txt'],
+		'bzip2 / bunzip2': ['bunzip2 file.txt.bz2', '# file.txt'],
+		'zip / unzip': ['zip file.zip file.txt', 'unzip file.zip', '# extracted files'],
+		'xz / unxz': ['xz file.txt', '# file.txt.xz', 'unxz file.txt.xz', '# file.txt'],
+		'vmstat': ['vmstat'],
+		'iotop': ['iotop'],
+		'atop': ['atop', '# system stats'],
+		'sar': ['sar', '# activity report'],
+		'nmon': ['nmon', '# monitor UI'],
+		'iftop': ['iftop', '# network usage'],
+		'who': ['who', '# logged users'],
+		'w': ['w', '# user activity'],
+		'last': ['last', '# login history'],
+		'whoami': ['whoami', '# ashish'],
+		'su': ['su root'],
+		'groups': ['groups', '# group list'],
+		'newgrp': ['newgrp devs', '# switched group'],
+		'chpasswd': ['echo "user:1234" | chpasswd', '# password updated'],
+		'mount / umount': ['mount /dev/sdb1 /mnt', 'umount /mnt']
+		,
+		'fdisk': ['fdisk -l', '# partitions list'],
+		'parted / gparted': ['parted /dev/sdb', '# partition tool'],
+		'mkfs': ['mkfs.ext4 /dev/sdb1', '# filesystem created'],
+		'ncdu': ['ncdu', '# disk analyzer UI'],
+		'sync': ['sync', '# data written to disk'],
+		'badblocks': ['badblocks /dev/sdb', '# check errors'],
+		'quota': ['quota -u user', '# usage info.']
+	};
+
+	const getExamples = (question) => examplesByQuestion[String(question || '').toLowerCase()] || [];
+
 	return (
 		<div className="min-h-screen bg-[#0a0a0a] text-white">
 			<header className="border-b border-[#1f1f1f] bg-[#0a0a0a]/95 backdrop-blur-sm sticky top-0 z-50">
@@ -491,6 +585,20 @@ function DevOpsSheet({ auth, setAuth }) {
 																					})}
 																				</div>
 																			</div>
+																			{getExamples(item.q).length > 0 && (
+																				<div>
+																					<p className="text-[15px] mt-2">
+																						<span className="text-sky-400 font-semibold">Examples:</span>
+																					</p>
+																					<div className="mt-1 bg-[#0f1622] border border-sky-400/20 rounded-lg p-3 space-y-1">
+																						{getExamples(item.q).map((line, idx) => (
+																							<p key={idx} className={`font-mono text-[14px] leading-relaxed ${line.trim().startsWith('#') ? 'text-gray-400' : 'text-sky-300'}`}>
+																								{line}
+																							</p>
+																						))}
+																					</div>
+																				</div>
+																			)}
 																		</div>
 																	) : item.a ? (
 																		<p className="text-[16px] text-emerald-300/80 px-2 pb-1 leading-relaxed">
