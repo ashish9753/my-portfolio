@@ -279,14 +279,18 @@ function HomePage({ auth, setAuth }) {
     {
       title: 'HTML',
       description: 'Most Asked HTML Interview Questions',
-      cta: 'Coming Soon',
-      available: false
+      cta: 'Start Learning',
+      to: '/sheet/HTML',
+      available: true,
+      accent: 'orange'
     },
     {
       title: 'CSS + TailwindCSS',
       description: 'Most Asked CSS & TailwindCSS Interview Questions',
-      cta: 'Coming Soon',
-      available: false
+      cta: 'Start Learning',
+      to: '/sheet/CSS',
+      available: true,
+      accent: 'orange'
     },
     {
       title: 'JavaScript',
@@ -305,14 +309,18 @@ function HomePage({ auth, setAuth }) {
     {
       title: 'React',
       description: 'Most Asked React Interview Questions',
-      cta: 'Coming Soon',
-      available: false
+      cta: 'Start Learning',
+      to: '/sheet/React',
+      available: true,
+      accent: 'orange'
     },
     {
       title: 'Node.js',
       description: 'Most Asked Node.js Interview Questions',
-      cta: 'Coming Soon',
-      available: false
+      cta: 'Start Learning',
+      to: '/sheet/NodeJS',
+      available: true,
+      accent: 'green'
     },
     {
       title: 'MySQL',
