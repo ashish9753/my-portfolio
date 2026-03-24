@@ -10,7 +10,9 @@ import {
   FaPython,
   FaDatabase,
   FaAws,
-  FaDocker
+  FaDocker,
+  FaGithub,
+  FaLinux
 } from 'react-icons/fa';
 import { 
   SiTailwindcss, 
@@ -22,7 +24,9 @@ import {
   SiGraphql,
   SiPostgresql,
   SiKubernetes,
-  SiRedis
+  SiRedis,
+  SiMysql,
+  SiPostman
 } from 'react-icons/si';
 
 const Skills = () => {
@@ -74,6 +78,7 @@ const Skills = () => {
       title: 'Database',
       skills: [
         { name: 'MongoDB', icon: SiMongodb, color: '#47A248', level: 85 },
+        { name: 'MySQL', icon: SiMysql, color: '#4479A1', level: 82 },
         { name: 'PostgreSQL', icon: SiPostgresql, color: '#336791', level: 80 },
         { name: 'Firebase', icon: SiFirebase, color: '#FFCA28', level: 75 }
       ]
@@ -83,6 +88,9 @@ const Skills = () => {
       skills: [
         { name: 'Git', icon: FaGitAlt, color: '#F05032', level: 90 },
         { name: 'Docker', icon: FaDocker, color: '#2496ED', level: 75 },
+        { name: 'GitHub', icon: FaGithub, color: '#FFFFFF', level: 88 },
+        { name: 'Postman', icon: SiPostman, color: '#FF6C37', level: 80 },
+        { name: 'Linux', icon: FaLinux, color: '#FCC624', level: 75 },
         { name: 'AWS', icon: FaAws, color: '#FF9900', level: 70 },
       ]
     }

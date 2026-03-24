@@ -30,10 +30,30 @@ const About = () => {
   };
 
   const stats = [
-    { icon: FiCode, label: 'Projects Built', value: '4+' },
-    { icon: FiUsers, label: 'Current Year', value: '3rd' },
-    { icon: FiAward, label: 'Certifications', value: '3+' },
-    { icon: FiHeart, label: 'DSA Problems', value: '240+' }
+    { 
+      icon: FiCode, 
+      label: 'Projects Built', 
+      value: '4+',
+      href: 'https://github.com/ashish9753?tab=repositories'
+    },
+    { 
+      icon: FiUsers, 
+      label: 'Current Year', 
+      value: '3rd',
+      href: 'https://www.linkedin.com/school/lovely-professional-university/posts/?feedView=all'
+    },
+    { 
+      icon: FiAward, 
+      label: 'Certifications', 
+      value: '3+',
+      href: 'https://www.linkedin.com/in/ashish2208/details/certifications/'
+    },
+    { 
+      icon: FiHeart, 
+      label: 'Total Questions', 
+      value: '342',
+      href: 'https://codolio.com/profile/ashish_2208'
+    }
   ];
 
   const skills = [
@@ -84,9 +104,8 @@ const About = () => {
                 </p>
                 
                 <p>
-                  Currently completing my Node.js certification and continuously improving my skills through 240+ DSA problems 
-                  on LeetCode. I'm actively seeking internship opportunities to apply my skills in professional environments 
-                  and contribute to innovative projects.
+                  Currently completing my Node.js certification and continuously improving my skills.
+                  Solved 342+ DSA problems on LeetCode & GeeksforGeeks; earned 100 Days (2025) & 50 Days (2026) badges; LeetCode rating: 1412.
                 </p>
               </div>
 
@@ -114,22 +133,29 @@ const About = () => {
             <motion.div variants={itemVariants} className="space-y-8">
               <div className="grid grid-cols-2 gap-6">
                 {stats.map((stat, index) => (
-                  <motion.div
+                  <a
                     key={stat.label}
-                    className="bg-black/50 p-6 rounded-xl border border-gray-700 hover:border-gray-600 transition-all duration-300 text-center group"
-                    whileHover={{ scale: 1.05, y: -5 }}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    href={stat.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block focus:outline-none"
                   >
-                    <div className="flex justify-center mb-4">
-                      <div className="p-3 bg-gradient-to-r from-blue-500/20 to-green-500/20 rounded-full group-hover:from-blue-500/30 group-hover:to-green-500/30 transition-all duration-300">
-                        <stat.icon className="text-2xl text-blue-400" />
+                    <motion.div
+                      className="bg-black/50 p-6 rounded-xl border border-gray-700 hover:border-gray-600 transition-all duration-300 text-center group"
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                    >
+                      <div className="flex justify-center mb-4">
+                        <div className="p-3 bg-gradient-to-r from-blue-500/20 to-green-500/20 rounded-full group-hover:from-blue-500/30 group-hover:to-green-500/30 transition-all duration-300">
+                          <stat.icon className="text-2xl text-blue-400" />
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
-                    <div className="text-gray-400 text-sm">{stat.label}</div>
-                  </motion.div>
+                      <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
+                      <div className="text-gray-400 text-sm">{stat.label}</div>
+                    </motion.div>
+                  </a>
                 ))}
               </div>
 
@@ -160,7 +186,10 @@ const About = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 { emoji: '🎓', text: 'Studying Computer Science at LPU, Punjab (3rd Year)' },
-                { emoji: '💻', text: 'Solved 240+ DSA problems with 50+ day coding streak' },
+                {
+                  emoji: '💻',
+                  text: 'Solved 342+ DSA problems on LeetCode & GeeksforGeeks; earned 100 Days (2025) & 50 Days (2026) badges; LeetCode rating: 1412.'
+                },
                 { emoji: '🏆', text: 'Meta certified in React Basics & Advanced Specialization' }
               ].map((fact, index) => (
                 <motion.div
