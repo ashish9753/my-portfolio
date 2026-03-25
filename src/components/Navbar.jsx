@@ -148,7 +148,7 @@ const Navbar = () => {
                 );
               })}
               
-              {/* DSA Sheet Link - Highlighted (temporarily disabled)
+              {/* DSA Sheet Link - Highlighted */}
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -179,7 +179,6 @@ const Navbar = () => {
                   </motion.button>
                 </Link>
               </motion.div>
-              */}
             </div>
           </div>
 
@@ -237,7 +236,7 @@ const Navbar = () => {
                 );
               })}
               
-              {/* DSA Sheet Link - Mobile (temporarily disabled)
+              {/* DSA Sheet Link - Mobile */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -262,7 +261,6 @@ const Navbar = () => {
                   </motion.div>
                 </Link>
               </motion.div>
-              */}
             </div>
           </motion.div>
         )}
