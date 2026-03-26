@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../components/Footer';
+import LoadingScreen from '../../components/LoadingScreen.jsx';
 
 function RecursionSheet({ auth, setAuth }) {
   const navigate = useNavigate();
@@ -125,11 +126,7 @@ function RecursionSheet({ auth, setAuth }) {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-[#fb7185] text-xl">Loading Recursion questions...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading Recursion questions..." />;
   }
 
   return (

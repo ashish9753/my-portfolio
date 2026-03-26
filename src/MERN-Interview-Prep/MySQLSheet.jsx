@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../sheet-app/components/Footer';
+import LoadingScreen from '../components/LoadingScreen.jsx';
 
 function MySQLSheet({ auth, setAuth }) {
   const topic = 'MySQL';
@@ -43,7 +44,9 @@ function MySQLSheet({ auth, setAuth }) {
   const toggleSection = (subTopic) => setExpandedSections(prev => ({ ...prev, [subTopic]: !prev[subTopic] }));
   const handleLogout = () => { localStorage.removeItem('token'); localStorage.removeItem('user'); setAuth({ isAuthenticated: false, user: null, token: null }); navigate('/login'); };
 
-  if (loading) return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center"><div className="text-blue-400 text-xl">Loading MySQL concepts...</div></div>;
+  if (loading) {
+    return <LoadingScreen message="Loading MySQL concepts..." />;
+  }
 
   const completedCount = concepts.filter(c => c.completed).length;
   const progressPercentage = concepts.length > 0 ? Math.round((completedCount / concepts.length) * 100) : 0;

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../sheet-app/components/Footer';
+import LoadingScreen from '../components/LoadingScreen.jsx';
 
 function SoftwareEngineeringSheet({ auth, setAuth }) {
   const topic = 'Software Engineering';
@@ -104,11 +105,7 @@ function SoftwareEngineeringSheet({ auth, setAuth }) {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-[#00ff00] text-xl">Loading Software Engineering concepts...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading Software Engineering concepts..." />;
   }
 
   const completedCount = concepts.filter(c => c.completed).length;

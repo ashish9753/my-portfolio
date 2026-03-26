@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from './Footer';
+import LoadingScreen from '../../components/LoadingScreen.jsx';
 
 function HomePage({ auth, setAuth }) {
   const [stats, setStats] = useState({
@@ -12,13 +13,21 @@ function HomePage({ auth, setAuth }) {
     hardCompleted: 0
   });
   const [activity, setActivity] = useState({});
+  const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(60);
   const navigate = useNavigate();
 
   const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
   useEffect(() => {
-    fetchStats();
-    fetchActivity();
+    const loadAll = async () => {
+      try {
+        await Promise.all([fetchStats(), fetchActivity()]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAll();
   }, []);
 
   // Auto-refresh every 60 seconds
@@ -130,6 +139,10 @@ function HomePage({ auth, setAuth }) {
     navigate('/login');
   };
 
+  if (loading) {
+    return <LoadingScreen message="Loading your DSA dashboard..." />;
+  }
+
   const topics = [
     {
       name: 'Sorting',
@@ -193,6 +206,20 @@ function HomePage({ auth, setAuth }) {
       color: 'text-[#a78bfa]',
       borderColor: 'border-[#a78bfa]',
       hoverBg: 'hover:bg-[#a78bfa]/10'
+    },
+    {
+      name: 'BinaryTrees',
+      description: 'Master binary trees, tree traversals, and advanced tree algorithms',
+      color: 'text-[#10b981]',
+      borderColor: 'border-[#10b981]',
+      hoverBg: 'hover:bg-[#10b981]/10'
+    },
+    {
+      name: 'BinarySearchTrees',
+      description: 'Master binary search trees, BST operations, and tree balancing',
+      color: 'text-[#06b6d4]',
+      borderColor: 'border-[#06b6d4]',
+      hoverBg: 'hover:bg-[#06b6d4]/10'
     },
     {
       name: 'Heaps',

@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -78,3 +79,48 @@ html {
 .delay-300 { animation-delay: 0.3s; }
 .delay-400 { animation-delay: 0.4s; }
 .delay-500 { animation-delay: 0.5s; }
+
+/* Global loading animation styles */
+@keyframes line-anim {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fill-anim {
+  from {
+    fill: transparent;
+  }
+  to {
+    fill: #64ffda;
+  }
+}
+
+@keyframes loader-progress-anim {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.logo-path {
+  stroke-dasharray: 800;
+  stroke-dashoffset: 800;
+  animation:
+    line-anim 2s ease forwards,
+    fill-anim 1s ease 1.5s forwards;
+  stroke: #64ffda;
+  stroke-width: 1px;
+  fill: transparent;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+}
+
+.loader-progress {
+  transform: translateX(-100%);
+  animation: loader-progress-anim 2.5s ease-out forwards;
+}

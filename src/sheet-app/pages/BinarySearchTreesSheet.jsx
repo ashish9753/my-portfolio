@@ -4,7 +4,8 @@ import axios from 'axios';
 import Footer from '../components/Footer';
 import LoadingScreen from '../../components/LoadingScreen.jsx';
 
-function GreedySheet({ auth, setAuth }) {
+function BinarySearchTreesSheet({ auth, setAuth }) {
+  const topic = 'Binary Search Trees'; // Hardcoded for Binary Search Trees page
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,7 @@ function GreedySheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/greedy-questions';
+  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
@@ -51,7 +52,8 @@ function GreedySheet({ auth, setAuth }) {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get(`${API_URL}`, getAuthHeaders());
+      const response = await axios.get(`${API_URL}?topic=${topic}`, getAuthHeaders());
+      // Sort by sequenceNo to maintain consistent ordering
       const sortedQuestions = response.data.sort((a, b) => (a.sequenceNo || 0) - (b.sequenceNo || 0));
       setQuestions(sortedQuestions);
       setLoading(false);
@@ -81,11 +83,11 @@ function GreedySheet({ auth, setAuth }) {
       await axios.patch(`${API_URL}/${id}`, {
         completed: !currentStatus
       }, getAuthHeaders());
-
-      setQuestions(questions.map(q =>
+      
+      setQuestions(questions.map(q => 
         q._id === id ? { ...q, completed: !currentStatus } : q
       ));
-
+      
       fetchStats();
     } catch (error) {
       console.error('Error updating question:', error);
@@ -100,7 +102,7 @@ function GreedySheet({ auth, setAuth }) {
 
   const filterQuestions = (questionsArray) => {
     if (!searchQuery.trim()) return questionsArray;
-    return questionsArray.filter(q =>
+    return questionsArray.filter(q => 
       q.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
@@ -127,7 +129,7 @@ function GreedySheet({ auth, setAuth }) {
   };
 
   if (loading) {
-    return <LoadingScreen message="Loading Greedy Algorithms questions..." />;
+    return <LoadingScreen message="Loading Binary Search Trees questions..." />;
   }
 
   return (
@@ -143,7 +145,7 @@ function GreedySheet({ auth, setAuth }) {
                 </svg>
               </Link>
               <h1 className="text-2xl font-bold">
-                <span className="text-[#fb923c]">Greedy Algorithms</span> Sheet
+                <span className="text-[#00ff00]">Binary Search Trees</span> Sheet
               </h1>
             </div>
             <div className="flex items-center space-x-4">
@@ -190,7 +192,7 @@ function GreedySheet({ auth, setAuth }) {
               </div>
             </div>
           </div>
-
+          
           {/* Progress Bar */}
           <div className="mt-4">
             <div className="flex justify-between text-sm text-gray-400 mb-2">
@@ -198,8 +200,8 @@ function GreedySheet({ auth, setAuth }) {
               <span>{progressPercentage}%</span>
             </div>
             <div className="w-full bg-[#2a2a2a] rounded-full h-2">
-              <div
-                className="bg-[#fb923c] h-2 rounded-full transition-all duration-300"
+              <div 
+                className="bg-[#00ff00] h-2 rounded-full transition-all duration-300"
                 style={{ width: `${progressPercentage}%` }}
               ></div>
             </div>
@@ -215,7 +217,7 @@ function GreedySheet({ auth, setAuth }) {
             placeholder="Search questions..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-12 text-white placeholder-gray-500 focus:outline-none focus:border-[#fb923c] transition-colors"
+            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg px-4 py-3 pl-12 text-white placeholder-gray-500 focus:outline-none focus:border-[#00ff00] transition-colors"
           />
           <svg
             className="w-5 h-5 text-gray-500 absolute left-4 top-3.5"
@@ -242,78 +244,76 @@ function GreedySheet({ auth, setAuth }) {
 
           return (
             <div key={difficulty} className="mb-8">
-              <h2
+              <h2 
                 onClick={() => toggleSection(difficulty)}
                 className={`text-xl font-bold mb-4 pb-2 border-b ${difficultyColors[difficulty]} cursor-pointer flex items-center justify-between hover:opacity-80 transition-opacity`}
               >
                 <span>{difficulty} ({difficultyQuestions.filter(q => q.completed).length}/{difficultyQuestions.length})</span>
-                <svg
+                <svg 
                   className={`w-6 h-6 transition-transform duration-300 ${expandedSections[difficulty] ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
+                  fill="none" 
+                  stroke="currentColor" 
                   viewBox="0 0 24 24"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </h2>
               {expandedSections[difficulty] && (
-                <div className="space-y-3">
-                  {difficultyQuestions.map((question, index) => (
-                    <div
-                      key={question._id}
-                      className={`bg-[#1a1a1a] border rounded-lg p-4 hover:bg-[#252525] transition-all ${
-                        question.completed ? 'border-[#fb923c]/50' : 'border-[#2a2a2a]'
-                      }`}
-                    >
-                      <div className="flex items-start space-x-4">
-                        <input
-                          type="checkbox"
-                          checked={question.completed}
-                          onChange={() => handleCheckboxChange(question._id, question.completed)}
-                          className="mt-1 w-5 h-5 rounded border-gray-600 text-[#fb923c] focus:ring-[#fb923c] focus:ring-offset-0 cursor-pointer"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between">
-                            <h3 className={`font-medium ${question.completed ? 'line-through text-gray-500' : 'text-white'}`}>
-                              {index + 1}. {question.name}
-                            </h3>
-                            <span className={`text-sm px-3 py-1 rounded-full ${
-                              difficulty === 'Easy' ? 'bg-green-500/20 text-green-400' :
-                              difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                              'bg-red-500/20 text-red-400'
-                            }`}>
-                              {difficulty}
-                            </span>
-                          </div>
-                          <div className="flex space-x-4 mt-2">
-                            {question.leetcodeLink && (
-                              <a
-                                href={question.leetcodeLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sm text-orange-400 hover:text-orange-300 transition-colors"
-                              >
-                                LeetCode →
-                              </a>
-                            )}
-                            {question.gfgLink && (
-                              <a
-                                href={question.gfgLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sm text-green-400 hover:text-green-300 transition-colors"
-                              >
-                                GFG →
-                              </a>
-                            )}
-                          </div>
+              <div className="space-y-3">
+                {difficultyQuestions.map((question, index) => (
+                  <div
+                    key={question._id}
+                    className={`bg-[#1a1a1a] border rounded-lg p-4 hover:bg-[#252525] transition-all ${
+                      question.completed ? 'border-[#00ff00]/50' : 'border-[#2a2a2a]'
+                    }`}
+                  >
+                    <div className="flex items-start space-x-4">
+                      <input
+                        type="checkbox"
+                        checked={question.completed}
+                        onChange={() => handleCheckboxChange(question._id, question.completed)}
+                        className="mt-1 w-5 h-5 rounded border-gray-600 text-[#00ff00] focus:ring-[#00ff00] focus:ring-offset-0 cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between">
+                          <h3 className={`font-medium ${question.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+                            {index + 1}. {question.name}
+                          </h3>
+                          <span className={`text-sm px-3 py-1 rounded-full ${
+                            difficulty === 'Easy' ? 'bg-green-500/20 text-green-400' :
+                            difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                            'bg-red-500/20 text-red-400'
+                          }`}>
+                            {difficulty}
+                          </span>
+                        </div>
+                        <div className="flex space-x-4 mt-2">
+                          {question.leetcodeLink && (
+                            <a
+                              href={question.leetcodeLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-orange-400 hover:text-orange-300 transition-colors"
+                            >
+                              LeetCode →
+                            </a>
+                          )}
+                          {question.gfgLink && (
+                            <a
+                              href={question.gfgLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-green-400 hover:text-green-300 transition-colors"
+                            >
+                              GFG →
+                            </a>
+                          )}
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                  </div>
+                ))}
+              </div>              )}            </div>
           );
         })}
       </div>
@@ -323,4 +323,4 @@ function GreedySheet({ auth, setAuth }) {
   );
 }
 
-export default GreedySheet;
+export default BinarySearchTreesSheet;

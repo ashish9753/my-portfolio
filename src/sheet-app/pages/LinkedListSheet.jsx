@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../components/Footer';
+import LoadingScreen from '../../components/LoadingScreen.jsx';
 
 function LinkedListSheet({ auth, setAuth }) {
   const topic = 'LinkedList'; // Hardcoded for LinkedList page
@@ -130,11 +131,7 @@ function LinkedListSheet({ auth, setAuth }) {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-[#00ff00] text-xl">Loading LinkedList questions...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading LinkedList questions..." />;
   }
 
   return (

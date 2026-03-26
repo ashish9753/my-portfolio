@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../components/Footer';
+import LoadingScreen from '../../components/LoadingScreen.jsx';
 
 function DPSheet({ auth, setAuth }) {
   const topic = 'DP'; // Hardcoded for DP page
@@ -128,11 +129,7 @@ function DPSheet({ auth, setAuth }) {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-[#ffd700] text-xl">Loading DP questions...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading DP questions..." />;
   }
 
   return (

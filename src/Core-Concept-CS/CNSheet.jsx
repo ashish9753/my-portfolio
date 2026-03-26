@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../sheet-app/components/Footer';
+import LoadingScreen from '../components/LoadingScreen.jsx';
 
 function CNSheet({ auth, setAuth }) {
   const topic = 'Computer Networks'; // Hardcoded for CN page
@@ -128,11 +129,7 @@ function CNSheet({ auth, setAuth }) {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-[#00ff00] text-xl">Loading Computer Networks concepts...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading Computer Networks concepts..." />;
   }
 
   const completedCount = concepts.filter(c => c.completed).length;

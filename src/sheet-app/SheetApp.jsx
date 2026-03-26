@@ -11,6 +11,8 @@ import RecursionSheet from './pages/RecursionSheet';
 import BitManipulationSheet from './pages/BitManipulationSheet';
 import StackAndQueuesSheet from './pages/StackAndQueuesSheet';
 import SlidingWindowSheet from './pages/SlidingWindowSheet';
+import BinaryTreesSheet from './pages/BinaryTreesSheet';
+import BinarySearchTreesSheet from './pages/BinarySearchTreesSheet';
 import HeapsSheet from './pages/HeapsSheet';
 import GreedySheet from './pages/GreedySheet';
 import GraphsSheet from './pages/GraphsSheet';
@@ -158,6 +160,22 @@ function SheetApp() {
         element={
           <ProtectedRoute>
             <SlidingWindowSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/BinaryTrees" 
+        element={
+          <ProtectedRoute>
+            <BinaryTreesSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/BinarySearchTrees" 
+        element={
+          <ProtectedRoute>
+            <BinarySearchTreesSheet auth={auth} setAuth={setAuth} />
           </ProtectedRoute>
         } 
       />

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../components/Footer';
+import LoadingScreen from '../../components/LoadingScreen.jsx';
 
 function StringSheet({ auth, setAuth }) {
   const navigate = useNavigate();
@@ -125,11 +126,7 @@ function StringSheet({ auth, setAuth }) {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-[#00ff00] text-xl">Loading String questions...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading String questions..." />;
   }
 
   return (

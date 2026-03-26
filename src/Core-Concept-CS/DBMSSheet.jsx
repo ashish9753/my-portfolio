@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../sheet-app/components/Footer';
+import LoadingScreen from '../components/LoadingScreen.jsx';
 
 function DBMSSheet({ auth, setAuth }) {
   const topic = 'DBMS'; // Hardcoded for DBMS page
@@ -128,11 +129,7 @@ function DBMSSheet({ auth, setAuth }) {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-[#00ff00] text-xl">Loading DBMS concepts...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading DBMS concepts..." />;
   }
 
   const completedCount = concepts.filter(c => c.completed).length;

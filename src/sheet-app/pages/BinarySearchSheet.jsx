@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../components/Footer';
+import LoadingScreen from '../../components/LoadingScreen.jsx';
 
 function BinarySearchSheet({ auth, setAuth }) {
   const topic = 'Binary Search'; // Hardcoded for Binary Search page
@@ -128,11 +129,7 @@ function BinarySearchSheet({ auth, setAuth }) {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-[#00ff00] text-xl">Loading Binary Search questions...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading Binary Search questions..." />;
   }
 
   return (
