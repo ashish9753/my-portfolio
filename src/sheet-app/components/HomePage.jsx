@@ -347,6 +347,7 @@ function HomePage({ auth, setAuth }) {
   }, []);
 
   const fetchStats = async () => {
+    if (!auth?.isAuthenticated) return;
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${API_URL}/stats/summary`, {
@@ -364,6 +365,7 @@ function HomePage({ auth, setAuth }) {
   };
 
   const fetchActivity = async () => {
+    if (!auth?.isAuthenticated) return;
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${API_URL}/stats/activity`, {
@@ -733,15 +735,24 @@ function HomePage({ auth, setAuth }) {
               DSA Practice Sheet
             </h1>
             <p className="text-gray-400 text-lg">
-              Welcome, <span className="text-blue-500 font-semibold">{auth.user?.username}</span>
+              Welcome, <span className="text-blue-500 font-semibold">{auth?.isAuthenticated ? auth.user?.username : 'Guest'}</span>
             </p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-colors"
-          >
-            Logout
-          </button>
+          {auth?.isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-colors"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
+            >
+              Login
+            </Link>
+          )}
         </div>
 
         {/* Stats Section */}

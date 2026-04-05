@@ -94,9 +94,7 @@ function SheetApp() {
       <Route 
         path="/" 
         element={
-          <ProtectedRoute>
-            <HomePage auth={auth} setAuth={setAuth} />
-          </ProtectedRoute>
+          <HomePage auth={auth} setAuth={setAuth} />
         } 
       />
       <Route 
