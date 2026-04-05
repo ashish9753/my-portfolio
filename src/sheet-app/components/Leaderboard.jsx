@@ -102,7 +102,7 @@ const Leaderboard = ({ baseUrl, totalQuestions = 0 }) => {
                     <thead className="sticky top-0 z-10">
                         <tr className="bg-[#1f1f1f] text-gray-400 text-xs uppercase tracking-wider shadow-md">
                             <th className="py-4 px-6 font-semibold w-1/3 text-center">Rank</th>
-                        <th className="py-4 px-6 font-semibold w-1/3 text-center">User</th>
+                        <th className="py-4 px-6 font-semibold w-1/3 text-left">User</th>
                         <th className="py-4 px-6 font-semibold text-center w-1/3">Questions Solved</th>
                     </tr>
                 </thead>
@@ -128,7 +128,7 @@ const Leaderboard = ({ baseUrl, totalQuestions = 0 }) => {
                                     </div>
                                 </td>
                                 <td className="py-3 px-6">
-                                    <div className="flex justify-center items-center gap-4">
+                                    <div className="flex justify-start items-center gap-4">
                                         <img 
                                             src={`/Badges/${getBadgeImage(solvedCount)}`} 
                                             alt="Badge" 
