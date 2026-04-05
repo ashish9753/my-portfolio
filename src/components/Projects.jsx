@@ -1,37 +1,41 @@
-import React, { useRef, useState } from 'react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 import { FiGithub, FiExternalLink, FiCode, FiEye, FiFilter, FiX } from 'react-icons/fi';
 import { FaReact, FaNodeJs, FaPython } from 'react-icons/fa';
 import { SiTailwindcss, SiMongodb, SiExpress, SiFirebase, SiNextdotjs } from 'react-icons/si';
 
+const ProjectImageSlider = ({ images, title }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (!images || images.length <= 1) return;
+
+    const intervalId = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [images]);
+
+  if (!images || images.length === 0) return null;
+
+  return (
+    <img
+      src={images[currentIndex]}
+      alt={title}
+      className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
+      onError={(e) => {
+        e.target.style.display = 'none';
+        if (e.target.parentElement) {
+          e.target.parentElement.innerHTML = '<div class="flex items-center justify-center h-full bg-gray-800 text-gray-400"><span>Image not found</span></div>';
+        }
+      }}
+    />
+  );
+};
+
 const Projects = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, threshold: 0.1 });
   const [filter, setFilter] = useState('All');
   const [selectedProject, setSelectedProject] = useState(null);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        staggerChildren: 0.2
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        ease: 'easeOut'
-      }
-    }
-  };
 
   const projects = [
     {
@@ -63,26 +67,35 @@ const Projects = () => {
     },
     {
       id: 2,
-      title: 'Personal Portfolio Website',
-      category: 'Frontend',
-      description: 'My professional portfolio website showcasing projects, skills, and experience with modern design and animations.',
-      longDescription: 'Designed and developed my personal portfolio website to showcase my skills, projects, and professional experience. Built with React and Tailwind CSS featuring smooth animations, responsive design, dark theme, and optimized performance for excellent user experience.',
-      image: '/Portfolio.png',
+      title: 'DSA Practice Sheet – Full-Stack Interview Platform',
+      category: 'Full Stack',
+      description: 'Full-stack MERN DSA practice platform with real-time progress tracking, activity heatmap, and interview prep sheets.',
+      longDescription: 'Engineered a full-stack MERN platform enabling structured DSA learning and real-time progress tracking, improving user consistency. Designed a scalable architecture (MongoDB, Express.js, React.js, Node.js) with Tailwind CSS, implemented secure JWT-based authentication and role-based access, and built advanced features like problem tracking, level-based progression from Bronze to Grandmaster, and a GitHub-style activity heatmap to boost engagement.',
+      image: '/Sheet/Sheet1.png',
+      images: [
+        '/Sheet/Sheet1.png',
+        '/Sheet/Sheet2.png',
+        '/Sheet/Sheet3.png',
+        '/Sheet/Sheet4.png'
+      ],
       technologies: [
         { name: 'React', icon: FaReact, color: '#61DAFB' },
+        { name: 'Node.js', icon: FaNodeJs, color: '#339933' },
+        { name: 'MongoDB', icon: SiMongodb, color: '#47A248' },
+        { name: 'Express', icon: SiExpress, color: '#FFFFFF' },
         { name: 'Tailwind', icon: SiTailwindcss, color: '#06B6D4' }
       ],
-      github: 'https://github.com/ashish9753/my-portfolio',
-      live: 'https://www.ashishdev.com',
+      github: 'https://github.com/ashish9753/my-portfolio/tree/main/src/sheet-app',
+      live: 'https://ashishdev.com/sheet',
       features: [
-        'Responsive Design',
-        'Smooth Animations',
-        'Dark Theme',
-        'Project Showcase',
-        'Skills Display',
-        'Contact Form',
-        'SEO Optimized',
-        'Fast Loading Performance'
+        'Full-stack MERN platform for structured DSA learning',
+        'Scalable architecture with MongoDB, Express.js, React.js, Node.js, and Tailwind CSS',
+        'Secure JWT-based authentication and role-based access',
+        'Real-time progress tracking with series-wise statistics',
+        'Problem tracking and level-based progression (Bronze to Grandmaster)',
+        'GitHub-style activity heatmap and streak tracking',
+        'Core CS and MERN interview preparation sheets',
+        'Responsive dashboard with performance analytics'
       ]
     }
   ];
@@ -96,14 +109,9 @@ const Projects = () => {
   return (
     <section id="projects" className="py-20 bg-[#101010]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
+        <div>
           {/* Section Header */}
-          <motion.div className="text-center mb-16" variants={itemVariants}>
+          <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-gradient">
               Featured Projects
             </h2>
@@ -111,12 +119,11 @@ const Projects = () => {
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
               Here are some of the projects I've worked on. Each one represents a unique challenge and learning experience.
             </p>
-          </motion.div>
+          </div>
 
           {/* Filter Buttons */}
-          <motion.div 
+          <div 
             className="flex justify-center mb-12"
-            variants={itemVariants}
           >
             <div className="flex flex-wrap justify-center gap-4 bg-black/30 p-2 rounded-xl border border-gray-700">
               {categories.map((category) => (
@@ -134,80 +141,59 @@ const Projects = () => {
                 </button>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Projects Grid */}
-          <motion.div 
+          <div 
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            layout
           >
-            <AnimatePresence>
               {filteredProjects.map((project, index) => (
-                (() => {
-                  const fromLeft = index % 2 === 0;
-
-                  return (
-                    <motion.div
-                      key={project.id}
-                      className="bg-black/50 rounded-xl overflow-hidden border border-gray-700 hover:border-gray-600 transition-all duration-300 group"
-                      layout
-                      whileHover={{ y: -10, scale: 1.02, rotate: 0.5 }}
-                      initial={{
-                        opacity: 0,
-                        x: fromLeft ? -80 : 80,
-                        y: 40,
-                        rotate: fromLeft ? -4 : 4,
-                        scale: 0.9
-                      }}
-                      whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }}
-                      viewport={{ once: false, amount: 0.4 }}
-                      exit={{ opacity: 0, y: -40, scale: 0.9 }}
-                      transition={{ duration: 0.6, delay: index * 0.08, ease: 'easeOut' }}
-                    >
+                <div
+                  key={project.id}
+                  className="bg-black/50 rounded-xl overflow-hidden border border-gray-700 hover:border-gray-600 transition-all duration-300 group"
+                >
                   {/* Project Image */}
                   <div className="relative overflow-hidden h-48 bg-gray-800">
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.parentElement.innerHTML = '<div class="flex items-center justify-center h-full bg-gray-800 text-gray-400"><span>Image not found</span></div>';
-                      }}
-                    />
+                    {project.images && project.images.length > 0 ? (
+                      <ProjectImageSlider images={project.images} title={project.title} />
+                    ) : (
+                      <img
+                        src={project.image}
+                        alt={project.title}
+                        className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.parentElement.innerHTML = '<div class=\"flex items-center justify-center h-full bg-gray-800 text-gray-400\"><span>Image not found</span></div>';
+                        }}
+                      />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     
                     {/* Action Buttons */}
                     <div className="absolute bottom-4 left-4 right-4 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <motion.button
+                      <button
                         onClick={() => setSelectedProject(project)}
                         className="p-2 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-colors duration-200"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
                       >
                         <FiEye size={18} />
-                      </motion.button>
+                      </button>
                       <div className="flex space-x-2">
-                        <motion.a
+                        <a
                           href={project.github}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-2 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-colors duration-200"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
                         >
                           <FiGithub size={18} />
-                        </motion.a>
-                        <motion.a
+                        </a>
+                        <a
                           href={project.live}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-2 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-colors duration-200"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
                         >
                           <FiExternalLink size={18} />
-                        </motion.a>
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -269,43 +255,37 @@ const Projects = () => {
                       </a>
                     </div>
                   </div>
-                    </motion.div>
-                  );
-                })()
+                </div>
               ))}
-            </AnimatePresence>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
 
       {/* Project Detail Modal */}
-      <AnimatePresence>
-        {selectedProject && (
-          <motion.div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedProject(null)}
+      {selectedProject && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedProject(null)}
+        >
+          <div
+            className="bg-gray-900 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-700"
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              className="bg-gray-900 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-700"
-              initial={{ opacity: 0, scale: 0.8, y: 50 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8, y: 50 }}
-              onClick={(e) => e.stopPropagation()}
-            >
               {/* Modal Header */}
-              <div className="relative bg-gray-800">
-                <img
-                  src={selectedProject.image}
-                  alt={selectedProject.title}
-                  className="w-full h-64 object-cover object-center rounded-t-xl"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.parentElement.innerHTML = '<div class="flex items-center justify-center h-64 bg-gray-800 text-gray-400 rounded-t-xl"><span>Image not found</span></div>';
-                  }}
-                />
+              <div className="relative bg-gray-800 h-64 overflow-hidden rounded-t-xl">
+                {selectedProject.images && selectedProject.images.length > 0 ? (
+                  <ProjectImageSlider images={selectedProject.images} title={selectedProject.title} />
+                ) : (
+                  <img
+                    src={selectedProject.image}
+                    alt={selectedProject.title}
+                    className="w-full h-64 object-cover object-center rounded-t-xl"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentElement.innerHTML = '<div class=\"flex items-center justify-center h-64 bg-gray-800 text-gray-400 rounded-t-xl\"><span>Image not found</span></div>';
+                    }}
+                  />
+                )}
                 <button
                   onClick={() => setSelectedProject(null)}
                   className="absolute top-4 right-4 p-2 bg-black/50 backdrop-blur-sm rounded-full text-white hover:bg-black/70 transition-colors duration-200"
@@ -378,10 +358,9 @@ const Projects = () => {
                   </a>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
