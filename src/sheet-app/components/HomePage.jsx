@@ -694,9 +694,9 @@ function HomePage({ auth, setAuth }) {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="container mx-auto px-4 py-8 max-w-6xl relative">
         {/* Header with User Info and Logout */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-8">
           <div>
             <h1 className="text-5xl font-bold mb-2 text-white">
               DSA Practice Sheet
@@ -705,21 +705,31 @@ function HomePage({ auth, setAuth }) {
               Welcome, <span className="text-blue-500 font-semibold">{auth?.isAuthenticated ? auth.user?.username : 'Guest'}</span>
             </p>
           </div>
-          {auth?.isAuthenticated ? (
-            <button
-              onClick={handleLogout}
-              className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-colors"
+          <div className="flex flex-col items-end gap-3">
+            <a 
+              href="https://ashishdev.com" 
+              className="group flex justify-center items-center gap-2 px-5 py-2.5 bg-slate-900/60 hover:bg-emerald-600 border border-slate-700 hover:border-emerald-500 rounded-full text-slate-300 hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] backdrop-blur-md font-semibold text-sm w-full md:w-auto"
             >
-              Logout
-            </button>
-          ) : (
-            <Link
-              to="/sheet/login"
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
-            >
-              Login
-            </Link>
-          )}
+              <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+              <span>Back to ashishdev.com</span>
+            </a>
+            {auth?.isAuthenticated ? (
+              <button
+                onClick={handleLogout}
+                className="px-6 py-2 bg-red-600/20 hover:bg-red-600 border border-red-500/50 hover:border-red-500 rounded-full font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] w-full md:w-auto text-sm"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                to="/sheet/login"
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-full font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] w-full md:w-auto text-sm flex items-center justify-center gap-2"
+              >
+                <span>Login</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Stats Section */}
