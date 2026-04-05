@@ -404,7 +404,7 @@ function HomePage({ auth, setAuth }) {
       user: null,
       token: null
     });
-    navigate('/login');
+    navigate('/sheet/login');
   };
 
   if (loading) {
@@ -747,7 +747,7 @@ function HomePage({ auth, setAuth }) {
             </button>
           ) : (
             <Link
-              to="/login"
+              to="/sheet/login"
               className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
             >
               Login
