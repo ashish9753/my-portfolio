@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from './Footer';
 import LoadingScreen from '../../components/LoadingScreen.jsx';
+import Leaderboard from './Leaderboard';
+import WebsiteReviews from './WebsiteReviews';
 
 const badgeAnimationByAchievement = {
   Bronze: 'badge-anim-silver',
@@ -271,6 +273,8 @@ const ContributionHeatmap = ({ activity, currentBadge, username }) => {
 };
 
 function HomePage({ auth, setAuth }) {
+  const [activeView, setActiveView] = useState(auth?.isAuthenticated ? 'activity' : 'leaderboard');
+  const [topView, setTopView] = useState(auth?.isAuthenticated ? 'progress' : 'reviews');
   const [stats, setStats] = useState({
     total: 0,
     completed: 0,
@@ -282,6 +286,11 @@ function HomePage({ auth, setAuth }) {
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(60);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setActiveView(auth?.isAuthenticated ? 'activity' : 'leaderboard');
+    setTopView(auth?.isAuthenticated ? 'progress' : 'reviews');
+  }, [auth?.isAuthenticated]);
 
   const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
   useEffect(() => {
@@ -782,78 +791,142 @@ function HomePage({ auth, setAuth }) {
           </div>
         </div>
 
-        {/* Overall Progress */}
-        <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#2a2a2a] mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <div className="text-5xl font-bold mb-2">{progressPercentage}%</div>
-              <div className="text-gray-400 text-lg">Overall Progress</div>
-            </div>
+{/* Top Section Toggle: Overall Progress or Website Reviews */}
+        <div className="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] mb-8 overflow-hidden">
+          <div className="flex items-center gap-6 border-b border-[#2a2a2a] px-6 pt-4 bg-[#161616]">
+            {auth?.isAuthenticated && (
+              <button
+                onClick={() => setTopView('progress')}
+                className={`text-lg font-semibold pb-3 border-b-2 transition-all ${
+                  topView === 'progress'
+                    ? 'text-white border-blue-500'
+                    : 'text-gray-500 border-transparent hover:text-gray-300'
+                }`}
+              >
+                Overall Progress
+              </button>
+            )}
+            <button
+              onClick={() => setTopView('reviews')}
+              className={`text-lg font-semibold pb-3 border-b-2 transition-all ${
+                topView === 'reviews'
+                  ? 'text-white border-blue-500'
+                  : 'text-gray-500 border-transparent hover:text-gray-300'
+              }`}
+            >
+              Website Reviews
+            </button>
           </div>
 
-          {/* Achievement Progress Bar */}
-          <div className="relative px-5">
-            {/* Progress line background */}
-            <div className="absolute top-5 left-0 right-0 h-1 bg-gray-700 z-0"></div>
-            
-            {/* Progress line filled */}
-            <div 
-              className="absolute top-5 left-0 h-1 bg-gradient-to-r from-[#CD7F32] via-[#FFD700] to-purple-500 transition-all duration-500 z-0"
-              style={{ width: `${progressPercentage}%` }}
-            ></div>
-
-            <div className="flex justify-between relative z-10">
-              {achievements.map((achievement, index) => (
-                <div key={achievement.name} className="flex flex-col items-center">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
-                    index <= currentLevel 
-                      ? achievement.color + ' border-transparent' 
-                      : 'bg-gray-700 border-gray-600'
-                  }`}>
-                    {index <= currentLevel && (
-                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                      </svg>
-                    )}
-                  </div>
-                  <div className={`text-xs mt-2 ${index <= currentLevel ? 'text-white font-semibold' : 'text-gray-600'}`}>
-                    {achievement.name}
+          <div className="p-6">
+            {topView === 'progress' && auth?.isAuthenticated ? (
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <div className="text-5xl font-bold mb-2">{progressPercentage}%</div>
+                    <div className="text-gray-400 text-lg">Overall Progress</div>
                   </div>
                 </div>
-              ))}
-            </div>
+
+                {/* Achievement Progress Bar */}
+                <div className="relative px-5">
+                  {/* Progress line background */}
+                  <div className="absolute top-5 left-0 right-0 h-1 bg-gray-700 z-0"></div>
+
+                  {/* Progress line filled */}
+                  <div
+                    className="absolute top-5 left-0 h-1 bg-gradient-to-r from-[#CD7F32] via-[#FFD700] to-purple-500 transition-all duration-500 z-0"
+                    style={{ width: `${progressPercentage}%` }}
+                  ></div>
+
+                  <div className="flex justify-between relative z-10">
+                    {achievements.map((achievement, index) => (
+                      <div key={achievement.name} className="flex flex-col items-center">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${        
+                          index <= currentLevel
+                            ? achievement.color + ' border-transparent'
+                            : 'bg-gray-700 border-gray-600'  
+                        }`}>
+                          {index <= currentLevel && (        
+                            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                            </svg>
+                          )}
+                        </div>
+                        <div className={`text-xs mt-2 ${index <= currentLevel ? 'text-white font-semibold' : 'text-gray-600'}`}>
+                          {achievement.name}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <WebsiteReviews apiBaseUrl={API_URL.replace('/questions', '')} auth={auth} hideContainer={true} />
+            )}
           </div>
         </div>
 
-        {/* Contribution Heatmap */}
-        <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#2a2a2a] mb-10 pb-10">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-xl font-semibold text-white">Activity Graph</h2>
-              <p className="text-sm text-gray-400 mt-1">Your daily question completion streak</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={migrateTimestamps}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-xs font-semibold transition-colors"
-                title="Click if your completed questions don't show on the graph"
-              >
-                Sync Activity
-              </button>
-              <div className="flex items-center gap-2 text-sm text-gray-400">
-                <span>Less</span>
-                <div className="flex gap-1">
-                  <div className="w-3 h-3 rounded-sm bg-[#161b22]"></div>
-                  <div className="w-3 h-3 rounded-sm bg-[#0e4429]"></div>
-                  <div className="w-3 h-3 rounded-sm bg-[#006d32]"></div>
-                  <div className="w-3 h-3 rounded-sm bg-[#26a641]"></div>
-                  <div className="w-3 h-3 rounded-sm bg-[#39d353]"></div>
-                </div>
-                <span>More</span>
+{/* Contribution Heatmap & Leaderboard */}
+          <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#2a2a2a] mb-10 pb-10">
+            <div className="flex items-center justify-between mb-4 border-b border-[#2a2a2a] pb-4">
+              <div className="flex space-x-6">
+                {auth?.isAuthenticated && (
+                  <button 
+                    onClick={() => setActiveView('activity')}
+                    className={`text-xl font-semibold pb-1 border-b-2 transition-all ${
+                      activeView === 'activity' 
+                        ? 'text-white border-blue-500' 
+                        : 'text-gray-500 border-transparent hover:text-gray-300'
+                    }`}
+                  >
+                    Activity Graph
+                  </button>
+                )}
+                <button 
+                  onClick={() => setActiveView('leaderboard')}
+                  className={`text-xl font-semibold pb-1 border-b-2 transition-all ${
+                    activeView === 'leaderboard' 
+                      ? 'text-white border-blue-500' 
+                      : 'text-gray-500 border-transparent hover:text-gray-300'
+                  }`}
+                >
+                  Leaderboard
+                </button>
               </div>
+
+              {activeView === 'activity' && (
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={migrateTimestamps}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-xs font-semibold transition-colors"
+                    title="Click if your completed questions don't show on the graph"
+                  >
+                    Sync Activity
+                  </button>
+                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <span>Less</span>
+                    <div className="flex gap-1">
+                      <div className="w-3 h-3 rounded-sm bg-[#161b22]"></div>
+                      <div className="w-3 h-3 rounded-sm bg-[#0e4429]"></div>
+                      <div className="w-3 h-3 rounded-sm bg-[#006d32]"></div>
+                      <div className="w-3 h-3 rounded-sm bg-[#26a641]"></div>
+                      <div className="w-3 h-3 rounded-sm bg-[#39d353]"></div>
+                    </div>
+                    <span>More</span>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-          <ContributionHeatmap activity={activity} currentBadge={currentBadge} username={auth.user?.username} />
+
+            {activeView === 'activity' ? (
+              <>
+                <p className="text-sm text-gray-400 mb-4">Your daily question completion streak</p>
+                <ContributionHeatmap activity={activity} currentBadge={currentBadge} username={auth.user?.username} />
+              </>
+            ) : (
+              <Leaderboard baseUrl={API_URL} totalQuestions={stats.total} />
+            )}
         </div>
 
         {/* Topics Grid */}
@@ -896,7 +969,8 @@ function HomePage({ auth, setAuth }) {
           </div>
         </div>
 
-        <Footer />      </div>
+
+        <Footer /></div>
     </div>
   );
 }
