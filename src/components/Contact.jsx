@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { FiMail, FiPhone, FiMapPin, FiSend, FiUser, FiMessageSquare, FiCheck } from 'react-icons/fi';
+import { FiMail, FiMapPin, FiSend, FiUser, FiMessageSquare, FiCheck } from 'react-icons/fi';
 import { FaGithub, FaLinkedin, FaTwitter, FaInstagram } from 'react-icons/fa';
 
 const Contact = () => {
@@ -44,13 +44,6 @@ const Contact = () => {
       title: 'Email',
       value: 'ashishs8927@gmail.com',
       href: 'ashishs8927@gmail.com',
-      clickable: false
-    },
-    {
-      icon: FiPhone,
-      title: 'Phone',
-      value: '+91 7987828452',
-      href: '+91 7987828452',
       clickable: false
     },
     {
