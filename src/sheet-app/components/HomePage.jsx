@@ -4,6 +4,272 @@ import axios from 'axios';
 import Footer from './Footer';
 import LoadingScreen from '../../components/LoadingScreen.jsx';
 
+const badgeAnimationByAchievement = {
+  Bronze: 'badge-anim-silver',
+  Silver: 'badge-anim-silver',
+  Gold: 'badge-anim-silver',
+  Platinum: 'badge-anim-silver',
+  Diamond: 'badge-anim-silver',
+  Grandmaster: 'badge-anim-silver'
+};
+
+// Contribution Heatmap Component
+const ContributionHeatmap = ({ activity, currentBadge, username }) => {
+  const [hoveredDay, setHoveredDay] = useState(null);
+  const [selectedPeriod, setSelectedPeriod] = useState('Current');
+
+  const periods = ['Current', '2026 (Jan - Jun)', '2025 (Jul - Dec)', '2025 (Jan - Jun)', '2024 (Jul - Dec)', '2024 (Jan - Jun)'];
+
+  // Generate days for the selected period
+  const generateDays = (period) => {
+    const days = [];
+    if (period === 'Current') {
+      const today = new Date();
+      for (let i = 182; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        days.push(d);
+      }
+    } else {
+      const match = period.match(/(\d{4}) \((Jan - Jun|Jul - Dec)\)/);
+      if (match) {
+        const year = parseInt(match[1]);
+        const isFirstHalf = match[2] === 'Jan - Jun';
+        const startDate = new Date(year, isFirstHalf ? 0 : 6, 1);
+        const endDate = new Date(year, isFirstHalf ? 5 : 11, isFirstHalf ? 30 : 31);
+        
+        let curr = new Date(startDate);
+        // if the period is partially in the future, don't generate beyond today
+        const today = new Date();
+        while (curr <= endDate) {
+          days.push(new Date(curr));
+          curr.setDate(curr.getDate() + 1);
+        }
+      }
+    }
+    return days;
+  };
+
+  const days = generateDays(selectedPeriod);
+  const todayDateKey = new Date().toDateString();
+  
+  // Ensure all days start on the correct weekday (align weeks to Monday or Sunday)
+  // We'll just group every 7 days as they come for simplicity, or we can pad to align.
+  // For accurate GitHub/Leetcode grid: weeks are columns. First column starts with Sunday or Monday.
+  // Let's pad the start to ensure the week aligns correctly (e.g., Sunday = 0).
+  const startPadding = days[0] ? days[0].getDay() : 0; 
+  const paddedDays = [];
+  // Pad with nulls
+  for (let i = 0; i < startPadding; i++) {
+      paddedDays.push(null);
+  }
+  paddedDays.push(...days);
+
+  const todayDateStr = days.find((day) => day && day.toDateString() === todayDateKey)?.toISOString().split('T')[0];
+  const todayCount = todayDateStr ? activity[todayDateStr] || 0 : 0;
+  const hasCompletedToday = todayCount > 0;
+
+  // Stats calculations
+  const calcStats = () => {
+    let subs = 0;
+    Object.values(activity).forEach(c => subs += c);
+    
+    const dates = Object.keys(activity).sort();
+    let maxStr = 0;
+    let currStrTemp = 0;
+    let lastDate = null;
+
+    for (let i = 0; i < dates.length; i++) {
+      if (activity[dates[i]] > 0) {
+        const d = new Date(dates[i]);
+        if (!lastDate) {
+          currStrTemp = 1;
+        } else {
+          const diff = Math.round((d - lastDate) / (1000 * 60 * 60 * 24));
+          if (diff === 1) {
+            currStrTemp++;
+          } else if (diff > 1) {
+            currStrTemp = 1;
+          }
+        }
+        if (currStrTemp > maxStr) maxStr = currStrTemp;
+        lastDate = d;
+      }
+    }
+
+    let currStr = 0;
+    const t = new Date();
+    t.setHours(0,0,0,0);
+    for(let i=0; i<1000; i++) {
+       const checkStr = new Date(t);
+       checkStr.setDate(t.getDate() - i);
+       const dStr = checkStr.toISOString().split('T')[0];
+       if (activity[dStr] > 0) {
+           currStr++;
+       } else {
+           if (i === 0) continue; // It's okay to miss today
+           break;
+       }
+    }
+
+    return { submissions: subs, maxStreak: maxStr, currentStreak: currStr };
+  };
+
+  const stats = calcStats();
+
+  // Get activity level (0-4) based on count
+  const getLevel = (count) => {
+    if (!count || count === 0) return 0;
+    if (count === 1) return 1;
+    if (count === 2) return 2;
+    if (count <= 4) return 3;
+    return 4;
+  };
+
+  // Get color based on level
+  const getColor = (level) => {
+    const colors = ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'];
+    return colors[level];
+  };
+
+  // Group days by week columns
+  const weeks = [];
+  for (let i = 0; i < paddedDays.length; i += 7) {
+    weeks.push(paddedDays.slice(i, i + 7));
+  }
+
+  // Get month labels to display below the grid
+  const getMonthLabelsBelow = () => {
+    const monthLabels = [];
+    let lastMonth = -1;
+    
+    weeks.forEach((week, weekIndex) => {
+      // Find first valid day
+      const validDay = week.find(d => d !== null);
+      if (validDay) {
+        const month = validDay.getMonth();
+        if (month !== lastMonth) {
+          monthLabels.push({ index: weekIndex, label: validDay.toLocaleString('default', { month: 'short' }) });
+          lastMonth = month;
+        }
+      }
+    });
+    return monthLabels;
+  };
+
+  const monthLabels = getMonthLabelsBelow();
+
+  return (
+    <div className="relative bg-[#1a1a1a] rounded-xl p-4 md:p-6 border border-[#333]">
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="w-full lg:w-[70%]">
+          <div className="flex flex-col md:flex-row items-center justify-between mb-6">
+            {/* Stats */}
+            <div className="flex flex-wrap gap-4 md:gap-6 text-sm font-medium">     
+              <span className="text-gray-400">Max.Streak <span className="text-[#39d353] font-bold ml-1">{stats.maxStreak}</span></span>
+              <span className="text-gray-400">Current.Streak <span className="text-[#39d353] font-bold ml-1">{stats.currentStreak}</span></span>
+            </div>
+
+            {/* Period Dropdown */}
+            <div className="mt-4 md:mt-0 relative group">
+              <select
+                value={selectedPeriod}
+                onChange={(e) => setSelectedPeriod(e.target.value)}
+                className="bg-[#2a2a2a] text-white text-sm py-1.5 px-3 pr-8 rounded focus:outline-none appearance-none cursor-pointer border border-[#444] hover:border-gray-400 transition-colors"
+              >
+                {periods.map(p => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Heatmap Area */}
+          <div className="flex flex-col overflow-x-auto overflow-y-hidden pb-4 custom-scrollbar">
+            <div className="flex items-start gap-2 min-w-max">
+               {/* We omit Day labels (Mon/Wed/Fri) on the left as per the image, or keep them optional */}
+              {/* Heatmap Grid (Columns) */}
+              <div className="flex gap-[4px]">
+                {weeks.map((week, weekIndex) => (
+                  <div key={weekIndex} className="flex flex-col gap-[4px]">
+                    {week.map((day, dayIndex) => {
+                      if (!day) return <div key={dayIndex} className="w-[14px] h-[14px] rounded-[3px] bg-transparent" />;
+
+                      const dateStr = day.toISOString().split('T')[0];
+                      const count = activity[dateStr] || 0;
+                      const level = getLevel(count);
+                      const isToday = day.toDateString() === todayDateKey;
+                      const shouldBlinkToday = isToday && count === 0;
+
+                      return (
+                        <div
+                          key={dayIndex}
+                          className={`w-[14px] h-[14px] rounded-[3px] cursor-pointer transition-transform hover:ring-2 hover:ring-white/30 hover:scale-110 ${shouldBlinkToday ? 'today-empty-blink' : ''}`}
+                          style={{ backgroundColor: getColor(level) }}
+                          onMouseEnter={() => setHoveredDay({ date: day, count })}  
+                          onMouseLeave={() => setHoveredDay(null)}
+                          title={`${dateStr}: ${count} questions`}
+                        />
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Month labels placed below the columns */}
+            <div className="relative h-6 mt-2 text-xs text-gray-500 font-medium min-w-max w-full">
+               {monthLabels.map(ml => (
+                   <div key={ml.index} className="absolute" style={{ left: `${ml.index * 18}px` }}>
+                       {ml.label}
+                   </div>
+               ))}
+            </div>
+          </div>
+
+          {!hasCompletedToday && (
+            <p className="mt-3 text-xs font-semibold text-red-500 text-center md:text-left">
+              No question completed today
+            </p>
+          )}
+        </div>
+
+        {/* Badge Area (30%) */}
+        <div className="w-full lg:w-[30%] flex justify-center items-center border-t lg:border-t-0 lg:border-l border-[#333] pt-6 lg:pt-0 lg:pl-6">
+          <div className="text-center">
+            <img
+              src={`/Badges/${currentBadge.image}`}
+              alt={`${currentBadge.name} badge`}
+              className={`w-32 h-36 mx-auto object-contain ${badgeAnimationByAchievement[currentBadge.name] || 'badge-anim-bronze'}`}
+            />
+            <p className="mt-4 text-sm text-gray-300">
+              Earned by <span className="font-semibold text-white">{username || 'User'}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      {hoveredDay && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-4 bg-black text-white text-xs px-3 py-2 rounded shadow-[0_0_10px_rgba(0,0,0,0.5)] border border-gray-700 whitespace-nowrap z-50 pointer-events-none">
+          <div className="font-semibold text-center mb-1">
+            {hoveredDay.count} {hoveredDay.count === 1 ? 'submission' : 'submissions'}
+          </div>
+          <div className="text-gray-400">
+            {hoveredDay.date.toLocaleDateString('en-US', { 
+              weekday: 'short', 
+              year: 'numeric', 
+              month: 'short', 
+              day: 'numeric' 
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 function HomePage({ auth, setAuth }) {
   const [stats, setStats] = useState({
     total: 0,
@@ -455,169 +721,7 @@ function HomePage({ auth, setAuth }) {
     name: achievements[currentLevel]?.name || 'Bronze',
     image: badgeByAchievement[achievements[currentLevel]?.name] || 'Bronze.png'
   };
-  const badgeAnimationByAchievement = {
-    Bronze: 'badge-anim-silver',
-    Silver: 'badge-anim-silver',
-    Gold: 'badge-anim-silver',
-    Platinum: 'badge-anim-silver',
-    Diamond: 'badge-anim-silver',
-    Grandmaster: 'badge-anim-silver'
-  };
-
-  // Contribution Heatmap Component
-  const ContributionHeatmap = ({ activity, currentBadge, username }) => {
-    const [hoveredDay, setHoveredDay] = useState(null);
-    const scrollContainerRef = useRef(null);
-
-    // Generate last 365 days
-    const generateDays = () => {
-      const days = [];
-      const today = new Date();
-      for (let i = 364; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        days.push(date);
-      }
-      return days;
-    };
-
-    const days = generateDays();
-    const todayDateKey = new Date().toDateString();
-    const todayDateStr = days.find((day) => day.toDateString() === todayDateKey)?.toISOString().split('T')[0];
-    const todayCount = todayDateStr ? activity[todayDateStr] || 0 : 0;
-    const hasCompletedToday = todayCount > 0;
-
-    // Get activity level (0-4) based on count
-    const getLevel = (count) => {
-      if (!count || count === 0) return 0;
-      if (count === 1) return 1;
-      if (count === 2) return 2;
-      if (count <= 4) return 3;
-      return 4;
-    };
-
-    // Get color based on level
-    const getColor = (level) => {
-      const colors = ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'];
-      return colors[level];
-    };
-
-    // Group days by week
-    const weeks = [];
-    for (let i = 0; i < days.length; i += 7) {
-      weeks.push(days.slice(i, i + 7));
-    }
-
-    // Auto-scroll to show latest activity (right side) by default
-    useEffect(() => {
-      if (scrollContainerRef.current) {
-        const el = scrollContainerRef.current;
-        el.scrollLeft = el.scrollWidth;
-      }
-    }, []);
-
-    // Get month labels
-    const getMonthLabel = (weekIndex) => {
-      if (weekIndex >= weeks.length) return '';
-      const firstDay = weeks[weekIndex][0];
-      if (!firstDay) return '';
-      const day = firstDay.getDate();
-      if (day <= 7 || weekIndex === 0) {
-        return firstDay.toLocaleString('default', { month: 'short' });
-      }
-      return '';
-    };
-
-    return (
-      <div className="relative">
-        <div className="flex items-end justify-between gap-5">
-          <div ref={scrollContainerRef} className="flex-1 min-w-0 overflow-x-auto">
-            {/* Month labels */}
-            <div className="flex gap-[3px] mb-3 ml-[60px] text-[11px] text-gray-500 font-medium">
-              {weeks.map((_, index) => (
-                <div key={index} className="w-[16px] text-center">
-                  {getMonthLabel(index)}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-[3px]">
-              {/* Day labels */}
-              <div className="flex flex-col gap-[4px] text-[11px] text-gray-500 pr-3 w-[56px] text-left font-medium">
-                <div className="h-[16px] flex items-center">Mon</div>
-                <div className="h-[16px]"></div>
-                <div className="h-[16px] flex items-center">Wed</div>
-                <div className="h-[16px]"></div>
-                <div className="h-[16px] flex items-center">Fri</div>
-                <div className="h-[16px]"></div>
-                <div className="h-[16px] flex items-center">Sun</div>
-              </div>
-
-              {/* Heatmap grid */}
-              <div className="flex gap-[4px]">
-                {weeks.map((week, weekIndex) => (
-                  <div key={weekIndex} className="flex flex-col gap-[4px]">
-                    {week.map((day, dayIndex) => {
-                      const dateStr = day.toISOString().split('T')[0];
-                      const count = activity[dateStr] || 0;
-                      const level = getLevel(count);
-                      const isToday = day.toDateString() === todayDateKey;
-                      const shouldBlinkToday = isToday && count === 0;
-
-                      return (
-                        <div
-                          key={dayIndex}
-                          className={`w-[16px] h-[16px] rounded-[3px] cursor-pointer transition-transform hover:ring-2 hover:ring-white/30 hover:scale-110 ${shouldBlinkToday ? 'today-empty-blink' : ''}`}
-                          style={{ backgroundColor: getColor(level) }}
-                          onMouseEnter={() => setHoveredDay({ date: day, count })}
-                          onMouseLeave={() => setHoveredDay(null)}
-                          title={`${dateStr}: ${count} questions`}
-                        />
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="shrink-0 min-w-[150px] text-center">
-            <img
-              src={`/Badges/${currentBadge.image}`}
-              alt={`${currentBadge.name} badge`}
-              className={`w-36 h-42 mx-auto object-contain ${badgeAnimationByAchievement[currentBadge.name] || 'badge-anim-bronze'}`}
-            />
-            <p className="mt-2 text-xs text-gray-300">
-              Earned by <span className="font-semibold text-white">{username || 'User'}</span>
-            </p>
-          </div>
-        </div>
-
-        {!hasCompletedToday && (
-          <p className="mt-3 text-sm font-semibold text-red-400">
-            No question completed today
-          </p>
-        )}
-
-        {/* Tooltip */}
-        {hoveredDay && (
-          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-900 text-white text-xs px-3 py-2 rounded shadow-lg border border-gray-700 whitespace-nowrap z-50">
-            <div className="font-semibold">
-              {hoveredDay.count} {hoveredDay.count === 1 ? 'question' : 'questions'}
-            </div>
-            <div className="text-gray-400">
-              {hoveredDay.date.toLocaleDateString('en-US', { 
-                weekday: 'short', 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
+  // Old place of ContributionHeatmap
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
