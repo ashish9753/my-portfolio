@@ -296,55 +296,22 @@ function HomePage({ auth, setAuth }) {
     loadAll();
   }, []);
 
-  // Auto-refresh every 60 seconds
+  // Countdown timer and Auto-refresh
   useEffect(() => {
-    const refreshInterval = setInterval(() => {
+    const timer = setInterval(() => {
+      setCountdown((prev) => (prev <= 1 ? 0 : prev - 1));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (countdown === 0) {
       fetchStats();
       fetchActivity();
-      setCountdown(60); // Reset countdown after refresh
-    }, 60000); // 60 seconds
-
-    return () => clearInterval(refreshInterval);
-  }, []);
-
-  // Countdown timer
-  useEffect(() => {
-    const countdownInterval = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          return 60; // Reset to 60 when it reaches 0
-        }
-        return prev - 1;
-      });
-    }, 1000); // Every 1 second
-
-    return () => clearInterval(countdownInterval);
-  }, []);
-
-  // Auto-refresh every 60 seconds
-  useEffect(() => {
-    const refreshInterval = setInterval(() => {
-      fetchStats();
-      fetchActivity();
-      setCountdown(60); // Reset countdown after refresh
-    }, 60000); // 60 seconds
-
-    return () => clearInterval(refreshInterval);
-  }, []);
-
-  // Countdown timer
-  useEffect(() => {
-    const countdownInterval = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          return 60; // Reset to 60 when it reaches 0
-        }
-        return prev - 1;
-      });
-    }, 1000); // Every 1 second
-
-    return () => clearInterval(countdownInterval);
-  }, []);
+      setCountdown(60);
+    }
+  }, [countdown, auth]); // Add auth dependency to ensure we use the latest token/auth context
 
   const fetchStats = async () => {
     if (!auth?.isAuthenticated) return;
