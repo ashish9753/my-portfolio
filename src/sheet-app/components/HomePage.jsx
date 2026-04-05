@@ -164,20 +164,20 @@ const ContributionHeatmap = ({ activity, currentBadge, username }) => {
   return (
     <div className="relative bg-[#1a1a1a] rounded-xl p-4 md:p-6 border border-[#333]">
       <div className="flex flex-col lg:flex-row gap-6">
-        <div className="w-full lg:w-[70%]">
-          <div className="flex flex-col md:flex-row items-center justify-between mb-6">
+        <div className="w-full lg:w-[70%] overflow-hidden">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 md:mb-6 gap-4 md:gap-0">
             {/* Stats */}
-            <div className="flex flex-wrap gap-4 md:gap-6 text-sm font-medium">     
+            <div className="flex flex-wrap gap-3 md:gap-6 text-xs md:text-sm font-medium w-full md:w-auto">     
               <span className="text-gray-400">Max.Streak <span className="text-[#39d353] font-bold ml-1">{stats.maxStreak}</span></span>
               <span className="text-gray-400">Current.Streak <span className="text-[#39d353] font-bold ml-1">{stats.currentStreak}</span></span>
             </div>
 
             {/* Period Dropdown */}
-            <div className="mt-4 md:mt-0 relative group">
+            <div className="relative group w-full md:w-auto">
               <select
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value)}
-                className="bg-[#2a2a2a] text-white text-sm py-1.5 px-3 pr-8 rounded focus:outline-none appearance-none cursor-pointer border border-[#444] hover:border-gray-400 transition-colors"
+                className="bg-[#2a2a2a] text-white text-xs md:text-sm py-1.5 md:py-2 px-3 pr-8 rounded focus:outline-none appearance-none cursor-pointer border border-[#444] hover:border-gray-400 transition-colors w-full md:w-auto"
               >
                 {periods.map(p => (
                   <option key={p} value={p}>{p}</option>
@@ -827,31 +827,31 @@ function HomePage({ auth, setAuth }) {
                 </div>
 
                 {/* Achievement Progress Bar */}
-                <div className="relative px-5">
+                <div className="relative px-2 sm:px-5 mt-4">
                   {/* Progress line background */}
-                  <div className="absolute top-5 left-0 right-0 h-1 bg-gray-700 z-0"></div>
+                  <div className="absolute top-4 sm:top-5 left-0 right-0 h-1 bg-gray-700 z-0"></div>
 
                   {/* Progress line filled */}
                   <div
-                    className="absolute top-5 left-0 h-1 bg-gradient-to-r from-[#CD7F32] via-[#FFD700] to-purple-500 transition-all duration-500 z-0"
+                    className="absolute top-4 sm:top-5 left-0 h-1 bg-gradient-to-r from-[#CD7F32] via-[#FFD700] to-purple-500 transition-all duration-500 z-0"
                     style={{ width: `${progressPercentage}%` }}
                   ></div>
 
                   <div className="flex justify-between relative z-10">
                     {achievements.map((achievement, index) => (
                       <div key={achievement.name} className="flex flex-col items-center">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${        
+                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 ${        
                           index <= currentLevel
                             ? achievement.color + ' border-transparent'
                             : 'bg-gray-700 border-gray-600'  
                         }`}>
                           {index <= currentLevel && (        
-                            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                             </svg>
                           )}
                         </div>
-                        <div className={`text-xs mt-2 ${index <= currentLevel ? 'text-white font-semibold' : 'text-gray-600'}`}>
+                        <div className={`text-[10px] sm:text-xs mt-2 text-center max-w-[40px] sm:max-w-none break-words ${index <= currentLevel ? 'text-white font-semibold' : 'text-gray-600'}`}>
                           {achievement.name}
                         </div>
                       </div>
@@ -866,12 +866,12 @@ function HomePage({ auth, setAuth }) {
         </div>
 
 {/* Contribution Heatmap & Leaderboard */}
-          <div className="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] mb-10 pb-6">
-            <div className="flex items-center justify-between mb-4 border-b border-[#2a2a2a] px-6 pt-3 bg-[#161616]">
-              <div className="flex gap-2">
+          <div className="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] mb-10 pb-6 overflow-hidden">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between mb-4 border-b border-[#2a2a2a] px-4 md:px-6 pt-3 bg-[#161616] gap-4 xl:gap-0">
+              <div className="flex gap-2 overflow-x-auto whitespace-nowrap custom-scrollbar pb-2 xl:pb-0">
                 <button 
                   onClick={() => setActiveView('activity')}
-                  className={`text-xl font-semibold px-4 py-2 rounded-t-lg border-b-2 transition-all ${
+                  className={`text-base md:text-xl font-semibold px-4 py-2 rounded-t-lg border-b-2 transition-all shrink-0 ${
                     activeView === 'activity' 
                       ? 'text-white border-blue-500 bg-[#222]' 
                       : 'text-gray-500 border-transparent hover:text-gray-300 hover:bg-[#1a1a1a]'
@@ -881,7 +881,7 @@ function HomePage({ auth, setAuth }) {
                 </button>
                 <button 
                   onClick={() => setActiveView('leaderboard')}
-                  className={`text-xl font-semibold px-4 py-2 rounded-t-lg border-b-2 transition-all ${
+                  className={`text-base md:text-xl font-semibold px-4 py-2 rounded-t-lg border-b-2 transition-all shrink-0 ${
                     activeView === 'leaderboard' 
                       ? 'text-white border-blue-500 bg-[#222]' 
                       : 'text-gray-500 border-transparent hover:text-gray-300 hover:bg-[#1a1a1a]'
@@ -892,22 +892,22 @@ function HomePage({ auth, setAuth }) {
               </div>
 
               {activeView === 'activity' && (
-                <div className="flex items-center gap-4 px-6 pb-2">
+                <div className="flex flex-wrap items-center gap-3 md:gap-4 pb-2">
                   <button
                     onClick={migrateTimestamps}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-xs font-semibold transition-colors"
+                    className="px-3 md:px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-xs font-semibold transition-colors break-keep whitespace-nowrap"
                     title="Click if your completed questions don't show on the graph"
                   >
                     Sync Activity
                   </button>
-                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <div className="flex items-center gap-1 md:gap-2 text-xs md:text-sm text-gray-400 whitespace-nowrap">
                     <span>Less</span>
                     <div className="flex gap-1">
-                      <div className="w-3 h-3 rounded-sm bg-[#161b22]"></div>
-                      <div className="w-3 h-3 rounded-sm bg-[#0e4429]"></div>
-                      <div className="w-3 h-3 rounded-sm bg-[#006d32]"></div>
-                      <div className="w-3 h-3 rounded-sm bg-[#26a641]"></div>
-                      <div className="w-3 h-3 rounded-sm bg-[#39d353]"></div>
+                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm bg-[#161b22]"></div>
+                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm bg-[#0e4429]"></div>
+                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm bg-[#006d32]"></div>
+                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm bg-[#26a641]"></div>
+                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm bg-[#39d353]"></div>
                     </div>
                     <span>More</span>
                   </div>

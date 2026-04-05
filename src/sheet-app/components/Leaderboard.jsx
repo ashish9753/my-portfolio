@@ -105,17 +105,17 @@ const Leaderboard = ({ baseUrl, totalQuestions = 0 }) => {
                 </h3>
             </div>
             <div 
-                className="overflow-y-auto overflow-x-hidden max-h-[440px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                className="overflow-y-auto overflow-x-auto max-h-[440px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 ref={scrollRef}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                <table className="w-full text-left border-collapse table-fixed relative">
+                <table className="w-full min-w-[450px] text-left border-collapse relative">
                     <thead className="sticky top-0 z-10">
                         <tr className="bg-[#1f1f1f] text-gray-400 text-xs uppercase tracking-wider shadow-md">
-                            <th className="py-4 px-6 font-semibold w-1/3 text-center">Rank</th>
-                        <th className="py-4 px-6 font-semibold w-1/3 text-left">User</th>
-                        <th className="py-4 px-6 font-semibold text-center w-1/3">Questions Solved</th>
+                            <th className="py-4 px-2 sm:px-6 font-semibold w-[20%] sm:w-1/4 text-center">Rank</th>
+                        <th className="py-4 px-2 sm:px-6 font-semibold w-[45%] sm:w-1/2 text-left">User</th>
+                        <th className="py-4 px-2 sm:px-6 font-semibold text-center w-[35%] sm:w-1/4">Questions Solved</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-[#2a2a2a]/50">
@@ -129,41 +129,41 @@ const Leaderboard = ({ baseUrl, totalQuestions = 0 }) => {
                                 key={`${user._id || index}-${index}`} 
                                 className="group hover:bg-[#2a2a2a]/40 transition-all duration-200"
                             >
-                                <td className="py-3 px-6 text-center">
-                                    <div className={`inline-flex items-center justify-center font-bold text-sm ${
-                                        actualIndex === 0 ? 'w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-400 ring-1 ring-yellow-500/50' : 
-                                        actualIndex === 1 ? 'w-8 h-8 rounded-full bg-gray-400/20 text-gray-300 ring-1 ring-gray-400/50' : 
-                                        actualIndex === 2 ? 'w-8 h-8 rounded-full bg-amber-600/20 text-amber-500 ring-1 ring-amber-600/50' : 
+                                <td className="py-2 sm:py-3 px-2 sm:px-6 text-center">
+                                    <div className={`inline-flex items-center justify-center font-bold text-xs sm:text-sm ${
+                                        actualIndex === 0 ? 'w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-yellow-500/20 text-yellow-400 ring-1 ring-yellow-500/50' : 
+                                        actualIndex === 1 ? 'w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-400/20 text-gray-300 ring-1 ring-gray-400/50' : 
+                                        actualIndex === 2 ? 'w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-amber-600/20 text-amber-500 ring-1 ring-amber-600/50' : 
                                         'text-gray-400 font-semibold'
                                     }`}>
                                         #{actualIndex + 1}
                                     </div>
                                 </td>
-                                <td className="py-3 px-6">
-                                    <div className="flex justify-start items-center gap-4">
+                                <td className="py-2 sm:py-3 px-2 sm:px-6">
+                                    <div className="flex justify-start items-center gap-2 sm:gap-4">
                                         <img 
                                             src={`/Badges/${getBadgeImage(solvedCount)}`} 
                                             alt="Badge" 
-                                            className="w-12 h-12 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform duration-300"
+                                            className="w-8 h-8 sm:w-12 sm:h-12 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform duration-300"
                                         />
-                                        <div className="flex flex-col text-left">
-                                            <span className="font-semibold text-gray-200 text-base group-hover:text-blue-400 transition-colors break-all line-clamp-1">
+                                        <div className="flex flex-col text-left min-w-0">
+                                            <span className="font-semibold text-gray-200 text-sm sm:text-base group-hover:text-blue-400 transition-colors break-all line-clamp-1">
                                                 {user.username || user.name || 'AnonymousPlayer'}
                                             </span>
-                                            <span className="text-xs text-gray-500 whitespace-nowrap">
+                                            <span className="text-[10px] sm:text-xs text-gray-500 whitespace-nowrap">
                                                 {percentage}% Completed
                                             </span>
                                         </div>
                                     </div>
                                 </td>
-                                <td className="py-4 px-6 text-center">
-                                    <div className="flex justify-center items-end gap-1 flex-row">
-                                        <span className="font-bold text-xl text-emerald-400 leading-none">
+                                <td className="py-3 sm:py-4 px-2 sm:px-6 text-center">
+                                    <div className="flex justify-center items-end gap-1 flex-row flex-wrap sm:flex-nowrap">
+                                        <span className="font-bold text-lg sm:text-xl text-emerald-400 leading-none">
                                             {solvedCount}
                                         </span>
                                         {totalQs > 0 && (
-                                            <span className="text-sm text-gray-500 font-semibold leading-none mb-[2px]">
-                                                / {totalQs}
+                                            <span className="text-xs sm:text-sm text-gray-500 font-semibold leading-none mb-[2px]">
+                                                /{totalQs}
                                             </span>
                                         )}
                                     </div>
