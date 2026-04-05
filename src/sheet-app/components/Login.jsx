@@ -47,7 +47,24 @@ function Login({ setAuth }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center auth-bg px-4 py-10">
+    <div className="relative min-h-screen flex items-center justify-center auth-bg px-4 py-10 pt-20">
+      <div className="absolute top-4 w-full px-6 flex justify-between items-center z-50">
+        <Link 
+          to="/sheet" 
+          className="group flex flex-1 sm:flex-none justify-center items-center gap-2 px-5 py-2.5 bg-slate-900/60 hover:bg-rose-600 border border-slate-700 hover:border-rose-500 rounded-full text-slate-300 hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-[0_0_20px_rgba(225,29,72,0.5)] backdrop-blur-md font-semibold text-sm mr-2"
+        >
+          <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          <span className="hidden sm:inline">Cancel to </span>Login
+        </Link>
+        <a 
+          href="https://ashishdev.com" 
+          className="group flex flex-1 sm:flex-none justify-center items-center gap-2 px-5 py-2.5 bg-slate-900/60 hover:bg-emerald-600 border border-slate-700 hover:border-emerald-500 rounded-full text-slate-300 hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] backdrop-blur-md font-semibold text-sm ml-2"
+        >
+          <span className="hidden sm:inline">Home page </span>
+          <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </a>
+      </div>
+
       <div className="max-w-5xl w-full auth-card auth-card-float auth-page-swap grid md:grid-cols-2 overflow-hidden">
         {/* Visual / left panel */}
         <div className="auth-visual-panel hidden md:block">
