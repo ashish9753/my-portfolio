@@ -287,14 +287,16 @@ function HomePage({ auth, setAuth }) {
   useEffect(() => {
     const loadAll = async () => {
       try {
-        await Promise.all([fetchStats(), fetchActivity()]);
+        if (auth?.isAuthenticated) {
+          await Promise.all([fetchStats(), fetchActivity()]);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     loadAll();
-  }, []);
+  }, [auth?.isAuthenticated]);
 
   // Countdown timer and Auto-refresh
   useEffect(() => {
