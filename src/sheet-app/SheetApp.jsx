@@ -74,9 +74,10 @@ function SheetApp() {
   };
 
   return (
+    <>
     <Routes>
-      <Route 
-        path="/login" 
+      <Route
+        path="/login"
         element={
           <PublicRoute>
             <Login setAuth={setAuth} />
@@ -282,6 +283,21 @@ function SheetApp() {
       <Route path="/MySQL" element={<ProtectedRoute><MySQLSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
       <Route path="/PostgreSQL" element={<ProtectedRoute><PostgreSQLSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
     </Routes>
+
+    {/* Floating Support Logo */}
+    <a
+      href="/#contact"
+      className="fixed bottom-6 right-6 z-50 animate-bounce hover:animate-none hover:scale-110 transition-transform duration-300 group cursor-pointer"
+      title="Contact Support"
+    >
+      <div className="absolute inset-0 bg-blue-500 rounded-full blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
+      <img
+        src="/Support_Logo.png"
+        alt="Support Contact" 
+        className="relative w-14 h-14 sm:w-16 sm:h-16 object-contain drop-shadow-[0_0_10px_rgba(0,191,255,0.7)]"
+      />
+    </a>
+    </>
   );
 }
 
