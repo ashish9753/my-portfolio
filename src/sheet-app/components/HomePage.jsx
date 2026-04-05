@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from './Footer';
@@ -467,6 +467,7 @@ function HomePage({ auth, setAuth }) {
   // Contribution Heatmap Component
   const ContributionHeatmap = ({ activity, currentBadge, username }) => {
     const [hoveredDay, setHoveredDay] = useState(null);
+    const scrollContainerRef = useRef(null);
 
     // Generate last 365 days
     const generateDays = () => {
@@ -507,6 +508,14 @@ function HomePage({ auth, setAuth }) {
       weeks.push(days.slice(i, i + 7));
     }
 
+    // Auto-scroll to show latest activity (right side) by default
+    useEffect(() => {
+      if (scrollContainerRef.current) {
+        const el = scrollContainerRef.current;
+        el.scrollLeft = el.scrollWidth;
+      }
+    }, []);
+
     // Get month labels
     const getMonthLabel = (weekIndex) => {
       if (weekIndex >= weeks.length) return '';
@@ -522,11 +531,11 @@ function HomePage({ auth, setAuth }) {
     return (
       <div className="relative">
         <div className="flex items-end justify-between gap-5">
-          <div className="flex-1 min-w-0 overflow-x-auto">
+          <div ref={scrollContainerRef} className="flex-1 min-w-0 overflow-x-auto">
             {/* Month labels */}
-            <div className="flex gap-[3px] mb-3 ml-[52px] text-[11px] text-gray-500 font-medium">
+            <div className="flex gap-[3px] mb-3 ml-[60px] text-[11px] text-gray-500 font-medium">
               {weeks.map((_, index) => (
-                <div key={index} className="w-[13px] text-center">
+                <div key={index} className="w-[16px] text-center">
                   {getMonthLabel(index)}
                 </div>
               ))}
@@ -534,20 +543,20 @@ function HomePage({ auth, setAuth }) {
 
             <div className="flex gap-[3px]">
               {/* Day labels */}
-              <div className="flex flex-col gap-[3px] text-[11px] text-gray-500 pr-3 w-[48px] text-left font-medium">
-                <div className="h-[13px] flex items-center">Mon</div>
-                <div className="h-[13px]"></div>
-                <div className="h-[13px] flex items-center">Wed</div>
-                <div className="h-[13px]"></div>
-                <div className="h-[13px] flex items-center">Fri</div>
-                <div className="h-[13px]"></div>
-                <div className="h-[13px] flex items-center">Sun</div>
+              <div className="flex flex-col gap-[4px] text-[11px] text-gray-500 pr-3 w-[56px] text-left font-medium">
+                <div className="h-[16px] flex items-center">Mon</div>
+                <div className="h-[16px]"></div>
+                <div className="h-[16px] flex items-center">Wed</div>
+                <div className="h-[16px]"></div>
+                <div className="h-[16px] flex items-center">Fri</div>
+                <div className="h-[16px]"></div>
+                <div className="h-[16px] flex items-center">Sun</div>
               </div>
 
               {/* Heatmap grid */}
-              <div className="flex gap-[3px]">
+              <div className="flex gap-[4px]">
                 {weeks.map((week, weekIndex) => (
-                  <div key={weekIndex} className="flex flex-col gap-[3px]">
+                  <div key={weekIndex} className="flex flex-col gap-[4px]">
                     {week.map((day, dayIndex) => {
                       const dateStr = day.toISOString().split('T')[0];
                       const count = activity[dateStr] || 0;
@@ -558,7 +567,7 @@ function HomePage({ auth, setAuth }) {
                       return (
                         <div
                           key={dayIndex}
-                          className={`w-[13px] h-[13px] rounded-[2px] cursor-pointer transition-all hover:ring-2 hover:ring-white/30 hover:scale-110 ${shouldBlinkToday ? 'today-empty-blink' : ''}`}
+                          className={`w-[16px] h-[16px] rounded-[3px] cursor-pointer transition-transform hover:ring-2 hover:ring-white/30 hover:scale-110 ${shouldBlinkToday ? 'today-empty-blink' : ''}`}
                           style={{ backgroundColor: getColor(level) }}
                           onMouseEnter={() => setHoveredDay({ date: day, count })}
                           onMouseLeave={() => setHoveredDay(null)}
@@ -723,7 +732,7 @@ function HomePage({ auth, setAuth }) {
         </div>
 
         {/* Contribution Heatmap */}
-        <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#2a2a2a] mb-8">
+        <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#2a2a2a] mb-10 pb-10">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-xl font-semibold text-white">Activity Graph</h2>
