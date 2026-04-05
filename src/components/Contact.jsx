@@ -231,7 +231,7 @@ const Contact = () => {
                     exit={{ opacity: 0, y: -20 }}
                   >
                     <FiCheck className="text-green-500" />
-                    <span className="text-green-400">Message sent successfully! I'll get back to you soon.</span>
+                    <span className="text-green-400">Message sent successfully! We noted your query, we will mail you in 1-2 working days.</span>
                   </motion.div>
                 )}
 
@@ -342,7 +342,7 @@ const Contact = () => {
                       <FiCheck className="text-green-500 text-xl" />
                       <div>
                         <p className="text-green-500 font-medium">Message Sent Successfully!</p>
-                        <p className="text-gray-300 text-sm">Thank you for reaching out. I'll get back to you soon!</p>
+                        <p className="text-gray-300 text-sm">We noted your query, we will mail you in 1-2 working days.</p>
                       </div>
                     </motion.div>
                   )}

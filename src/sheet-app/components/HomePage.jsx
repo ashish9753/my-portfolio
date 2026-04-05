@@ -717,13 +717,6 @@ function HomePage({ auth, setAuth }) {
             </p>
           </div>
           <div className="flex flex-col items-end gap-3">
-            <a 
-              href="https://ashishdev.com" 
-              className="group flex justify-center items-center gap-2 px-5 py-2.5 bg-slate-900/60 hover:bg-emerald-600 border border-slate-700 hover:border-emerald-500 rounded-full text-slate-300 hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] backdrop-blur-md font-semibold text-sm w-full md:w-auto"
-            >
-              <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-              <span>Back to ashishdev.com</span>
-            </a>
             {auth?.isAuthenticated ? (
               <button
                 onClick={handleLogout}

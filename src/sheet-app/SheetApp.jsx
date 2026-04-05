@@ -33,6 +33,7 @@ import MySQLSheet from '../MERN-Interview-Prep/MySQLSheet';
 import PostgreSQLSheet from '../MERN-Interview-Prep/PostgreSQLSheet';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import SupportModal from './components/SupportModal';
 import './App.css';
 import './index.css';
 
@@ -42,6 +43,7 @@ function SheetApp() {
     user: null,
     token: null
   });
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   // Check for existing auth on mount
   useEffect(() => {
@@ -285,9 +287,12 @@ function SheetApp() {
     </Routes>
 
     {/* Floating Support Logo */}
-    <a
-      href="/#contact"
-      className="fixed bottom-6 right-6 z-50 animate-bounce hover:animate-none hover:scale-110 transition-transform duration-300 group cursor-pointer"
+    <button
+      onClick={(e) => {
+        e.preventDefault();
+        setIsSupportOpen(true);
+      }}
+      className="fixed bottom-6 right-6 z-50 animate-bounce hover:animate-none hover:scale-110 transition-transform duration-300 group cursor-pointer border-none bg-transparent p-0"
       title="Contact Support"
     >
       <div className="absolute inset-0 bg-blue-500 rounded-full blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
@@ -296,7 +301,9 @@ function SheetApp() {
         alt="Support Contact" 
         className="relative w-14 h-14 sm:w-16 sm:h-16 object-contain drop-shadow-[0_0_10px_rgba(0,191,255,0.7)]"
       />
-    </a>
+    </button>
+
+    <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
     </>
   );
 }
