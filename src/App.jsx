@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero.jsx';
 import About from './components/About.jsx';
+import Education from './components/Education.jsx';
+import Certificates from './components/Certificates.jsx';
 import Skills from './components/Skills.jsx';
 import Projects from './components/Projects.jsx';
 import Contact from './components/Contact.jsx';
@@ -22,6 +24,8 @@ function Portfolio() {
       <Navbar />
       <Hero />
       <About />
+      <Education />
+      <Certificates />
       <Skills />
       <Projects />
       <Contact />

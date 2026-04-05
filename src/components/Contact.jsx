@@ -49,8 +49,8 @@ const Contact = () => {
     {
       icon: FiPhone,
       title: 'Phone',
-      value: '+91 6266928927',
-      href: '+91 6266928927',
+      value: '+91 7987828452',
+      href: '+91 7987828452',
       clickable: false
     },
     {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiMenu, FiX, FiHome, FiUser, FiCode, FiBriefcase, FiMail, FiBook } from 'react-icons/fi';
+import { FiMenu, FiX, FiHome, FiUser, FiCode, FiBriefcase, FiMail, FiBook, FiAward } from 'react-icons/fi';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,9 +40,9 @@ const Navbar = () => {
     };
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
-    
+
     // Observe all sections
-    const sections = ['home', 'about', 'skills', 'projects', 'contact'];
+    const sections = ['home', 'about', 'education', 'certificates', 'skills', 'projects', 'contact'];
     sections.forEach(sectionId => {
       const section = document.getElementById(sectionId);
       if (section) {
@@ -63,6 +63,8 @@ const Navbar = () => {
   const navItems = [
     { name: 'Home', href: '#home', id: 'home', icon: FiHome },
     { name: 'About', href: '#about', id: 'about', icon: FiUser },
+    { name: 'Education', href: '#education', id: 'education', icon: FiBook },
+    { name: 'Certificates', href: '#certificates', id: 'certificates', icon: FiAward },
     { name: 'Skills', href: '#skills', id: 'skills', icon: FiCode },
     { name: 'Projects', href: '#projects', id: 'projects', icon: FiBriefcase },
     { name: 'Contact', href: '#contact', id: 'contact', icon: FiMail },

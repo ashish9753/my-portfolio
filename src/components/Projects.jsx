@@ -94,7 +94,7 @@ const Projects = () => {
     : projects.filter(project => project.category === filter);
 
   return (
-    <section id="projects" className="py-20 bg-gray-900/50">
+    <section id="projects" className="py-20 bg-[#101010]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           ref={ref}
@@ -143,17 +143,27 @@ const Projects = () => {
           >
             <AnimatePresence>
               {filteredProjects.map((project, index) => (
-                <motion.div
-                  key={project.id}
-                  className="bg-black/50 rounded-xl overflow-hidden border border-gray-700 hover:border-gray-600 transition-all duration-300 group"
-                  variants={itemVariants}
-                  layout
-                  whileHover={{ y: -10, scale: 1.02 }}
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -50 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
+                (() => {
+                  const fromLeft = index % 2 === 0;
+
+                  return (
+                    <motion.div
+                      key={project.id}
+                      className="bg-black/50 rounded-xl overflow-hidden border border-gray-700 hover:border-gray-600 transition-all duration-300 group"
+                      layout
+                      whileHover={{ y: -10, scale: 1.02, rotate: 0.5 }}
+                      initial={{
+                        opacity: 0,
+                        x: fromLeft ? -80 : 80,
+                        y: 40,
+                        rotate: fromLeft ? -4 : 4,
+                        scale: 0.9
+                      }}
+                      whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }}
+                      viewport={{ once: false, amount: 0.4 }}
+                      exit={{ opacity: 0, y: -40, scale: 0.9 }}
+                      transition={{ duration: 0.6, delay: index * 0.08, ease: 'easeOut' }}
+                    >
                   {/* Project Image */}
                   <div className="relative overflow-hidden h-48 bg-gray-800">
                     <img
@@ -259,7 +269,9 @@ const Projects = () => {
                       </a>
                     </div>
                   </div>
-                </motion.div>
+                    </motion.div>
+                  );
+                })()
               ))}
             </AnimatePresence>
           </motion.div>

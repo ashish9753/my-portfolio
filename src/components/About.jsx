@@ -66,7 +66,7 @@ const About = () => {
   ];
 
   return (
-    <section id="about" className="py-20 bg-gray-900/50">
+    <section id="about" className="py-20 bg-[#101010]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           ref={ref}
@@ -105,7 +105,7 @@ const About = () => {
                 
                 <p>
                   Currently completing my Node.js certification and continuously improving my skills.
-                  Solved 342+ DSA problems on LeetCode & GeeksforGeeks; earned 100 Days (2025) & 50 Days (2026) badges; LeetCode rating: 1412.
+                  Solved 400+ DSA problems across LeetCode & GeeksforGeeks; earned 100 Days (2025) & 50 Days (2026) badges; LeetCode rating: 1412.
                 </p>
               </div>
 
@@ -188,7 +188,7 @@ const About = () => {
                 { emoji: '🎓', text: 'Studying Computer Science at LPU, Punjab (3rd Year)' },
                 {
                   emoji: '💻',
-                  text: 'Solved 342+ DSA problems on LeetCode & GeeksforGeeks; earned 100 Days (2025) & 50 Days (2026) badges; LeetCode rating: 1412.'
+                  text: 'Solved 400+ DSA problems across LeetCode & GeeksforGeeks; earned 100 Days (2025) & 50 Days (2026) badges; LeetCode rating: 1412.'
                 },
                 { emoji: '🏆', text: 'Meta certified in React Basics & Advanced Specialization' }
               ].map((fact, index) => (
