@@ -41,12 +41,12 @@ const Leaderboard = ({ baseUrl, totalQuestions = 0 }) => {
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
-                // Determine base api URL by removing /questions if it exists in baseUrl
-                const apiRoot = baseUrl ? baseUrl.replace(/\/questions\/?$/, '') : 'https://dsa-sheet-backend-7r7i.onrender.com/api';
+                const baseUrlToUse = baseUrl || 'http://localhost:5000/api/questions';
+                const apiRoot = baseUrlToUse.replace(/\/questions\/?$/, '');
                 const response = await axios.get(`${apiRoot}/leaderboard`);
                 const data = response.data;
                 const rawUsers = data.leaderboard || (Array.isArray(data) ? data : []);
-                setLeaderboardData(rawUsers.slice(0, 30));
+                setLeaderboardData(rawUsers.slice(0, 100));
             } catch (error) {
                 console.error('Error fetching leaderboard:', error);
             } finally {
@@ -89,7 +89,7 @@ const Leaderboard = ({ baseUrl, totalQuestions = 0 }) => {
         <div className="flex flex-col w-full rounded-lg border border-[#2a2a2a] bg-[#161616] overflow-hidden">
             <div className="py-3 px-6 bg-[#1a1a1a] border-b border-[#2a2a2a] flex items-center justify-between">
                 <h3 className="font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 uppercase text-sm">
-                    Top 30 Users
+                    Top 100 Users
                 </h3>
             </div>
             <div 

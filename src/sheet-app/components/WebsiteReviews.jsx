@@ -3,10 +3,13 @@ import axios from 'axios';
 import { FaStar, FaUserCircle, FaEdit, FaTrash } from 'react-icons/fa';
 
 const WebsiteReviews = ({ apiBaseUrl, auth, hideContainer = false }) => {
+  const [allReviews, setAllReviews] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [stats, setStats] = useState({ averageRating: 0, totalReviews: 0 });
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showAllModal, setShowAllModal] = useState(false);
+  const [filterRating, setFilterRating] = useState('All');
   const [formData, setFormData] = useState({ rating: 5, review: '' });
   const [hoverRating, setHoverRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,7 +33,8 @@ const WebsiteReviews = ({ apiBaseUrl, auth, hideContainer = false }) => {
       const stData = statsRes.status === 'fulfilled' ? statsRes.value.data : { averageRating: 0, totalReviews: 0 };
       
       const parsedReviews = Array.isArray(revData) ? revData : (revData.reviews || []);
-      setReviews(parsedReviews);
+      setAllReviews(parsedReviews);
+      setReviews(parsedReviews.slice(0, 20)); // Show only recent 20 reviews
       
       // Some APIs return { totalReviews: X, averageRating: Y }
       setStats({
@@ -68,20 +72,19 @@ const WebsiteReviews = ({ apiBaseUrl, auth, hideContainer = false }) => {
       return () => cancelAnimationFrame(animationFrameId);
   }, [isHovered, reviews.length]);
 
-  const myReviewIndex = auth?.isAuthenticated && auth?.user?._id 
-    ? reviews.findIndex(r => r.user?._id === auth.user._id)
+  const getUserId = (u) => {
+    if (!u) return null;
+    return typeof u === 'string' ? u : (u._id || u.id);
+  };
+
+  const authUserId = getUserId(auth?.user);
+
+  const myReviewIndex = auth?.isAuthenticated && authUserId
+    ? reviews.findIndex(r => getUserId(r.user) === authUserId)
     : -1;
 
   const handleOpenModal = () => {
-    const myExistingReview = myReviewIndex >= 0 ? reviews[myReviewIndex] : null;
-    if (myExistingReview) {
-      setFormData({
-        rating: myExistingReview.rating || 5,
-        review: myExistingReview.review || ''
-      });
-    } else {
-      setFormData({ rating: 5, review: '' });
-    }
+    setFormData({ rating: 5, review: '' });
     setShowModal(true);
   };
 
@@ -141,16 +144,27 @@ const WebsiteReviews = ({ apiBaseUrl, auth, hideContainer = false }) => {
     <div className={`relative overflow-hidden ${hideContainer ? '' : 'bg-[#1a1a1a] rounded-lg p-6 border border-[#2a2a2a] mb-10'}`}>
       <div className="relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-[#333] pb-6">
-          <div>
-            <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 mb-2">
-              Website Reviews
-            </h2>
-            <div className="flex items-center gap-3">
+          <div className="flex-1 w-full md:w-auto">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+                Website Reviews
+              </h2>
+            </div>
+            <div className="flex items-center gap-3 mt-2 flex-wrap">
               <div className="flex items-center gap-1.5 bg-[#222] px-3 py-1.5 rounded-full border border-[#333]">
                 <span className="text-yellow-400 font-bold text-lg leading-none">{formattedStatsRating}</span>
                 <FaStar className="w-4 h-4 text-yellow-400 mb-0.5" />
               </div>
               <span className="text-gray-400 font-medium">Based on {stats.totalReviews} reviews</span>
+              
+              {allReviews.length > 0 && (
+                <button
+                  onClick={() => setShowAllModal(true)}
+                  className="ml-auto md:ml-4 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  See All Reviews →
+                </button>
+              )}
             </div>
           </div>
 
@@ -159,7 +173,7 @@ const WebsiteReviews = ({ apiBaseUrl, auth, hideContainer = false }) => {
               onClick={handleOpenModal}
               className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all duration-300 shadow-[0_0_20px_rgba(37,99,235,0.2)] hover:shadow-[0_0_25px_rgba(37,99,235,0.4)] hover:-translate-y-0.5 active:translate-y-0"
             >
-              {myReviewIndex >= 0 ? 'Edit Your Review' : 'Leave a Review'}
+              Leave a Review
             </button>
           ) : (
             <div className="text-sm text-gray-500 italic bg-[#2a2a2a] px-4 py-2 rounded-lg border border-[#333]">
@@ -176,8 +190,8 @@ const WebsiteReviews = ({ apiBaseUrl, auth, hideContainer = false }) => {
             onMouseLeave={() => setIsHovered(false)}
           >
             {reviews.length > 0 ? (
-              [...reviews, ...reviews].map((r, i) => {
-                const isMine = auth?.isAuthenticated && r.user?._id === auth?.user?._id;
+              (reviews.length > 3 ? [...reviews, ...reviews] : reviews).map((r, i) => {
+                const isMine = auth?.isAuthenticated && getUserId(r.user) === authUserId;
                 
                 return (
                   <div
@@ -264,7 +278,7 @@ const WebsiteReviews = ({ apiBaseUrl, auth, hideContainer = false }) => {
           <div className="bg-[#161616] rounded-2xl border border-[#333] w-full max-w-md shadow-2xl transform transition-all overflow-hidden flex flex-col">
             <div className="px-6 py-4 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]">
               <h3 className="text-xl font-bold text-white">
-                {myReviewIndex >= 0 ? 'Update Your Review' : 'Write a Review'}
+                Write a Review
               </h3>
               <button 
                 onClick={() => setShowModal(false)}
@@ -338,6 +352,103 @@ const WebsiteReviews = ({ apiBaseUrl, auth, hideContainer = false }) => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* See All Reviews Modal */}
+      {showAllModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#161616] rounded-2xl border border-[#333] w-full max-w-4xl max-h-[90vh] shadow-2xl transform transition-all flex flex-col">
+            <div className="px-6 py-4 border-b border-[#2a2a2a] flex justify-between items-center bg-[#1a1a1a]">
+              <h3 className="text-xl font-bold text-white">
+                All Reviews
+              </h3>
+              <button 
+                onClick={() => setShowAllModal(false)}
+                className="text-gray-400 hover:text-white transition-colors bg-[#222] hover:bg-[#333] p-2 rounded-full"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            </div>
+            
+            <div className="p-4 border-b border-[#2a2a2a] bg-[#1a1a1a]">
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: 'All', value: 'All' },
+                  { label: 'Best (5 Stars)', value: 5 },
+                  { label: 'Good (4 Stars)', value: 4 },
+                  { label: 'Average (3 Stars)', value: 3 },
+                  { label: 'Poor (1-2 Stars)', value: 'Poor' }
+                ].map(filter => (
+                  <button
+                    key={filter.label}
+                    onClick={() => setFilterRating(filter.value)}
+                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      filterRating === filter.value
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-[#2a2a2a] text-gray-400 hover:bg-[#333] hover:text-gray-200'
+                    }`}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {allReviews
+                .filter(r => {
+                  if (filterRating === 'All') return true;
+                  if (filterRating === 'Poor') return r.rating <= 2;
+                  return r.rating === filterRating;
+                })
+                .map((r, i) => {
+                  const isMine = auth?.isAuthenticated && getUserId(r.user) === authUserId;
+                  return (
+                    <div
+                      key={`${r._id || i}-all`}
+                      className={`bg-[#1a1a1a] rounded-xl p-5 border ${isMine ? 'border-blue-500/50 shadow-[0_0_10px_rgba(37,99,235,0.05)]' : 'border-[#2a2a2a]'} flex flex-col hover:bg-[#1f1f1f] transition-colors`}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-inner">
+                            {r.user?.username?.charAt(0)?.toUpperCase() || 'A'}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-gray-200 text-sm">
+                              {r.user?.username || r.user?.name || 'Anonymous'}
+                              {isMine && <span className="ml-2 text-[10px] font-bold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full ring-1 ring-blue-500/50">YOU</span>}
+                            </h4>
+                            <div className="flex mt-1 gap-0.5">
+                              {renderStars(r.rating || 5)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-gray-300 text-sm leading-relaxed mb-3 whitespace-pre-wrap">
+                        {r.review}
+                      </p>
+                      <div className="pt-3 border-t border-[#2a2a2a] text-xs font-semibold text-gray-500 uppercase mt-auto">
+                        {new Date(r.createdAt || Date.now()).toLocaleDateString('en-US', {
+                          year: 'numeric', month: 'short', day: 'numeric'
+                        })}
+                      </div>
+                    </div>
+                  );
+                })
+              }
+              {allReviews.filter(r => {
+                  if (filterRating === 'All') return true;
+                  if (filterRating === 'Poor') return r.rating <= 2;
+                  return r.rating === filterRating;
+                }).length === 0 && (
+                <div className="col-span-full py-16 flex flex-col items-center justify-center text-gray-500 bg-[#161616] rounded-xl border border-[#2a2a2a] border-dashed">
+                  <FaStar className="w-10 h-10 text-[#333] mb-3" />
+                  <p>No reviews match this filter.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

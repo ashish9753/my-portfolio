@@ -793,25 +793,23 @@ function HomePage({ auth, setAuth }) {
 
 {/* Top Section Toggle: Overall Progress or Website Reviews */}
         <div className="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] mb-8 overflow-hidden">
-          <div className="flex items-center gap-6 border-b border-[#2a2a2a] px-6 pt-4 bg-[#161616]">
-            {auth?.isAuthenticated && (
-              <button
-                onClick={() => setTopView('progress')}
-                className={`text-lg font-semibold pb-3 border-b-2 transition-all ${
-                  topView === 'progress'
-                    ? 'text-white border-blue-500'
-                    : 'text-gray-500 border-transparent hover:text-gray-300'
-                }`}
-              >
-                Overall Progress
-              </button>
-            )}
+          <div className="flex items-center gap-2 border-b border-[#2a2a2a] px-6 pt-3 bg-[#161616]">
+            <button
+              onClick={() => setTopView('progress')}
+              className={`text-lg font-semibold px-4 py-2 rounded-t-lg border-b-2 transition-all ${
+                topView === 'progress'
+                  ? 'text-white border-blue-500 bg-[#222]'
+                  : 'text-gray-500 border-transparent hover:text-gray-300 hover:bg-[#1a1a1a]'
+              }`}
+            >
+              Overall Progress
+            </button>
             <button
               onClick={() => setTopView('reviews')}
-              className={`text-lg font-semibold pb-3 border-b-2 transition-all ${
+              className={`text-lg font-semibold px-4 py-2 rounded-t-lg border-b-2 transition-all ${
                 topView === 'reviews'
-                  ? 'text-white border-blue-500'
-                  : 'text-gray-500 border-transparent hover:text-gray-300'
+                  ? 'text-white border-blue-500 bg-[#222]'
+                  : 'text-gray-500 border-transparent hover:text-gray-300 hover:bg-[#1a1a1a]'
               }`}
             >
               Website Reviews
@@ -819,7 +817,7 @@ function HomePage({ auth, setAuth }) {
           </div>
 
           <div className="p-6">
-            {topView === 'progress' && auth?.isAuthenticated ? (
+            {topView === 'progress' ? (
               <>
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -868,27 +866,25 @@ function HomePage({ auth, setAuth }) {
         </div>
 
 {/* Contribution Heatmap & Leaderboard */}
-          <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#2a2a2a] mb-10 pb-10">
-            <div className="flex items-center justify-between mb-4 border-b border-[#2a2a2a] pb-4">
-              <div className="flex space-x-6">
-                {auth?.isAuthenticated && (
-                  <button 
-                    onClick={() => setActiveView('activity')}
-                    className={`text-xl font-semibold pb-1 border-b-2 transition-all ${
-                      activeView === 'activity' 
-                        ? 'text-white border-blue-500' 
-                        : 'text-gray-500 border-transparent hover:text-gray-300'
-                    }`}
-                  >
-                    Activity Graph
-                  </button>
-                )}
+          <div className="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] mb-10 pb-6">
+            <div className="flex items-center justify-between mb-4 border-b border-[#2a2a2a] px-6 pt-3 bg-[#161616]">
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setActiveView('activity')}
+                  className={`text-xl font-semibold px-4 py-2 rounded-t-lg border-b-2 transition-all ${
+                    activeView === 'activity' 
+                      ? 'text-white border-blue-500 bg-[#222]' 
+                      : 'text-gray-500 border-transparent hover:text-gray-300 hover:bg-[#1a1a1a]'
+                  }`}
+                >
+                  Activity Graph
+                </button>
                 <button 
                   onClick={() => setActiveView('leaderboard')}
-                  className={`text-xl font-semibold pb-1 border-b-2 transition-all ${
+                  className={`text-xl font-semibold px-4 py-2 rounded-t-lg border-b-2 transition-all ${
                     activeView === 'leaderboard' 
-                      ? 'text-white border-blue-500' 
-                      : 'text-gray-500 border-transparent hover:text-gray-300'
+                      ? 'text-white border-blue-500 bg-[#222]' 
+                      : 'text-gray-500 border-transparent hover:text-gray-300 hover:bg-[#1a1a1a]'
                   }`}
                 >
                   Leaderboard
@@ -896,7 +892,7 @@ function HomePage({ auth, setAuth }) {
               </div>
 
               {activeView === 'activity' && (
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 px-6 pb-2">
                   <button
                     onClick={migrateTimestamps}
                     className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-xs font-semibold transition-colors"
@@ -919,15 +915,19 @@ function HomePage({ auth, setAuth }) {
               )}
             </div>
 
-            {activeView === 'activity' ? (
-              <>
-                <p className="text-sm text-gray-400 mb-4">Your daily question completion streak</p>
-                <ContributionHeatmap activity={activity} currentBadge={currentBadge} username={auth.user?.username} />
-              </>
-            ) : (
-              <Leaderboard baseUrl={API_URL} totalQuestions={stats.total} />
-            )}
-        </div>
+            <div className="px-6">
+              {activeView === 'activity' ? (
+                <>
+                  <p className="text-sm text-gray-400 mb-4">Your daily question completion streak</p>
+                  <ContributionHeatmap activity={activity} currentBadge={currentBadge} username={auth.user?.username} />
+                </>
+              ) : (
+                <div className="mt-4">
+                  <Leaderboard baseUrl={API_URL} totalQuestions={stats.total} />
+                </div>
+              )}
+            </div>
+          </div>
 
         {/* Topics Grid */}
         <h2 className="text-2xl font-bold mb-6">Available Topics</h2>
