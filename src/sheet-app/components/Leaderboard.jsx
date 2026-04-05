@@ -7,6 +7,12 @@ const Leaderboard = ({ baseUrl, totalQuestions = 0 }) => {
     const [isHovered, setIsHovered] = useState(false);
     const scrollRef = useRef(null);
 
+    const [totalQs, setTotalQs] = useState(totalQuestions);
+
+    useEffect(() => {
+        setTotalQs(totalQuestions);
+    }, [totalQuestions]);
+
     const achievements = [
         { name: 'Bronze', threshold: 0 },
         { name: 'Silver', threshold: 20 },
@@ -17,8 +23,8 @@ const Leaderboard = ({ baseUrl, totalQuestions = 0 }) => {
     ];
 
     const getBadgeImage = (completedCount) => {
-        if (!totalQuestions) return 'Bronze.png';
-        const percentage = Math.round((completedCount / totalQuestions) * 100);
+        if (!totalQs) return 'Bronze.png';
+        const percentage = Math.round((completedCount / totalQs) * 100);
         let currentName = 'Bronze';
         for (let i = achievements.length - 1; i >= 0; i--) {
             if (percentage >= achievements[i].threshold) {
@@ -47,6 +53,12 @@ const Leaderboard = ({ baseUrl, totalQuestions = 0 }) => {
                 const data = response.data;
                 const rawUsers = data.leaderboard || (Array.isArray(data) ? data : []);
                 setLeaderboardData(rawUsers.slice(0, 100));
+                
+                // If totalQuestions wasn't provided (e.g., user not logged in), check if the API returned it 
+                // or default to a fallback total (e.g. 450) if we can't find it
+                if (!totalQuestions) {
+                    setTotalQs(data.totalQuestions || 450); 
+                }
             } catch (error) {
                 console.error('Error fetching leaderboard:', error);
             } finally {
@@ -111,7 +123,7 @@ const Leaderboard = ({ baseUrl, totalQuestions = 0 }) => {
                         [...leaderboardData, ...leaderboardData].map((user, index) => {
                             const actualIndex = index % leaderboardData.length;
                             const solvedCount = user.completedQuestionsCount ?? user.totalCompleted ?? user.completedCount ?? 0;
-                            const percentage = totalQuestions ? Math.round((solvedCount / totalQuestions) * 100) : 0;
+                            const percentage = totalQs ? Math.round((solvedCount / totalQs) * 100) : 0;
                             return (
                             <tr 
                                 key={`${user._id || index}-${index}`} 
@@ -149,9 +161,9 @@ const Leaderboard = ({ baseUrl, totalQuestions = 0 }) => {
                                         <span className="font-bold text-xl text-emerald-400 leading-none">
                                             {solvedCount}
                                         </span>
-                                        {totalQuestions > 0 && (
+                                        {totalQs > 0 && (
                                             <span className="text-sm text-gray-500 font-semibold leading-none mb-[2px]">
-                                                / {totalQuestions}
+                                                / {totalQs}
                                             </span>
                                         )}
                                     </div>
