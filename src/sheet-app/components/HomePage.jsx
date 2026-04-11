@@ -328,9 +328,12 @@ function HomePage({ auth, setAuth }) {
     if (!auth?.isAuthenticated) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/stats/summary`, {
+      const response = await axios.get(`${API_URL}/stats/summary?t=${new Date().getTime()}`, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
       });
       setStats(response.data);
@@ -346,9 +349,12 @@ function HomePage({ auth, setAuth }) {
     if (!auth?.isAuthenticated) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/stats/activity`, {
+      const response = await axios.get(`${API_URL}/stats/activity?t=${new Date().getTime()}`, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
       });
       setActivity(response.data);
