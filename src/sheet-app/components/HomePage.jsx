@@ -284,7 +284,7 @@ function HomePage({ auth, setAuth }) {
   });
   const [activity, setActivity] = useState({});
   const [loading, setLoading] = useState(true);
-  const [countdown, setCountdown] = useState(60);
+  const [countdown, setCountdown] = useState(30);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -320,7 +320,7 @@ function HomePage({ auth, setAuth }) {
     if (countdown === 0) {
       fetchStats();
       fetchActivity();
-      setCountdown(60);
+      setCountdown(30);
     }
   }, [countdown, auth]); // Add auth dependency to ensure we use the latest token/auth context
 
