@@ -1,9 +1,21 @@
+
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import LoadingScreen from '../../components/LoadingScreen.jsx';
 
 function AdminPage({ auth }) {
+  // Defensive: fallback if auth is missing
+  if (!auth || !auth.user) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-2">Authentication Required</h1>
+          <p className="text-gray-400">Please log in as an admin to view this page.</p>
+        </div>
+      </div>
+    );
+  }
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -17,6 +29,10 @@ function AdminPage({ auth }) {
     role: 'user'
   });
   const [isSavingEdit, setIsSavingEdit] = useState(false);
+  // New filter states
+  const [onlineFilter, setOnlineFilter] = useState('all'); // all | online | offline
+  const [joinStart, setJoinStart] = useState('');
+  const [joinEnd, setJoinEnd] = useState('');
 
   const ADMIN_API = 'https://dsa-sheet-backend-7r7i.onrender.com/api/admin';
   const MAIN_ADMIN_EMAIL = 'admin@ashishdev.com';
@@ -48,13 +64,31 @@ function AdminPage({ auth }) {
     }
   };
 
+  // Only one polling effect: fetch all users on mount, then poll only status
   useEffect(() => {
-    if (isAdminUser) {
-      fetchUsers();
-    } else {
+    if (!isAdminUser) {
       setLoading(false);
+      return;
     }
-  }, [isAdminUser]);
+    fetchUsers(); // initial full fetch
+    const token = localStorage.getItem('token');
+    let intervalId = setInterval(async () => {
+      try {
+        const response = await axios.get(`${ADMIN_API}/users`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const payload = response.data;
+        const list = Array.isArray(payload)
+          ? payload
+          : payload?.users || payload?.data || [];
+        setUsers(prevUsers => prevUsers.map(user => {
+          const updated = list.find(u => u._id === user._id);
+          return updated ? { ...user, isOnline: updated.isOnline } : user;
+        }));
+      } catch {}
+    }, 10000);
+    return () => clearInterval(intervalId);
+  }, [isAdminUser, ADMIN_API]);
 
   const filteredUsers = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -63,9 +97,22 @@ function AdminPage({ auth }) {
       const email = user.email || '';
       const matchesTerm = !term || username.toLowerCase().includes(term) || email.toLowerCase().includes(term);
       const matchesBlocked = !showBlockedOnly || user.isBlocked;
-      return matchesTerm && matchesBlocked;
+      // Online/offline filter
+      const matchesOnline =
+        onlineFilter === 'all' ? true :
+        onlineFilter === 'online' ? user.isOnline :
+        onlineFilter === 'offline' ? !user.isOnline : true;
+      // Joining date filter
+      let matchesJoin = true;
+      if (joinStart) {
+        matchesJoin = matchesJoin && user.joiningDate && new Date(user.joiningDate) >= new Date(joinStart);
+      }
+      if (joinEnd) {
+        matchesJoin = matchesJoin && user.joiningDate && new Date(user.joiningDate) <= new Date(joinEnd);
+      }
+      return matchesTerm && matchesBlocked && matchesOnline && matchesJoin;
     });
-  }, [users, searchTerm, showBlockedOnly]);
+  }, [users, searchTerm, showBlockedOnly, onlineFilter, joinStart, joinEnd]);
 
   const stats = useMemo(() => {
     const total = users.length;
@@ -275,8 +322,38 @@ function AdminPage({ auth }) {
               />
               Show blocked only
             </label>
+            <label className="flex items-center gap-2 text-sm text-gray-300">
+              <span>Status:</span>
+              <select
+                value={onlineFilter}
+                onChange={e => setOnlineFilter(e.target.value)}
+                className="rounded border border-[#2a2a2a] bg-[#0d0d0d] px-2 py-1 text-sm text-white"
+              >
+                <option value="all">All</option>
+                <option value="online">Online</option>
+                <option value="offline">Offline</option>
+              </select>
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-300">
+              <span>Joined from:</span>
+              <input
+                type="date"
+                value={joinStart}
+                onChange={e => setJoinStart(e.target.value)}
+                className="rounded border border-[#2a2a2a] bg-[#0d0d0d] px-2 py-1 text-sm text-white"
+              />
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-300">
+              <span>to</span>
+              <input
+                type="date"
+                value={joinEnd}
+                onChange={e => setJoinEnd(e.target.value)}
+                className="rounded border border-[#2a2a2a] bg-[#0d0d0d] px-2 py-1 text-sm text-white"
+              />
+            </label>
           </div>
-          <div className="text-xs text-gray-400">Edit, block, or delete users.</div>
+          {/* Removed extra info text for less congestion */}
         </div>
 
         <div className="bg-[#111] border border-[#2a2a2a] rounded-xl overflow-hidden">
@@ -287,6 +364,8 @@ function AdminPage({ auth }) {
                   <th className="text-left px-4 py-3 font-semibold">User</th>
                   <th className="text-left px-4 py-3 font-semibold">Email</th>
                   <th className="text-center px-4 py-3 font-semibold">Solved</th>
+                  <th className="text-center px-4 py-3 font-semibold">Joined</th>
+                  <th className="text-center px-4 py-3 font-semibold">Last Submission</th>
                   <th className="text-center px-4 py-3 font-semibold">Role</th>
                   <th className="text-center px-4 py-3 font-semibold">Status</th>
                   <th className="text-right px-4 py-3 font-semibold">Actions</th>
@@ -317,15 +396,23 @@ function AdminPage({ auth }) {
                         </td>
                         <td className="px-4 py-4 text-gray-300">{user.email || 'N/A'}</td>
                         <td className="px-4 py-4 text-center text-gray-200">{solvedCount}</td>
+                        <td className="px-4 py-4 text-center text-gray-200">
+                          {user.joiningDate ? new Date(user.joiningDate).toLocaleDateString() : 'N/A'}
+                        </td>
+                        <td className="px-4 py-4 text-center text-gray-200">
+                          {user.lastSubmissionDate ? new Date(user.lastSubmissionDate).toLocaleString() : 'N/A'}
+                        </td>
                         <td className="px-4 py-4 text-center">
                           <span className={`px-2 py-1 rounded-full text-xs ${isAdmin ? 'bg-emerald-500/20 text-emerald-300' : 'bg-gray-700/40 text-gray-300'}`}>
                             {isAdmin ? 'Admin' : 'User'}
                           </span>
                         </td>
                         <td className="px-4 py-4 text-center">
-                          <span className={`px-2 py-1 rounded-full text-xs ${isBlocked ? 'bg-rose-500/20 text-rose-300' : 'bg-blue-500/20 text-blue-300'}`}>
-                            {isBlocked ? 'Blocked' : 'Active'}
-                          </span>
+                          {user.isOnline ? (
+                            <span className="px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-300">Online</span>
+                          ) : (
+                            <span className="px-2 py-1 rounded-full text-xs bg-gray-700/40 text-gray-300">Offline</span>
+                          )}
                         </td>
                         <td className="px-4 py-4">
                           <div className="flex flex-wrap justify-end gap-2">
