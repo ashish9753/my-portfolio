@@ -40,6 +40,20 @@ function AdminPage({ auth }) {
   const isAdminUser = auth?.user?.isAdmin || auth?.user?.role === 'admin';
   const isMainAdmin = isAdminUser && auth?.user?.email?.toLowerCase() === MAIN_ADMIN_EMAIL;
 
+  // Returns a human-readable "X ago" string from a date
+  const timeAgo = (date) => {
+    if (!date) return null;
+    const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+    if (seconds < 60) return `${seconds}s ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days}d ago`;
+    return new Date(date).toLocaleDateString();
+  };
+
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -365,6 +379,8 @@ function AdminPage({ auth }) {
                   <th className="text-left px-4 py-3 font-semibold">Email</th>
                   <th className="text-center px-4 py-3 font-semibold">Solved</th>
                   <th className="text-center px-4 py-3 font-semibold">Joined</th>
+                  <th className="text-center px-4 py-3 font-semibold">Last Login</th>
+                  <th className="text-center px-4 py-3 font-semibold">Last Online</th>
                   <th className="text-center px-4 py-3 font-semibold">Last Submission</th>
                   <th className="text-center px-4 py-3 font-semibold">Role</th>
                   <th className="text-center px-4 py-3 font-semibold">Status</th>
@@ -399,6 +415,28 @@ function AdminPage({ auth }) {
                         <td className="px-4 py-4 text-center text-gray-200">
                           {user.joiningDate ? new Date(user.joiningDate).toLocaleDateString() : 'N/A'}
                         </td>
+                        {/* Last Login */}
+                        <td className="px-4 py-4 text-center">
+                          {user.lastLoginDate ? (
+                            <div>
+                              <div className="text-gray-200 text-xs">{new Date(user.lastLoginDate).toLocaleDateString()}</div>
+                              <div className="text-gray-500 text-xs">{timeAgo(user.lastLoginDate)}</div>
+                            </div>
+                          ) : (
+                            <span className="text-gray-500 text-xs">Never</span>
+                          )}
+                        </td>
+                        {/* Last Online */}
+                        <td className="px-4 py-4 text-center">
+                          {user.lastActive ? (
+                            <div>
+                              <div className="text-gray-200 text-xs">{new Date(user.lastActive).toLocaleDateString()}</div>
+                              <div className="text-gray-500 text-xs">{timeAgo(user.lastActive)}</div>
+                            </div>
+                          ) : (
+                            <span className="text-gray-500 text-xs">Never</span>
+                          )}
+                        </td>
                         <td className="px-4 py-4 text-center text-gray-200">
                           {user.lastSubmissionDate ? new Date(user.lastSubmissionDate).toLocaleString() : 'N/A'}
                         </td>
@@ -407,11 +445,12 @@ function AdminPage({ auth }) {
                             {isAdmin ? 'Admin' : 'User'}
                           </span>
                         </td>
+                        {/* Online/Offline badge only */}
                         <td className="px-4 py-4 text-center">
                           {user.isOnline ? (
-                            <span className="px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-300">Online</span>
+                            <span className="px-2 py-1 rounded-full text-xs bg-green-500/20 text-green-300">● Online</span>
                           ) : (
-                            <span className="px-2 py-1 rounded-full text-xs bg-gray-700/40 text-gray-300">Offline</span>
+                            <span className="px-2 py-1 rounded-full text-xs bg-gray-700/40 text-gray-400">Offline</span>
                           )}
                         </td>
                         <td className="px-4 py-4">
