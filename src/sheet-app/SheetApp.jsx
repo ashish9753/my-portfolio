@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './components/HomePage';
+import AdminPage from './components/AdminPage';
 import SortingSheet from './pages/SortingSheet';
 import ArraySheet from './pages/ArraySheet';
 import BinarySearchSheet from './pages/BinarySearchSheet';
@@ -45,6 +46,16 @@ function SheetApp() {
   });
   const [isSupportOpen, setIsSupportOpen] = useState(false);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setAuth({
+      isAuthenticated: false,
+      user: null,
+      token: null
+    });
+  };
+
   // Check for existing auth on mount
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -75,6 +86,56 @@ function SheetApp() {
     return children;
   };
 
+  const AdminRoute = ({ children }) => {
+    if (!auth.isAuthenticated) {
+      return <Navigate to="/sheet/login" replace />;
+    }
+    const isAdminUser = auth.user?.isAdmin || auth.user?.role === 'admin';
+    if (!isAdminUser) {
+      return <Navigate to="/sheet" replace />;
+    }
+    return children;
+  };
+
+  if (auth.isAuthenticated && auth.user?.isBlocked) {
+    return (
+      <>
+        <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center px-4">
+          <div className="bg-[#111] border border-[#2a2a2a] rounded-xl p-8 max-w-xl w-full text-center">
+            <h1 className="text-3xl font-semibold">Account blocked</h1>
+            <p className="text-gray-400 mt-3">
+              Your account is currently blocked. Please contact support using the option in the right corner.
+            </p>
+            <button
+              onClick={handleLogout}
+              className="mt-6 px-6 py-2.5 rounded-full bg-rose-600/20 hover:bg-rose-600 border border-rose-500/60 font-semibold transition-all"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setIsSupportOpen(true);
+          }}
+          className="fixed bottom-6 right-6 z-50 animate-bounce hover:animate-none hover:scale-110 transition-transform duration-300 group cursor-pointer border-none bg-transparent p-0"
+          title="Contact Support"
+        >
+          <div className="absolute inset-0 bg-blue-500 rounded-full blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
+          <img
+            src="/Support_Logo.png"
+            alt="Support Contact"
+            className="relative w-14 h-14 sm:w-16 sm:h-16 object-contain drop-shadow-[0_0_10px_rgba(0,191,255,0.7)]"
+          />
+        </button>
+
+        <SupportModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} />
+      </>
+    );
+  }
+
   return (
     <>
     <Routes>
@@ -99,6 +160,14 @@ function SheetApp() {
         element={
           <HomePage auth={auth} setAuth={setAuth} />
         } 
+      />
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminPage auth={auth} />
+          </AdminRoute>
+        }
       />
       <Route 
         path="/Sorting" 

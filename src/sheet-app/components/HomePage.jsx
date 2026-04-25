@@ -285,7 +285,46 @@ function HomePage({ auth, setAuth }) {
   const [activity, setActivity] = useState({});
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(30);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    username: auth?.user?.username || '',
+    email: auth?.user?.email || ''
+  });
+  const [editError, setEditError] = useState('');
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    oldPassword: '',
+    newPassword: ''
+  });
+  const [passwordError, setPasswordError] = useState('');
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
   const navigate = useNavigate();
+
+  const syncBlockedStatus = (blockedValue) => {
+    if (!auth?.isAuthenticated || blockedValue === undefined || blockedValue === null) {
+      return;
+    }
+    if (auth.user?.isBlocked === blockedValue) {
+      return;
+    }
+    const updatedUser = { ...auth.user, isBlocked: blockedValue };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setAuth((prev) => ({
+      ...prev,
+      user: updatedUser
+    }));
+  };
+
+  const handleBlockedError = (error) => {
+    const status = error?.response?.status;
+    const message = (error?.response?.data?.message || '').toLowerCase();
+    if (status === 403 || message.includes('blocked')) {
+      syncBlockedStatus(true);
+      return true;
+    }
+    return false;
+  };
 
   useEffect(() => {
     setActiveView(auth?.isAuthenticated ? 'activity' : 'leaderboard');
@@ -293,6 +332,7 @@ function HomePage({ auth, setAuth }) {
   }, [auth?.isAuthenticated]);
 
   const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
+  const AUTH_API = 'https://dsa-sheet-backend-7r7i.onrender.com/api/auth';
   useEffect(() => {
     const loadAll = async () => {
       try {
@@ -336,9 +376,13 @@ function HomePage({ auth, setAuth }) {
           'Expires': '0'
         }
       });
+      syncBlockedStatus(response.data?.isBlocked ?? response.data?.user?.isBlocked);
       setStats(response.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
+      if (handleBlockedError(error)) {
+        return;
+      }
       if (error.response?.status === 401) {
         handleLogout();
       }
@@ -357,9 +401,11 @@ function HomePage({ auth, setAuth }) {
           'Expires': '0'
         }
       });
+      syncBlockedStatus(response.data?.isBlocked ?? response.data?.user?.isBlocked);
       setActivity(response.data);
     } catch (error) {
       console.error('Error fetching activity:', error);
+      handleBlockedError(error);
     }
   };
 
@@ -389,6 +435,110 @@ function HomePage({ auth, setAuth }) {
       token: null
     });
     navigate('/sheet/login');
+  };
+
+  const openEditProfile = () => {
+    setEditError('');
+    setEditForm({
+      username: auth?.user?.username || '',
+      email: auth?.user?.email || ''
+    });
+    setIsEditOpen(true);
+  };
+
+  const closeEditProfile = () => {
+    setIsEditOpen(false);
+  };
+
+  const openPasswordModal = () => {
+    setPasswordError('');
+    setPasswordForm({ oldPassword: '', newPassword: '' });
+    setIsPasswordOpen(true);
+  };
+
+  const closePasswordModal = () => {
+    setIsPasswordOpen(false);
+  };
+
+  const handleEditChange = (event) => {
+    const { name, value } = event.target;
+    setEditForm((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handlePasswordChange = (event) => {
+    const { name, value } = event.target;
+    setPasswordForm((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleEditSubmit = async (event) => {
+    event.preventDefault();
+    if (!auth?.isAuthenticated) return;
+
+    try {
+      setIsSavingEdit(true);
+      setEditError('');
+      const token = localStorage.getItem('token');
+      const payload = {
+        username: editForm.username.trim(),
+        email: editForm.email.trim()
+      };
+      const response = await axios.patch(`${AUTH_API}/me`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const updatedUser = response.data?.user;
+      if (updatedUser) {
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setAuth((prev) => ({
+          ...prev,
+          user: updatedUser
+        }));
+      }
+      setIsEditOpen(false);
+    } catch (error) {
+      if (handleBlockedError(error)) {
+        return;
+      }
+      setEditError(error.response?.data?.message || 'Failed to update profile.');
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
+
+  const handlePasswordSubmit = async (event) => {
+    event.preventDefault();
+    if (!auth?.isAuthenticated) return;
+
+    try {
+      setIsSavingPassword(true);
+      setPasswordError('');
+      const token = localStorage.getItem('token');
+      await axios.patch(`${AUTH_API}/me/password`, {
+        oldPassword: passwordForm.oldPassword,
+        newPassword: passwordForm.newPassword
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      setIsPasswordOpen(false);
+    } catch (error) {
+      if (handleBlockedError(error)) {
+        return;
+      }
+      setPasswordError(error.response?.data?.message || 'Failed to update password.');
+    } finally {
+      setIsSavingPassword(false);
+    }
   };
 
   if (loading) {
@@ -719,14 +869,38 @@ function HomePage({ auth, setAuth }) {
               DSA Practice Sheet
             </h1>
             <p className="text-gray-400 text-lg">
-              Welcome, <span className="text-blue-500 font-semibold">{auth?.isAuthenticated ? auth.user?.username : 'Guest'}</span>
+              Welcome, <span className="text-blue-500 font-semibold username-anim">{auth?.isAuthenticated ? auth.user?.username : 'Guest'}</span>
             </p>
           </div>
-          <div className="flex flex-col items-end gap-3">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-3">
+            {auth?.isAuthenticated && (auth.user?.isAdmin || auth.user?.role === 'admin') && (
+              <Link
+                to="/sheet/admin"
+                className="px-6 py-2 bg-[#1f2937] hover:bg-[#273449] border border-[#2a2a2a] rounded-full font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_20px_rgba(59,130,246,0.35)] w-full md:w-auto text-sm text-center"
+              >
+                Admin Console
+              </Link>
+            )}
+            {auth?.isAuthenticated && (
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+                <button
+                  onClick={openEditProfile}
+                  className="px-5 py-2 bg-[#171717] hover:bg-[#222] border border-[#2a2a2a] rounded-full font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_18px_rgba(148,163,184,0.3)] w-full sm:w-auto text-sm"
+                >
+                  Edit Profile
+                </button>
+                <button
+                  onClick={openPasswordModal}
+                  className="px-5 py-2 bg-[#171717] hover:bg-[#222] border border-[#2a2a2a] rounded-full font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_18px_rgba(148,163,184,0.3)] w-full sm:w-auto text-sm"
+                >
+                  Change Password
+                </button>
+              </div>
+            )}
             {auth?.isAuthenticated ? (
               <button
                 onClick={handleLogout}
-                className="px-6 py-2 bg-red-600/20 hover:bg-red-600 border border-red-500/50 hover:border-red-500 rounded-full font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] w-full md:w-auto text-sm"
+                className="px-6 py-2 bg-red-600/20 hover:bg-red-600 border border-red-500/50 hover:border-red-500 rounded-full font-semibold transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_18px_rgba(220,38,38,0.4)] w-full md:w-auto text-sm"
               >
                 Logout
               </button>
@@ -741,6 +915,135 @@ function HomePage({ auth, setAuth }) {
             )}
           </div>
         </div>
+
+        {isEditOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+            <div className="bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl w-full max-w-lg p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Update Profile</h2>
+                <button
+                  type="button"
+                  onClick={closeEditProfile}
+                  className="text-gray-400 hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {editError && (
+                <div className="mt-4 rounded-lg border border-rose-500/70 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                  {editError}
+                </div>
+              )}
+
+              <form onSubmit={handleEditSubmit} className="mt-6 space-y-4">
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">Username</label>
+                  <input
+                    name="username"
+                    value={editForm.username}
+                    onChange={handleEditChange}
+                    className="w-full rounded-lg border border-[#2a2a2a] bg-[#0d0d0d] px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={editForm.email}
+                    onChange={handleEditChange}
+                    className="w-full rounded-lg border border-[#2a2a2a] bg-[#0d0d0d] px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    required
+                  />
+                </div>
+                <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={closeEditProfile}
+                    className="px-4 py-2 rounded-lg border border-[#2a2a2a] text-gray-300 hover:bg-[#1a1a1a]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSavingEdit}
+                    className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 font-semibold text-white disabled:opacity-60"
+                  >
+                    {isSavingEdit ? 'Saving...' : 'Save changes'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {isPasswordOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+            <div className="bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl w-full max-w-lg p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Change Password</h2>
+                <button
+                  type="button"
+                  onClick={closePasswordModal}
+                  className="text-gray-400 hover:text-white"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {passwordError && (
+                <div className="mt-4 rounded-lg border border-rose-500/70 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                  {passwordError}
+                </div>
+              )}
+
+              <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-4">
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">Old password</label>
+                  <input
+                    type="password"
+                    name="oldPassword"
+                    value={passwordForm.oldPassword}
+                    onChange={handlePasswordChange}
+                    className="w-full rounded-lg border border-[#2a2a2a] bg-[#0d0d0d] px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    required
+                    minLength={6}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">New password</label>
+                  <input
+                    type="password"
+                    name="newPassword"
+                    value={passwordForm.newPassword}
+                    onChange={handlePasswordChange}
+                    className="w-full rounded-lg border border-[#2a2a2a] bg-[#0d0d0d] px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    required
+                    minLength={6}
+                  />
+                </div>
+                <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={closePasswordModal}
+                    className="px-4 py-2 rounded-lg border border-[#2a2a2a] text-gray-300 hover:bg-[#1a1a1a]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSavingPassword}
+                    className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 font-semibold text-white disabled:opacity-60"
+                  >
+                    {isSavingPassword ? 'Saving...' : 'Update password'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

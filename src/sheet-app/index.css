@@ -382,3 +382,20 @@ body {
 	border: 1px solid rgba(239, 68, 68, 0.4);
 	animation: todayEmptyBlink 1s ease-in-out infinite;
 }
+
+@keyframes usernameGlowPulse {
+	0%,
+	100% {
+		transform: translateY(0px);
+		text-shadow: 0 0 6px rgba(59, 130, 246, 0.35);
+	}
+	50% {
+		transform: translateY(-1px);
+		text-shadow: 0 0 12px rgba(59, 130, 246, 0.65);
+	}
+}
+
+.username-anim {
+	display: inline-block;
+	animation: usernameGlowPulse 2.4s ease-in-out infinite;
+}
