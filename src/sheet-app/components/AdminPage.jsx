@@ -19,8 +19,10 @@ function AdminPage({ auth }) {
   const [isSavingEdit, setIsSavingEdit] = useState(false);
 
   const ADMIN_API = 'https://dsa-sheet-backend-7r7i.onrender.com/api/admin';
+  const MAIN_ADMIN_EMAIL = 'admin@ashishdev.com';
 
   const isAdminUser = auth?.user?.isAdmin || auth?.user?.role === 'admin';
+  const isMainAdmin = isAdminUser && auth?.user?.email?.toLowerCase() === MAIN_ADMIN_EMAIL;
 
   const fetchUsers = async () => {
     try {
@@ -73,7 +75,9 @@ function AdminPage({ auth }) {
   }, [users]);
 
   const handleToggleBlock = async (user) => {
-    if (user.isAdmin || user.role === 'admin') {
+    const isAdmin = user.isAdmin || user.role === 'admin';
+    const isSelf = user._id === auth?.user?._id || user.email?.toLowerCase() === auth?.user?.email?.toLowerCase();
+    if ((isAdmin && !isMainAdmin) || (isMainAdmin && isSelf)) {
       return;
     }
 
@@ -102,6 +106,11 @@ function AdminPage({ auth }) {
   };
 
   const handleDelete = async (user) => {
+    const isAdmin = user.isAdmin || user.role === 'admin';
+    const isSelf = user._id === auth?.user?._id || user.email?.toLowerCase() === auth?.user?.email?.toLowerCase();
+    if ((isAdmin && !isMainAdmin) || (isMainAdmin && isSelf)) {
+      return;
+    }
     const ok = window.confirm(`Delete ${user.username || user.email || 'this user'} and all progress? This cannot be undone.`);
     if (!ok) return;
 
@@ -122,6 +131,11 @@ function AdminPage({ auth }) {
   };
 
   const openEditModal = (user) => {
+    const isAdmin = user.isAdmin || user.role === 'admin';
+    const isSelf = user._id === auth?.user?._id || user.email?.toLowerCase() === auth?.user?.email?.toLowerCase();
+    if ((isAdmin && !isMainAdmin) || (isMainAdmin && isSelf)) {
+      return;
+    }
     setEditUser(user);
     setEditForm({
       username: user.username || '',
@@ -288,10 +302,12 @@ function AdminPage({ auth }) {
                 ) : (
                   filteredUsers.map((user) => {
                     const isAdmin = user.isAdmin || user.role === 'admin';
+                    const isSelf = user._id === auth?.user?._id || user.email?.toLowerCase() === auth?.user?.email?.toLowerCase();
                     const isBlocked = user.isBlocked;
                     const solvedCount = user.completedQuestions ?? user.completedQuestionsCount ?? user.totalCompleted ?? user.completedCount ?? 0;
                     const isBusy = actionUserId === user._id;
-                    const isEditingDisabled = isAdmin || isBusy;
+                    const allowAdminActions = isMainAdmin ? !isSelf : !isAdmin;
+                    const isEditingDisabled = !allowAdminActions || isBusy;
 
                     return (
                       <tr key={user._id} className="border-t border-[#1f1f1f]">
@@ -318,23 +334,23 @@ function AdminPage({ auth }) {
                               onClick={() => openEditModal(user)}
                               disabled={isEditingDisabled}
                               className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-all ${isEditingDisabled ? 'border-gray-700 text-gray-500 cursor-not-allowed' : 'border-slate-500/60 text-slate-200 hover:bg-slate-500/10'}`}
-                              title={isEditingDisabled ? 'Cannot edit admin users' : 'Edit user'}
+                              title={isEditingDisabled ? (isMainAdmin && isSelf ? 'Cannot edit yourself here' : 'Cannot edit admin users') : 'Edit user'}
                             >
                               Edit
                             </button>
                             <button
                               type="button"
                               onClick={() => handleToggleBlock(user)}
-                              disabled={isAdmin || isBusy}
-                              className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-all ${isAdmin ? 'border-gray-700 text-gray-500 cursor-not-allowed' : isBlocked ? 'border-amber-400/60 text-amber-200 hover:bg-amber-500/10' : 'border-blue-400/60 text-blue-200 hover:bg-blue-500/10'} ${isBusy ? 'opacity-50 cursor-wait' : ''}`}
+                              disabled={!allowAdminActions || isBusy}
+                              className={`px-3 py-1.5 rounded-md text-xs font-semibold border transition-all ${!allowAdminActions ? 'border-gray-700 text-gray-500 cursor-not-allowed' : isBlocked ? 'border-amber-400/60 text-amber-200 hover:bg-amber-500/10' : 'border-blue-400/60 text-blue-200 hover:bg-blue-500/10'} ${isBusy ? 'opacity-50 cursor-wait' : ''}`}
                             >
                               {isBlocked ? 'Unblock' : 'Block'}
                             </button>
                             <button
                               type="button"
                               onClick={() => handleDelete(user)}
-                              disabled={isAdmin || isBusy}
-                              className={`px-3 py-1.5 rounded-md text-xs font-semibold border border-rose-500/60 text-rose-200 hover:bg-rose-500/10 ${isAdmin ? 'opacity-40 cursor-not-allowed' : ''} ${isBusy ? 'opacity-50 cursor-wait' : ''}`}
+                              disabled={!allowAdminActions || isBusy}
+                              className={`px-3 py-1.5 rounded-md text-xs font-semibold border border-rose-500/60 text-rose-200 hover:bg-rose-500/10 ${!allowAdminActions ? 'opacity-40 cursor-not-allowed' : ''} ${isBusy ? 'opacity-50 cursor-wait' : ''}`}
                             >
                               Delete
                             </button>
