@@ -3,8 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../components/Footer';
 import LoadingScreen from '../../components/LoadingScreen.jsx';
+import { notifyActivityUpdated } from '../utils/activitySync';
 
 function GraphsSheet({ auth, setAuth }) {
+  const topic = 'Graphs';
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +24,7 @@ function GraphsSheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/graphs-questions';
+  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
@@ -51,7 +53,7 @@ function GraphsSheet({ auth, setAuth }) {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get(`${API_URL}`, getAuthHeaders());
+      const response = await axios.get(`${API_URL}?topic=${topic}`, getAuthHeaders());
       const sortedQuestions = response.data.sort((a, b) => (a.sequenceNo || 0) - (b.sequenceNo || 0));
       setQuestions(sortedQuestions);
       setLoading(false);
@@ -86,9 +88,13 @@ function GraphsSheet({ auth, setAuth }) {
         q._id === id ? { ...q, completed: !currentStatus } : q
       ));
 
+      notifyActivityUpdated();
       fetchStats();
     } catch (error) {
       console.error('Error updating question:', error);
+      if (error.response?.status === 401) {
+        handleAuthError();
+      }
     }
   };
 
@@ -268,7 +274,7 @@ function GraphsSheet({ auth, setAuth }) {
                       <div className="flex items-start space-x-4">
                         <input
                           type="checkbox"
-                          checked={question.completed}
+                          checked={!!question.completed}
                           onChange={() => handleCheckboxChange(question._id, question.completed)}
                           className="mt-1 w-5 h-5 rounded border-gray-600 text-[#60a5fa] focus:ring-[#60a5fa] focus:ring-offset-0 cursor-pointer"
                         />

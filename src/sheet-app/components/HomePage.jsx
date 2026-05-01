@@ -5,6 +5,7 @@ import Footer from './Footer';
 import LoadingScreen from '../../components/LoadingScreen.jsx';
 import Leaderboard from './Leaderboard';
 import WebsiteReviews from './WebsiteReviews';
+import { ACTIVITY_UPDATED_EVENT } from '../utils/activitySync';
 
 const badgeAnimationByAchievement = {
   Bronze: 'badge-anim-silver',
@@ -408,6 +409,23 @@ function HomePage({ auth, setAuth }) {
       handleBlockedError(error);
     }
   };
+
+  useEffect(() => {
+    if (!auth?.isAuthenticated) return;
+
+    const refreshDashboard = () => {
+      fetchStats();
+      fetchActivity();
+    };
+
+    window.addEventListener(ACTIVITY_UPDATED_EVENT, refreshDashboard);
+    window.addEventListener('focus', refreshDashboard);
+
+    return () => {
+      window.removeEventListener(ACTIVITY_UPDATED_EVENT, refreshDashboard);
+      window.removeEventListener('focus', refreshDashboard);
+    };
+  }, [auth?.isAuthenticated, auth?.user]);
 
   const migrateTimestamps = async () => {
     try {
