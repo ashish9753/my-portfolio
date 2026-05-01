@@ -9,6 +9,7 @@ function DPSheet({ auth, setAuth }) {
   const topic = 'DP'; // Hardcoded for DP page
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
+  const [activeQuestionSource, setActiveQuestionSource] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSections, setExpandedSections] = useState({
@@ -24,7 +25,25 @@ function DPSheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
+  const API_BASE_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api';
+  const API_URL = `${API_BASE_URL}/questions`;
+  const QUESTION_SOURCES = [
+    {
+      listUrl: `${API_URL}?topic=${encodeURIComponent(topic)}`,
+      patchUrl: API_URL,
+      statsUrl: `${API_URL}/stats/summary`
+    },
+    {
+      listUrl: `${API_URL}?topic=${encodeURIComponent('Dynamic Programming')}`,
+      patchUrl: API_URL,
+      statsUrl: `${API_URL}/stats/summary`
+    },
+    {
+      listUrl: `${API_BASE_URL}/dp-questions`,
+      patchUrl: `${API_BASE_URL}/dp-questions`,
+      statsUrl: `${API_BASE_URL}/dp-questions/stats/summary`
+    }
+  ];
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
@@ -52,14 +71,32 @@ function DPSheet({ auth, setAuth }) {
   }, []);
 
   const fetchQuestions = async () => {
+    let lastError = null;
     try {
-      const response = await axios.get(`${API_URL}?topic=${topic}`, getAuthHeaders());
-      // Sort by sequenceNo to maintain consistent ordering
-      const sortedQuestions = response.data.sort((a, b) => (a.sequenceNo || 0) - (b.sequenceNo || 0));
-      setQuestions(sortedQuestions);
+      for (const source of QUESTION_SOURCES) {
+        try {
+          const response = await axios.get(source.listUrl, getAuthHeaders());
+          const questionsData = Array.isArray(response.data) ? response.data : [];
+
+          if (questionsData.length > 0) {
+            const sortedQuestions = [...questionsData].sort((a, b) => (a.sequenceNo || 0) - (b.sequenceNo || 0));
+            setQuestions(sortedQuestions);
+            setActiveQuestionSource(source);
+            setLoading(false);
+            return;
+          }
+        } catch (sourceError) {
+          if (sourceError.response?.status === 401) {
+            throw sourceError;
+          }
+          lastError = sourceError;
+        }
+      }
+
+      setQuestions([]);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching questions:', error);
+      console.error('Error fetching DP questions:', error || lastError);
       if (error.response?.status === 401) {
         handleAuthError();
       }
@@ -69,8 +106,21 @@ function DPSheet({ auth, setAuth }) {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get(`${API_URL}/stats/summary`, getAuthHeaders());
-      setStats(response.data);
+      const statsSources = activeQuestionSource
+        ? [activeQuestionSource.statsUrl]
+        : QUESTION_SOURCES.map(source => source.statsUrl);
+
+      for (const statsUrl of [...new Set(statsSources)]) {
+        try {
+          const response = await axios.get(statsUrl, getAuthHeaders());
+          setStats(response.data);
+          return;
+        } catch (sourceError) {
+          if (sourceError.response?.status === 401) {
+            throw sourceError;
+          }
+        }
+      }
     } catch (error) {
       console.error('Error fetching stats:', error);
       if (error.response?.status === 401) {
@@ -81,11 +131,30 @@ function DPSheet({ auth, setAuth }) {
 
   const handleCheckboxChange = async (id, currentStatus) => {
     try {
-      await axios.patch(`${API_URL}/${id}`, {
-        completed: !currentStatus
-      }, getAuthHeaders());
+      const patchUrls = activeQuestionSource
+        ? [activeQuestionSource.patchUrl, API_URL]
+        : QUESTION_SOURCES.map(source => source.patchUrl);
 
-      setQuestions(questions.map(q =>
+      let updated = false;
+      for (const patchUrl of [...new Set(patchUrls)]) {
+        try {
+          await axios.patch(`${patchUrl}/${id}`, {
+            completed: !currentStatus
+          }, getAuthHeaders());
+          updated = true;
+          break;
+        } catch (sourceError) {
+          if (sourceError.response?.status === 401) {
+            throw sourceError;
+          }
+        }
+      }
+
+      if (!updated) {
+        throw new Error('Unable to update DP question status.');
+      }
+
+      setQuestions(prevQuestions => prevQuestions.map(q =>
         q._id === id ? { ...q, completed: !currentStatus } : q
       ));
 
