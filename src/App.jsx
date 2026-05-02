@@ -12,6 +12,72 @@ import Contact from './components/Contact.jsx';
 import Footer from './components/Footer.jsx';
 import SheetApp from './sheet-app/SheetApp.jsx';
 
+const BASE_TITLE = 'Ashish Sharma';
+const PAGE_TITLES = {
+  '/': 'Full Stack Developer Portfolio',
+  '/sheet': 'DSA Sheet Dashboard',
+  '/sheet/login': 'Login',
+  '/sheet/signup': 'Signup',
+  '/sheet/admin': 'Admin Console',
+  '/sheet/Sorting': 'Sorting Sheet',
+  '/sheet/Array': 'Array Sheet',
+  '/sheet/Binary Search': 'Binary Search Sheet',
+  '/sheet/String': 'String Sheet',
+  '/sheet/LinkedList': 'LinkedList Sheet',
+  '/sheet/BitManipulation': 'BitManipulation Sheet',
+  '/sheet/StackAndQueues': 'Stack And Queues Sheet',
+  '/sheet/SlidingWindow': 'Sliding Window Sheet',
+  '/sheet/BinaryTrees': 'Binary Trees Sheet',
+  '/sheet/BinarySearchTrees': 'Binary Search Trees Sheet',
+  '/sheet/Heaps': 'Heaps Sheet',
+  '/sheet/Greedy': 'Greedy Sheet',
+  '/sheet/Graphs': 'Graphs Sheet',
+  '/sheet/DP': 'DP Sheet',
+  '/sheet/Recursion': 'Recursion Sheet',
+  '/sheet/System Design': 'System Design Sheet',
+  '/sheet/Computer Networks': 'Computer Networks Sheet',
+  '/sheet/Operating System': 'Operating System Sheet',
+  '/sheet/DBMS': 'DBMS Sheet',
+  '/sheet/DevOps': 'DevOps Sheet',
+  '/sheet/OOPS': 'OOPS Sheet',
+  '/sheet/Software Engineering': 'Software Engineering Sheet',
+  '/sheet/HTML': 'HTML Sheet',
+  '/sheet/CSS': 'CSS Sheet',
+  '/sheet/JavaScript': 'JavaScript Sheet',
+  '/sheet/MongoDB': 'MongoDB Sheet',
+  '/sheet/React': 'React Sheet',
+  '/sheet/NodeJS': 'NodeJS Sheet',
+  '/sheet/MySQL': 'MySQL Sheet',
+  '/sheet/PostgreSQL': 'PostgreSQL Sheet'
+};
+
+const HASH_TITLES = {
+  about: 'About',
+  education: 'Education',
+  certificates: 'Certificates',
+  skills: 'Skills',
+  projects: 'Projects',
+  contact: 'Contact'
+};
+
+function formatPathTitle(pathname) {
+  const lastSegment = decodeURIComponent(pathname.split('/').filter(Boolean).pop() || '');
+  return lastSegment
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function getDocumentTitle(location) {
+  if (location.pathname === '/' && location.hash) {
+    const hashTitle = HASH_TITLES[location.hash.slice(1)];
+    if (hashTitle) return `${hashTitle} | ${BASE_TITLE}`;
+  }
+
+  const decodedPath = decodeURIComponent(location.pathname);
+  const pageTitle = PAGE_TITLES[decodedPath] || formatPathTitle(decodedPath);
+  return pageTitle ? `${pageTitle} | ${BASE_TITLE}` : BASE_TITLE;
+}
+
 // Portfolio Homepage Component
 function Portfolio() {
   const location = useLocation();
@@ -51,6 +117,12 @@ function Portfolio() {
 }
 
 function App() {
+  const location = useLocation();
+
+  useEffect(() => {
+    document.title = getDocumentTitle(location);
+  }, [location]);
+
   return (
     <Routes>
       {/* Portfolio Routes */}
