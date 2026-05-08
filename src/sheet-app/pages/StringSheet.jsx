@@ -22,7 +22,7 @@ function StringSheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'http://13.201.54.180:5000/api/string-questions';
+  const API_URL = 'https://api.ashishdev.com/api/string-questions';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');

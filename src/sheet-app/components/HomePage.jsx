@@ -331,8 +331,8 @@ function HomePage({ auth, setAuth }) {
     setTopView(auth?.isAuthenticated ? 'progress' : 'reviews');
   }, [auth?.isAuthenticated]);
 
-  const API_URL = 'http://13.201.54.180:5000/api/questions';
-  const AUTH_API = 'http://13.201.54.180:5000/api/auth';
+  const API_URL = 'https://api.ashishdev.com/api/questions';
+  const AUTH_API = 'https://api.ashishdev.com/api/auth';
   useEffect(() => {
     const loadAll = async () => {
       try {
@@ -817,6 +817,16 @@ function HomePage({ auth, setAuth }) {
   };
 
   const progressPercentage = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+  const today = new Date();
+  const currentMonth = today.toLocaleString('default', { month: 'long' });
+  const currentYear = today.getFullYear();
+  const currentDay = today.getDate();
+  const firstDayOfMonth = new Date(currentYear, today.getMonth(), 1).getDay();
+  const daysInMonth = new Date(currentYear, today.getMonth() + 1, 0).getDate();
+  const calendarDays = [
+    ...Array(firstDayOfMonth).fill(null),
+    ...Array.from({ length: daysInMonth }, (_, index) => index + 1)
+  ];
 
   const achievements = [
     { name: 'Bronze', threshold: 0, color: 'bg-[#CD7F32]' },
@@ -1038,36 +1048,42 @@ function HomePage({ auth, setAuth }) {
         )}
 
         {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_1fr_0.72fr] gap-6 mb-8">
           {/* Series Available */}
-          <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#2a2a2a]">
+          <div className="bg-[#1a1a1a] rounded-lg p-5 border border-[#2a2a2a]">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+              <div className="w-14 h-14 shrink-0 bg-blue-600 rounded-full flex items-center justify-center">
+                <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
                 </svg>
               </div>
-              <div>
-                <div className="text-4xl font-bold">{topics.length}</div>
-                <div className="text-gray-400">DSA Series Available</div>
+              <div className="min-w-0">
+                <div className="text-3xl font-bold leading-none">{topics.length}</div>
+                <div className="mt-1.5 text-base leading-tight text-gray-400">DSA Series Available</div>
               </div>
             </div>
           </div>
 
           {/* Questions Completed */}
-          <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#2a2a2a]">
+          <div className="bg-[#1a1a1a] rounded-lg p-5 border border-[#2a2a2a]">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+              <div className="w-14 h-14 shrink-0 bg-purple-600 rounded-full flex items-center justify-center">
+                <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
                 </svg>
               </div>
-              <div>
-                <div className="text-4xl font-bold">{stats.completed}/{stats.total}</div>
-                <div className="text-gray-400">Questions Completed</div>
+              <div className="min-w-0">
+                <div className="text-3xl font-bold leading-none">{stats.completed}/{stats.total}</div>
+                <div className="mt-1.5 text-base leading-tight text-gray-400">Questions Completed</div>
               </div>
             </div>
           </div>
+
+          <div className="bg-[#1a1a1a] rounded-lg p-5 border border-[#2a2a2a]">
+            <div className="flex items-center gap-4">
+            </div>
+          </div>
+          
 
         </div>
 

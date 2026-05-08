@@ -24,7 +24,7 @@ function GraphsSheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'http://13.201.54.180:5000/api/questions';
+  const API_URL = 'https://api.ashishdev.com/api/questions';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');

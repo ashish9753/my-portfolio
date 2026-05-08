@@ -13,7 +13,7 @@ function PostgreSQLSheet({ auth, setAuth }) {
   const [expandedSections, setExpandedSections] = useState({});
   const [stats, setStats] = useState({ total: 0, completed: 0, percentage: 0 });
 
-  const API_URL = 'http://13.201.54.180:5000/api/core-concepts';
+  const API_URL = 'https://api.ashishdev.com/api/core-concepts';
   const getAuthHeaders = () => ({ headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
   const handleAuthError = () => { localStorage.removeItem('token'); localStorage.removeItem('user'); setAuth({ isAuthenticated: false, user: null, token: null }); navigate('/login'); };
 

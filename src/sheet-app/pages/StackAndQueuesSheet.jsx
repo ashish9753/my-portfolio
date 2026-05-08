@@ -22,7 +22,7 @@ function StackAndQueuesSheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'http://13.201.54.180:5000/api/stack-queues-questions';
+  const API_URL = 'https://api.ashishdev.com/api/stack-queues-questions';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');

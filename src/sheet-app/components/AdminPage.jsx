@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import LoadingScreen from '../../components/LoadingScreen.jsx';
 
-const ADMIN_API = 'http://13.201.54.180:5000/api/admin';
+const ADMIN_API = 'https://api.ashishdev.com/api/admin';
 const MAIN_ADMIN_EMAIL = 'admin@ashishdev.com';
 const ADMIN_QUESTION_TOPICS = [
   'Sorting',

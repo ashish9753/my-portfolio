@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
-const AUTH_API = 'http://13.201.54.180:5000/api/auth';
+const AUTH_API = 'https://api.ashishdev.com/api/auth';
 
 const getLoginErrorMessage = (err) => {
   const data = err.response?.data;
@@ -71,24 +71,25 @@ function Login({ setAuth }) {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center auth-bg px-4 py-10 pt-20">
-      <div className="absolute top-4 w-full px-6 flex justify-between items-center z-50">
+    <div className="relative min-h-screen auth-bg px-4 py-6 md:py-8">
+      <div className="absolute inset-x-0 top-4 z-50 mx-auto flex w-full max-w-[calc(100%-2rem)] items-center justify-between gap-3 px-2 sm:max-w-[calc(100%-3rem)] md:px-4">
         <Link 
           to="/sheet" 
-          className="group flex flex-1 sm:flex-none justify-center items-center gap-2 px-5 py-2.5 bg-slate-900/60 hover:bg-rose-600 border border-slate-700 hover:border-rose-500 rounded-full text-slate-300 hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-[0_0_20px_rgba(225,29,72,0.5)] backdrop-blur-md font-semibold text-sm mr-2"
+          className="group flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 px-4 py-2.5 text-sm font-semibold text-slate-300 shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-rose-500 hover:bg-rose-600 hover:text-white hover:shadow-[0_0_20px_rgba(225,29,72,0.5)] active:scale-95 sm:flex-none sm:px-5"
         >
           <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           <span className="hidden sm:inline">Cancel to </span>Login
         </Link>
         <a 
           href="https://ashishdev.com" 
-          className="group flex flex-1 sm:flex-none justify-center items-center gap-2 px-5 py-2.5 bg-slate-900/60 hover:bg-emerald-600 border border-slate-700 hover:border-emerald-500 rounded-full text-slate-300 hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] backdrop-blur-md font-semibold text-sm ml-2"
+          className="group flex min-h-12 flex-1 items-center justify-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 px-4 py-2.5 text-sm font-semibold text-slate-300 shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-105 hover:border-emerald-500 hover:bg-emerald-600 hover:text-white hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] active:scale-95 sm:flex-none sm:px-5"
         >
           <span className="hidden sm:inline">Home page </span>
           <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>
       </div>
 
+      <div className="flex min-h-[calc(100vh-3rem)] items-center justify-center pt-16 md:pt-12">
       <div className="max-w-5xl w-full auth-card auth-card-float auth-page-swap grid md:grid-cols-2 overflow-hidden">
         {/* Visual / left panel */}
         <div className="auth-visual-panel hidden md:block">
@@ -131,7 +132,7 @@ function Login({ setAuth }) {
         {/* Form / right panel */}
         <div className="relative flex items-center justify-center bg-slate-950/60 md:bg-slate-950/40 px-6 py-8 md:px-10 md:py-12 auth-slide-in-right">
           <div className="w-full max-w-md">
-            <div className="flex items-center justify-between mb-6">
+            <div className="mb-6 flex items-start justify-between gap-4">
               <div>
                 <h1 className="text-2xl md:text-3xl font-semibold text-slate-50">Welcome back</h1>
                 <p className="mt-1 text-sm text-slate-400">
@@ -146,7 +147,7 @@ function Login({ setAuth }) {
               </div>
                 <Link
                   to="/sheet/signup"
-                  className="hidden md:inline-flex auth-pill-cta text-[10px] md:text-[11px]"
+                  className="hidden shrink-0 md:inline-flex auth-pill-cta text-[10px] md:text-[11px]"
                 >
                   Create account
                 </Link>
@@ -201,6 +202,7 @@ function Login({ setAuth }) {
             </p>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -47,7 +47,7 @@ const Leaderboard = ({ baseUrl, totalQuestions = 0 }) => {
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
-                const baseUrlToUse = baseUrl || 'http://13.201.54.180:5000/api/questions';
+                const baseUrlToUse = baseUrl || 'https://api.ashishdev.com/api/questions';
                 const apiRoot = baseUrlToUse.replace(/\/questions\/?$/, '');
                 const response = await axios.get(`${apiRoot}/leaderboard`);
                 const data = response.data;
