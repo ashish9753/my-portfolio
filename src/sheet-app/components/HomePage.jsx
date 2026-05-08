@@ -285,7 +285,6 @@ function HomePage({ auth, setAuth }) {
   });
   const [activity, setActivity] = useState({});
   const [loading, setLoading] = useState(true);
-  const [countdown, setCountdown] = useState(30);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     username: auth?.user?.username || '',
@@ -332,8 +331,8 @@ function HomePage({ auth, setAuth }) {
     setTopView(auth?.isAuthenticated ? 'progress' : 'reviews');
   }, [auth?.isAuthenticated]);
 
-  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
-  const AUTH_API = 'https://dsa-sheet-backend-7r7i.onrender.com/api/auth';
+  const API_URL = 'http://13.201.54.180:5000/api/questions';
+  const AUTH_API = 'http://13.201.54.180:5000/api/auth';
   useEffect(() => {
     const loadAll = async () => {
       try {
@@ -348,33 +347,13 @@ function HomePage({ auth, setAuth }) {
     loadAll();
   }, [auth?.isAuthenticated]);
 
-  // Countdown timer and Auto-refresh
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prev) => (prev <= 1 ? 0 : prev - 1));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    if (countdown === 0) {
-      fetchStats();
-      fetchActivity();
-      setCountdown(30);
-    }
-  }, [countdown, auth]); // Add auth dependency to ensure we use the latest token/auth context
-
   const fetchStats = async () => {
     if (!auth?.isAuthenticated) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/stats/summary?t=${new Date().getTime()}`, {
+      const response = await axios.get(`${API_URL}/stats/summary`, {
         headers: {
-          Authorization: `Bearer ${token}`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+          Authorization: `Bearer ${token}`
         }
       });
       syncBlockedStatus(response.data?.isBlocked ?? response.data?.user?.isBlocked);
@@ -394,12 +373,9 @@ function HomePage({ auth, setAuth }) {
     if (!auth?.isAuthenticated) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/stats/activity?t=${new Date().getTime()}`, {
+      const response = await axios.get(`${API_URL}/stats/activity`, {
         headers: {
-          Authorization: `Bearer ${token}`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
+          Authorization: `Bearer ${token}`
         }
       });
       syncBlockedStatus(response.data?.isBlocked ?? response.data?.user?.isBlocked);
@@ -419,11 +395,9 @@ function HomePage({ auth, setAuth }) {
     };
 
     window.addEventListener(ACTIVITY_UPDATED_EVENT, refreshDashboard);
-    window.addEventListener('focus', refreshDashboard);
 
     return () => {
       window.removeEventListener(ACTIVITY_UPDATED_EVENT, refreshDashboard);
-      window.removeEventListener('focus', refreshDashboard);
     };
   }, [auth?.isAuthenticated, auth?.user]);
 
@@ -1095,20 +1069,6 @@ function HomePage({ auth, setAuth }) {
             </div>
           </div>
 
-          {/* Auto-refresh Countdown */}
-          <div className="bg-[#1a1a1a] rounded-lg p-6 border border-[#2a2a2a]">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd"/>
-                </svg>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-green-400">{countdown}s</div>
-                <div className="text-gray-400">Next Refresh</div>
-              </div>
-            </div>
-          </div>
         </div>
 
 {/* Top Section Toggle: Overall Progress or Website Reviews */}

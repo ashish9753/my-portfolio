@@ -2,6 +2,24 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
+const AUTH_API = 'http://13.201.54.180:5000/api/auth';
+
+const getLoginErrorMessage = (err) => {
+  const data = err.response?.data;
+  const serverMessage = typeof data === 'string'
+    ? data
+    : data?.message || data?.error || data?.errors?.[0]?.msg;
+
+  if (err.response?.status >= 500) {
+    return 'Login API returned a server error. The base server is online, but /api/auth/login is failing.';
+  }
+  if (serverMessage) return serverMessage;
+  if (err.response?.status === 401) return 'Invalid email or password.';
+  if (err.response?.status === 403) return 'Your account is blocked. Please contact support.';
+  if (err.request) return 'Cannot reach the login server. Check backend, CORS, or mixed-content settings.';
+  return 'Login failed. Please try again.';
+};
+
 function Login({ setAuth }) {
   const [formData, setFormData] = useState({
     email: '',
@@ -24,7 +42,13 @@ function Login({ setAuth }) {
     setLoading(true);
 
     try {
-      const response = await axios.post('https://dsa-sheet-backend-7r7i.onrender.com/api/auth/login', formData);
+      const email = formData.email.trim().toLowerCase();
+      const response = await axios.post(`${AUTH_API}/login`, {
+        email,
+        username: email,
+        identifier: email,
+        password: formData.password
+      });
 
       // Store token and user info
       localStorage.setItem('token', response.data.token);
@@ -40,7 +64,7 @@ function Login({ setAuth }) {
       // Redirect to home
       navigate('/sheet');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(getLoginErrorMessage(err));
     } finally {
       setLoading(false);
     }

@@ -17,7 +17,7 @@ function SoftwareEngineeringSheet({ auth, setAuth }) {
     percentage: 0
   });
 
-  const API_URL = 'https://dsa-sheet-backend-hb6z.onrender.com/api/core-concepts';
+  const API_URL = 'http://13.201.54.180:5000/api/core-concepts';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');

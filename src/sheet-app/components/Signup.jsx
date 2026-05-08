@@ -2,6 +2,21 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
+const AUTH_API = 'http://13.201.54.180:5000/api/auth';
+
+const getSignupErrorMessage = (err) => {
+  const data = err.response?.data;
+  const serverMessage = typeof data === 'string'
+    ? data
+    : data?.message || data?.error || data?.errors?.[0]?.msg;
+
+  if (serverMessage) return serverMessage;
+  if (err.response?.status >= 500) return 'Signup service is failing on the server. Please try again after the backend is fixed.';
+  if (err.response?.status === 409) return 'An account already exists with this email or username.';
+  if (err.request) return 'Cannot reach the signup server. Check backend, CORS, or mixed-content settings.';
+  return 'Signup failed. Please try again.';
+};
+
 function Signup({ setAuth }) {
   const [formData, setFormData] = useState({
     username: '',
@@ -45,9 +60,9 @@ function Signup({ setAuth }) {
     setLoading(true);
 
     try {
-      const response = await axios.post('https://dsa-sheet-backend-7r7i.onrender.com/api/auth/signup', {
-        username: formData.username,
-        email: formData.email,
+      const response = await axios.post(`${AUTH_API}/signup`, {
+        username: formData.username.trim(),
+        email: formData.email.trim().toLowerCase(),
         password: formData.password
       });
 
@@ -65,7 +80,7 @@ function Signup({ setAuth }) {
       // Redirect to home
       navigate('/sheet');
     } catch (err) {
-      setError(err.response?.data?.message || 'Signup failed. Please try again.');
+      setError(getSignupErrorMessage(err));
     } finally {
       setLoading(false);
     }

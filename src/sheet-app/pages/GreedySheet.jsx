@@ -22,7 +22,7 @@ function GreedySheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/greedy-questions';
+  const API_URL = 'http://13.201.54.180:5000/api/greedy-questions';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');

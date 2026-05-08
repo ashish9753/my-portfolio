@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import LoadingScreen from '../../components/LoadingScreen.jsx';
 
-const ADMIN_API = 'https://dsa-sheet-backend-7r7i.onrender.com/api/admin';
+const ADMIN_API = 'http://13.201.54.180:5000/api/admin';
 const MAIN_ADMIN_EMAIL = 'admin@ashishdev.com';
 const ADMIN_QUESTION_TOPICS = [
   'Sorting',
@@ -40,6 +40,7 @@ function AdminPage({ auth }) {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [questionSearch, setQuestionSearch] = useState('');
+  const [debouncedQuestionSearch, setDebouncedQuestionSearch] = useState('');
   const [questionTopic, setQuestionTopic] = useState('all');
   const [showBlockedOnly, setShowBlockedOnly] = useState(false);
   const [actionUserId, setActionUserId] = useState(null);
@@ -90,13 +91,13 @@ function AdminPage({ auth }) {
     }
   };
 
-  const fetchQuestions = async () => {
+  const fetchQuestions = async ({ search = debouncedQuestionSearch, topic = questionTopic } = {}) => {
     try {
       setQuestionsLoading(true);
       setError('');
       const params = new URLSearchParams();
-      if (questionTopic !== 'all') params.set('topic', questionTopic);
-      if (questionSearch.trim()) params.set('search', questionSearch.trim());
+      if (topic !== 'all') params.set('topic', topic);
+      if (search.trim()) params.set('search', search.trim());
       const url = `${ADMIN_API}/questions${params.toString() ? `?${params}` : ''}`;
       const res = await axios.get(url, { headers });
       setQuestions(res.data?.questions || []);
@@ -114,30 +115,21 @@ function AdminPage({ auth }) {
     }
 
     fetchUsers();
-    fetchQuestions();
-    const id = setInterval(async () => {
-      try {
-        const res = await axios.get(`${ADMIN_API}/users`, { headers });
-        const payload = res.data;
-        const list = Array.isArray(payload) ? payload : payload?.users || payload?.data || [];
-        setUsers(prev => prev.map(u => {
-          const updated = list.find(x => x._id === u._id);
-          return updated ? { ...u, isOnline: updated.isOnline, lastActive: updated.lastActive } : u;
-        }));
-      } catch {}
-    }, 10000);
-    return () => clearInterval(id);
   }, [isAdminUser]);
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setDebouncedQuestionSearch(questionSearch);
+    }, 500);
+
+    return () => clearTimeout(id);
+  }, [questionSearch]);
 
   useEffect(() => {
     if (!isAdminUser || activeView !== 'questions') return;
 
-    const id = setTimeout(() => {
-      fetchQuestions();
-    }, 250);
-
-    return () => clearTimeout(id);
-  }, [isAdminUser, activeView, questionSearch, questionTopic]);
+    fetchQuestions({ search: debouncedQuestionSearch, topic: questionTopic });
+  }, [isAdminUser, activeView, debouncedQuestionSearch, questionTopic]);
 
   const filteredUsers = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -272,11 +264,12 @@ function AdminPage({ auth }) {
 
   const handleResetQuestionFilters = () => {
     if (questionSearch === '' && questionTopic === 'all') {
-      fetchQuestions();
+      fetchQuestions({ search: '', topic: 'all' });
       return;
     }
 
     setQuestionSearch('');
+    setDebouncedQuestionSearch('');
     setQuestionTopic('all');
   };
 
@@ -338,7 +331,7 @@ function AdminPage({ auth }) {
               <button onClick={() => setActiveView('users')} className={`px-4 py-2 rounded-md text-sm font-medium ${activeView === 'users' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}>Users</button>
               <button onClick={() => setActiveView('questions')} className={`px-4 py-2 rounded-md text-sm font-medium ${activeView === 'questions' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}>Questions</button>
             </div>
-            <button onClick={activeView === 'users' ? fetchUsers : fetchQuestions} className="px-4 py-2 rounded-lg bg-[#161616] hover:bg-[#1e1e1e] border border-[#252525] text-sm font-medium">Refresh</button>
+            <button onClick={activeView === 'users' ? fetchUsers : () => fetchQuestions({ search: questionSearch, topic: questionTopic })} className="px-4 py-2 rounded-lg bg-[#161616] hover:bg-[#1e1e1e] border border-[#252525] text-sm font-medium">Refresh</button>
             <Link to="/sheet" className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-sm font-medium">Dashboard</Link>
           </div>
         </div>

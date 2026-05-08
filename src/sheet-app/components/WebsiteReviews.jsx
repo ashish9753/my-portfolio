@@ -23,23 +23,17 @@ const WebsiteReviews = ({ apiBaseUrl, auth, hideContainer = false }) => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      // Wait for both reviews and stats endpoints to resolve
-      const [reviewsRes, statsRes] = await Promise.allSettled([
-        axios.get(`${apiBaseUrl}/website`),
-        axios.get(`${apiBaseUrl}/website/stats`)
-      ]);
-      
-      const revData = reviewsRes.status === 'fulfilled' ? reviewsRes.value.data : [];
-      const stData = statsRes.status === 'fulfilled' ? statsRes.value.data : { averageRating: 0, totalReviews: 0 };
+      const response = await axios.get(`${apiBaseUrl}/website`);
+      const revData = response.data;
       
       const parsedReviews = Array.isArray(revData) ? revData : (revData.reviews || []);
       setAllReviews(parsedReviews);
       setReviews(parsedReviews.slice(0, 20)); // Show only recent 20 reviews
-      
-      // Some APIs return { totalReviews: X, averageRating: Y }
+
+      const ratingTotal = parsedReviews.reduce((sum, review) => sum + (Number(review.rating) || 0), 0);
       setStats({
-        averageRating: stData.averageRating || 0,
-        totalReviews: stData.totalReviews || parsedReviews.length
+        averageRating: parsedReviews.length ? ratingTotal / parsedReviews.length : 0,
+        totalReviews: parsedReviews.length
       });
     } catch (error) {
       console.error('Error fetching website reviews:', error);
