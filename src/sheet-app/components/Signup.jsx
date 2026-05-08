@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import GoogleAuthButton from './GoogleAuthButton';
 
 const AUTH_API = 'https://api.ashishdev.com/api/auth';
 
@@ -240,6 +241,18 @@ function Signup({ setAuth }) {
                 {loading ? 'Creating account…' : 'Create account'}
               </button>
             </form>
+            <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-slate-500">
+              <span className="h-px flex-1 bg-slate-800" />
+              <span>or</span>
+              <span className="h-px flex-1 bg-slate-800" />
+            </div>
+            <GoogleAuthButton
+              setAuth={setAuth}
+              setError={setError}
+              setLoading={setLoading}
+              navigate={navigate}
+              text="signup_with"
+            />
             <p className="mt-6 text-xs text-slate-500 text-center">
               By creating an account you agree to the{' '}
               <span className="text-slate-300">Terms</span> and{' '}
