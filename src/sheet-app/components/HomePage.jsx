@@ -665,8 +665,10 @@ function HomePage({ auth, setAuth }) {
     {
       title: 'DBMS (+ MySQL)',
       description: 'Most Asked DBMS & MySQL Interview Questions',
-      cta: 'Coming Soon',
-      available: false
+      cta: 'Start Learning',
+      to: '/sheet/DBMS',
+      available: true,
+      accent: 'emerald'
     },
     {
       title: 'Operating System',
@@ -772,6 +774,11 @@ function HomePage({ auth, setAuth }) {
       border: 'border-orange-500',
       title: 'text-orange-400',
       button: 'border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white'
+    },
+    emerald: {
+      border: 'border-emerald-500',
+      title: 'text-emerald-400',
+      button: 'border-emerald-500 text-emerald-500 hover:bg-emerald-500 hover:text-black'
     }
   };
 
