@@ -22,7 +22,8 @@ function SlidingWindowSheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'https://api.ashishdev.com/api/sliding-window-questions';
+  // const API_URL = 'https://api.ashishdev.com/api/sliding-window-questions';
+ const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/sliding-window-questions';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');

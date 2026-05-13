@@ -294,11 +294,11 @@ function HomePage({ auth, setAuth }) {
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
-    oldPassword: '',
     newPassword: ''
   });
   const [passwordError, setPasswordError] = useState('');
   const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [countdown, setCountdown] = useState(30);
   const navigate = useNavigate();
 
   const syncBlockedStatus = (blockedValue) => {
@@ -331,8 +331,10 @@ function HomePage({ auth, setAuth }) {
     setTopView(auth?.isAuthenticated ? 'progress' : 'reviews');
   }, [auth?.isAuthenticated]);
 
-  const API_URL = 'https://api.ashishdev.com/api/questions';
-  const AUTH_API = 'https://api.ashishdev.com/api/auth';
+  // const API_URL = 'https://api.ashishdev.com/api/questions';
+ const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
+  // const AUTH_API = 'https://api.ashishdev.com/api/auth';
+ const AUTH_API = 'https://dsa-sheet-backend-7r7i.onrender.com/api/auth';
   useEffect(() => {
     const loadAll = async () => {
       try {
@@ -401,6 +403,26 @@ function HomePage({ auth, setAuth }) {
     };
   }, [auth?.isAuthenticated, auth?.user]);
 
+  // Auto-refresh dashboard every 30 seconds with countdown
+  useEffect(() => {
+    if (!auth?.isAuthenticated) return;
+
+    const refreshInterval = setInterval(() => {
+      fetchStats();
+      fetchActivity();
+      setCountdown(30); // Reset countdown after refresh
+    }, 30000); // 30 seconds
+
+    const countdownInterval = setInterval(() => {
+      setCountdown((prev) => (prev > 1 ? prev - 1 : 30));
+    }, 1000); // 1 second
+
+    return () => {
+      clearInterval(refreshInterval);
+      clearInterval(countdownInterval);
+    };
+  }, [auth?.isAuthenticated]);
+
   const migrateTimestamps = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -444,7 +466,7 @@ function HomePage({ auth, setAuth }) {
 
   const openPasswordModal = () => {
     setPasswordError('');
-    setPasswordForm({ oldPassword: '', newPassword: '' });
+    setPasswordForm({ newPassword: '' });
     setIsPasswordOpen(true);
   };
 
@@ -514,7 +536,6 @@ function HomePage({ auth, setAuth }) {
       setPasswordError('');
       const token = localStorage.getItem('token');
       await axios.patch(`${AUTH_API}/me/password`, {
-        oldPassword: passwordForm.oldPassword,
         newPassword: passwordForm.newPassword
       }, {
         headers: {
@@ -1010,18 +1031,6 @@ function HomePage({ auth, setAuth }) {
 
               <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">Old password</label>
-                  <input
-                    type="password"
-                    name="oldPassword"
-                    value={passwordForm.oldPassword}
-                    onChange={handlePasswordChange}
-                    className="w-full rounded-lg border border-[#2a2a2a] bg-[#0d0d0d] px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                    required
-                    minLength={6}
-                  />
-                </div>
-                <div>
                   <label className="block text-sm text-gray-300 mb-2">New password</label>
                   <input
                     type="password"
@@ -1053,6 +1062,8 @@ function HomePage({ auth, setAuth }) {
             </div>
           </div>
         )}
+
+        
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_1fr_0.72fr] gap-6 mb-8">
@@ -1088,6 +1099,16 @@ function HomePage({ auth, setAuth }) {
 
           <div className="bg-[#1a1a1a] rounded-lg p-5 border border-[#2a2a2a]">
             <div className="flex items-center gap-4">
+              {/* Auto-refresh Countdown */}
+              {auth?.isAuthenticated && (
+                <div className="mb-6 flex items-center justify-end gap-2 text-sm text-gray-400">
+                  <span>Auto-refreshing in</span>
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600/20 border border-blue-500/40">
+                  <span className="font-bold text-blue-400">{countdown}</span>
+                  </div>
+                  <span>seconds</span>
+                  </div>
+                )}
             </div>
           </div>
           

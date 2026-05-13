@@ -17,7 +17,8 @@ function OOPSSheet({ auth, setAuth }) {
     percentage: 0
   });
 
-  const API_URL = 'https://api.ashishdev.com/api/core-concepts';
+  // const API_URL = 'https://api.ashishdev.com/api/core-concepts';
+ const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/core-concepts';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');

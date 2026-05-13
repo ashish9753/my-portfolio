@@ -3,7 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import GoogleAuthButton from './GoogleAuthButton';
 
-const AUTH_API = 'https://api.ashishdev.com/api/auth';
+// const AUTH_API = 'https://api.ashishdev.com/api/auth';
+ const AUTH_API = 'https://dsa-sheet-backend-7r7i.onrender.com/api/auth';
 
 const getLoginErrorMessage = (err) => {
   const data = err.response?.data;

@@ -22,7 +22,8 @@ function StringSheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'https://api.ashishdev.com/api/string-questions';
+  // const API_URL = 'https://api.ashishdev.com/api/string-questions';
+ const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/string-questions';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');

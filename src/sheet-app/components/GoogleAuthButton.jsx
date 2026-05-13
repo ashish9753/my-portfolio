@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '971496737518-r6ghl3vudfup2jlalm5d8pdq4ej904om.apps.googleusercontent.com';
-const AUTH_API = 'https://api.ashishdev.com/api/auth';
+// const AUTH_API = 'https://api.ashishdev.com/api/auth';
+ const AUTH_API = 'https://dsa-sheet-backend-7r7i.onrender.com/api/auth';
 const GOOGLE_SCRIPT_ID = 'google-identity-services';
 
 const loadGoogleScript = () => {

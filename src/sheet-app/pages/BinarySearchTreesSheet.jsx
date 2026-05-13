@@ -23,7 +23,8 @@ function BinarySearchTreesSheet({ auth, setAuth }) {
     hardCompleted: 0
   });
 
-  const API_URL = 'https://api.ashishdev.com/api/questions';
+  // const API_URL = 'https://api.ashishdev.com/api/questions';
+ const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');

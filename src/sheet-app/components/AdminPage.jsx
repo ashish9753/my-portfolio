@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import LoadingScreen from '../../components/LoadingScreen.jsx';
 
-const ADMIN_API = 'https://api.ashishdev.com/api/admin';
+// const ADMIN_API = 'https://api.ashishdev.com/api/admin';
+ const ADMIN_API = 'https://dsa-sheet-backend-7r7i.onrender.com/api/admin';
 const MAIN_ADMIN_EMAIL = 'admin@ashishdev.com';
 const ADMIN_QUESTION_TOPICS = [
   'Sorting',
