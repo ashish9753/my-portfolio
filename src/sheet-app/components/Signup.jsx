@@ -20,6 +20,8 @@ const getSignupErrorMessage = (err) => {
 };
 
 function Signup({ setAuth }) {
+  const GOOGLE_ONLY_SIGNUP = true;
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -40,6 +42,11 @@ function Signup({ setAuth }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (GOOGLE_ONLY_SIGNUP) {
+      setError('Verified users: please log in with Google only. Sorry for the inconvenience.');
+      return;
+    }
 
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
@@ -177,6 +184,36 @@ function Signup({ setAuth }) {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {GOOGLE_ONLY_SIGNUP && (
+                <div className="relative mb-4">
+                  <div className="pointer-events-none absolute -inset-1 rounded-lg bg-gradient-to-r from-[#9333ea]/20 via-[#a855f7]/10 to-[#9333ea]/20 blur-md opacity-100 animate-pulse" />
+                  <div className="pointer-events-none absolute -inset-0.5 rounded-lg ring-2 ring-[#9333ea]/50 animate-pulse" />
+                  <div className="relative bg-slate-950/80 rounded-lg border border-[#9333ea]/40 px-3 py-2 text-sm text-amber-200">
+                    Verified users: please log in with Google only. Sorry for the inconvenience.
+                  </div>
+                </div>
+              )}
+
+              {GOOGLE_ONLY_SIGNUP && (
+                <div className="relative mb-4">
+                  <div className="pointer-events-none absolute -inset-1 rounded-xl bg-[#9333ea]/15 blur-md opacity-80 animate-pulse" />
+                  <div className="pointer-events-none absolute -inset-0.5 rounded-xl ring-2 ring-[#9333ea]/35" />
+                  <div className="relative">
+                    <GoogleAuthButton
+                      setAuth={setAuth}
+                      setError={setError}
+                      setLoading={setLoading}
+                      navigate={navigate}
+                      text="signup_with"
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-slate-500">
+                <span className="h-px flex-1 bg-slate-800" />
+                <span>or</span>
+                <span className="h-px flex-1 bg-slate-800" />
+              </div>
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-slate-300">Username</label>
                 <input
@@ -186,7 +223,8 @@ function Signup({ setAuth }) {
                   onChange={handleChange}
                   required
                   minLength={3}
-                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-[#9333ea] focus:outline-none focus:ring-2 focus:ring-[#9333ea]/40"
+                  disabled={GOOGLE_ONLY_SIGNUP}
+                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-[#9333ea] focus:outline-none focus:ring-2 focus:ring-[#9333ea]/40 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="Choose a unique username"
                 />
                 <p className="mt-1 text-xs text-slate-500">Minimum 3 characters, must be unique.</p>
@@ -200,7 +238,8 @@ function Signup({ setAuth }) {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-[#9333ea] focus:outline-none focus:ring-2 focus:ring-[#9333ea]/40"
+                  disabled={GOOGLE_ONLY_SIGNUP}
+                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-[#9333ea] focus:outline-none focus:ring-2 focus:ring-[#9333ea]/40 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="Enter your email"
                 />
               </div>
@@ -214,7 +253,8 @@ function Signup({ setAuth }) {
                   onChange={handleChange}
                   required
                   minLength={6}
-                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-[#9333ea] focus:outline-none focus:ring-2 focus:ring-[#9333ea]/40"
+                  disabled={GOOGLE_ONLY_SIGNUP}
+                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-[#9333ea] focus:outline-none focus:ring-2 focus:ring-[#9333ea]/40 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="Create a password"
                 />
                 <p className="mt-1 text-xs text-slate-500">Minimum 6 characters.</p>
@@ -229,31 +269,20 @@ function Signup({ setAuth }) {
                   onChange={handleChange}
                   required
                   minLength={6}
-                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                  disabled={GOOGLE_ONLY_SIGNUP}
+                  className="w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="Confirm your password"
                 />
               </div>
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || GOOGLE_ONLY_SIGNUP}
                 className="mt-1 w-full rounded-lg bg-[#3730a3] py-3 text-sm font-semibold text-white shadow-lg shadow-[rgba(55,48,163,0.65)] auth-primary-btn hover:bg-[#4f46e5] disabled:cursor-not-allowed disabled:bg-slate-700 disabled:shadow-none"
               >
-                {loading ? 'Creating account…' : 'Create account'}
+                {GOOGLE_ONLY_SIGNUP ? 'Google sign-up only' : loading ? 'Creating account…' : 'Create account'}
               </button>
             </form>
-            <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-slate-500">
-              <span className="h-px flex-1 bg-slate-800" />
-              <span>or</span>
-              <span className="h-px flex-1 bg-slate-800" />
-            </div>
-            <GoogleAuthButton
-              setAuth={setAuth}
-              setError={setError}
-              setLoading={setLoading}
-              navigate={navigate}
-              text="signup_with"
-            />
             <p className="mt-6 text-xs text-slate-500 text-center">
               By creating an account you agree to the{' '}
               <span className="text-slate-300">Terms</span> and{' '}
