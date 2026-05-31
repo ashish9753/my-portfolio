@@ -702,8 +702,10 @@ function HomePage({ auth, setAuth }) {
     {
       title: 'Computer Networks',
       description: 'Most Asked Computer Networks Interview Questions',
-      cta: 'Coming Soon',
-      available: false
+      cta: 'Start Learning',
+      to: '/sheet/Computer Networks',
+      available: true,
+      accent: 'sky'
     },
     {
       title: 'OOPS',
@@ -800,6 +802,11 @@ function HomePage({ auth, setAuth }) {
       border: 'border-emerald-500',
       title: 'text-emerald-400',
       button: 'border-emerald-500 text-emerald-500 hover:bg-emerald-500 hover:text-black'
+    },
+    sky: {
+      border: 'border-sky-500',
+      title: 'text-sky-400',
+      button: 'border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white'
     }
   };
 
