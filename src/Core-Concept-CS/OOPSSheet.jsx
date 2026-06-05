@@ -220,6 +220,134 @@ const oopsSections = [
 
 const totalQuestions = oopsSections.reduce((s, sec) => s + sec.questions.length, 0);
 
+// ── Syntax highlighter ──────────────────────────────────────────────────────
+const KW = new Set(['class','interface','enum','public','private','protected','static',
+  'final','abstract','synchronized','native','transient','volatile','void','return',
+  'new','this','super','extends','implements','import','package','if','else','for',
+  'while','do','try','catch','finally','throw','throws','switch','case','break',
+  'continue','instanceof','null','true','false']);
+const PRIM = new Set(['int','double','float','boolean','char','long','byte','short']);
+
+function highlightLine(line) {
+  const tokens = [];
+  let i = 0;
+  while (i < line.length) {
+    if (line[i] === '/' && line[i + 1] === '/') {
+      tokens.push(<span key={i} style={{ color: '#6a9955' }}>{line.slice(i)}</span>);
+      break;
+    }
+    if (line[i] === '"') {
+      let j = i + 1;
+      while (j < line.length && line[j] !== '"') { if (line[j] === '\\') j++; j++; }
+      tokens.push(<span key={i} style={{ color: '#ce9178' }}>{line.slice(i, j + 1)}</span>);
+      i = j + 1; continue;
+    }
+    if (line[i] === '@') {
+      let j = i + 1;
+      while (j < line.length && /\w/.test(line[j])) j++;
+      tokens.push(<span key={i} style={{ color: '#dcdcaa' }}>{line.slice(i, j)}</span>);
+      i = j; continue;
+    }
+    if (/[a-zA-Z_]/.test(line[i])) {
+      let j = i;
+      while (j < line.length && /\w/.test(line[j])) j++;
+      const word = line.slice(i, j);
+      let color = '#9cdcfe';
+      if (KW.has(word) || PRIM.has(word)) color = '#569cd6';
+      else if (/^[A-Z]/.test(word)) color = '#4ec9b0';
+      tokens.push(<span key={i} style={{ color }}>{word}</span>);
+      i = j; continue;
+    }
+    if (/[0-9]/.test(line[i])) {
+      let j = i;
+      while (j < line.length && /[0-9.]/.test(line[j])) j++;
+      tokens.push(<span key={i} style={{ color: '#b5cea8' }}>{line.slice(i, j)}</span>);
+      i = j; continue;
+    }
+    tokens.push(<span key={i} style={{ color: '#d4d4d4' }}>{line[i]}</span>);
+    i++;
+  }
+  return tokens;
+}
+
+function isCodeLine(line) {
+  const t = line.trim();
+  if (!t) return null;
+  if (/^[•→✅❌▲▼|]/.test(t)) return false;
+  if (/^\d+\.\s+[A-Z]/.test(t)) return false;
+  if (/^[\/\\|\-_\s<>^v]{1,12}$/.test(t)) return false; // ASCII art
+  if (/^(class|interface|enum)\s/.test(t)) return true;
+  if (/^(public|private|protected|static|final|abstract|synchronized)\s/.test(t)) return true;
+  if (/^(void|int|double|float|boolean|char|long|byte|short)\s+\w/.test(t)) return true;
+  if (/^(return|throw|new)\s/.test(t)) return true;
+  if (/^(if|else)\s*[\({]/.test(t) || t === 'else {') return true;
+  if (/^(for|while|do)\s*[\({]/.test(t)) return true;
+  if (/^(try|catch|finally)\s*[{(]/.test(t)) return true;
+  if (/^(import|package)\s+[\w.]+/.test(t)) return true;
+  if (/^@\w+/.test(t)) return true;
+  if (t.includes('//')) return true;
+  if (t === '{' || /^\}[\s;,]*$/.test(t)) return true;
+  if (/^(this|super)\s*[.({]/.test(t)) return true;
+  if (/^System\./.test(t)) return true;
+  if (/^[A-Z][a-zA-Z0-9]*(<[^>]*>)?\s+[a-z]\w*(\[\])?\s*[=;({]/.test(t)) return true;
+  if (/^[A-Z][a-zA-Z0-9]+\s*\(\s*\)\s*\{?$/.test(t)) return true;
+  if (/^[A-Z][a-zA-Z0-9]+\s*\([A-Z@]/.test(t)) return true;
+  if (/^[A-Z][a-zA-Z0-9]+\.\w+/.test(t)) return true;
+  if (/^[a-z_]\w*(\.\w+)+/.test(t)) return true;
+  if (/^[a-z_]\w*\s*=\s*/.test(t) && t.endsWith(';')) return true;
+  return false;
+}
+
+function renderAnswer(text) {
+  const lines = text.split('\n');
+  const segments = [];
+  let i = 0;
+  while (i < lines.length) {
+    const lt = isCodeLine(lines[i]);
+    if (lt === true) {
+      const codeLines = [];
+      while (i < lines.length) {
+        const t = isCodeLine(lines[i]);
+        if (t === true) { codeLines.push(lines[i]); i++; }
+        else if (t === null && i + 1 < lines.length && isCodeLine(lines[i + 1]) === true) { codeLines.push(''); i++; }
+        else break;
+      }
+      while (codeLines.length && codeLines[codeLines.length - 1] === '') codeLines.pop();
+      if (codeLines.length) segments.push({ type: 'code', lines: codeLines });
+    } else {
+      const textLines = [];
+      while (i < lines.length && isCodeLine(lines[i]) !== true) { textLines.push(lines[i]); i++; }
+      const content = textLines.join('\n').trim();
+      if (content) segments.push({ type: 'text', content });
+    }
+  }
+  return segments.map((seg, idx) => {
+    if (seg.type === 'code') {
+      return (
+        <div key={idx} className="my-3 rounded-lg overflow-hidden border border-[#333] shadow-lg">
+          <div className="bg-[#252526] px-3 py-1.5 flex items-center justify-between">
+            <div className="flex gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+            </div>
+            <span className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">Java</span>
+          </div>
+          <pre className="bg-[#1e1e1e] px-5 py-3 overflow-x-auto font-mono text-[13px] leading-6 m-0 whitespace-pre">
+            {seg.lines.map((line, li) => <div key={li}>{highlightLine(line)}</div>)}
+          </pre>
+        </div>
+      );
+    }
+    return (
+      <div key={idx} className="text-[15px] text-yellow-300/80 leading-relaxed whitespace-pre-line">
+        {seg.content}
+      </div>
+    );
+  });
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 function OOPSSheet({ auth, setAuth }) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -455,13 +583,9 @@ function OOPSSheet({ auth, setAuth }) {
                               </a>
                             </div>
                             {isOpen && (
-                              <div className="px-1 pb-5 pt-2">
-                                {item.a ? (
-                                  <p className="text-[16px] text-yellow-300/80 px-2 pb-1 leading-relaxed whitespace-pre-line">
-                                    <span className="text-yellow-500 mr-1">→</span>{item.a}
-                                  </p>
-                                ) : (
-                                  <p className="text-[15px] text-gray-600 italic px-2 pb-1">Answer coming soon...</p>
+                              <div className="px-3 pb-5 pt-1 space-y-1">
+                                {item.a ? renderAnswer(item.a) : (
+                                  <p className="text-[15px] text-gray-600 italic">Answer coming soon...</p>
                                 )}
                               </div>
                             )}
