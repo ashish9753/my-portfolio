@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiGithub, FiExternalLink, FiCode, FiEye, FiFilter, FiX } from 'react-icons/fi';
-import { FaReact, FaNodeJs, FaPython } from 'react-icons/fa';
-import { SiTailwindcss, SiMongodb, SiExpress, SiFirebase, SiNextdotjs } from 'react-icons/si';
+import { FaReact, FaNodeJs, FaPython, FaDocker } from 'react-icons/fa';
+import { SiTailwindcss, SiMongodb, SiExpress, SiFirebase, SiNextdotjs, SiNginx } from 'react-icons/si';
 
 const ProjectImageSlider = ({ images, title }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -38,6 +38,35 @@ const Projects = () => {
   const [selectedProject, setSelectedProject] = useState(null);
 
   const projects = [
+    {
+      id: 3,
+      title: 'TradeEngine – Full-Stack E-Commerce Platform',
+      category: 'Full Stack',
+      description: 'Production-ready MERN-based e-commerce platform supporting customer, seller, and admin workflows with Google OAuth, role-based authorization, and Docker deployment.',
+      longDescription: 'Developed a production-ready MERN-based e-commerce platform supporting customer, seller, and admin workflows, improving operational efficiency by ~40%. Designed and implemented RESTful APIs, JWT authentication, Google OAuth, and role-based authorization, reducing API response time by ~25% while enhancing application security by ~35%. Built features such as product catalog management, advanced search/filtering, shopping cart, order tracking, and admin analytics dashboard. Deployed the application using Docker, Nginx, VPS, and Cloudflare, improving deployment reliability and scalability by ~45%.',
+      image: '/TradeEngine.png',
+      technologies: [
+        { name: 'React', icon: FaReact, color: '#61DAFB' },
+        { name: 'Node.js', icon: FaNodeJs, color: '#339933' },
+        { name: 'MongoDB', icon: SiMongodb, color: '#47A248' },
+        { name: 'Express', icon: SiExpress, color: '#FFFFFF' },
+        { name: 'Docker', icon: FaDocker, color: '#2496ED' },
+        { name: 'Nginx', icon: SiNginx, color: '#009639' },
+        { name: 'Tailwind', icon: SiTailwindcss, color: '#06B6D4' }
+      ],
+      github: 'https://github.com/ashish9753',
+      live: '#',
+      features: [
+        'Customer, Seller & Admin role-based workflows',
+        'RESTful APIs with JWT Authentication & Google OAuth',
+        'Product catalog management with advanced search/filtering',
+        'Shopping cart & order tracking system',
+        'Admin analytics dashboard',
+        'Deployed with Docker, Nginx, VPS & Cloudflare',
+        'Secure role-based authorization (~35% security improvement)',
+        'Responsive design with Tailwind CSS'
+      ]
+    },
     {
       id: 1,
       title: 'Account Management System',

@@ -1,24 +1,25 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { 
-  FaReact, 
-  FaNodeJs, 
-  FaJsSquare, 
-  FaHtml5, 
-  FaCss3Alt, 
-  FaGitAlt, 
+import {
+  FaReact,
+  FaNodeJs,
+  FaJsSquare,
+  FaHtml5,
+  FaCss3Alt,
+  FaGitAlt,
   FaPython,
   FaDatabase,
   FaAws,
   FaDocker,
   FaGithub,
-  FaLinux
+  FaLinux,
+  FaJava
 } from 'react-icons/fa';
-import { 
-  SiTailwindcss, 
-  SiMongodb, 
-  SiExpress, 
-  SiFirebase, 
+import {
+  SiTailwindcss,
+  SiMongodb,
+  SiExpress,
+  SiFirebase,
   SiTypescript,
   SiRedux,
   SiGraphql,
@@ -26,7 +27,8 @@ import {
   SiKubernetes,
   SiRedis,
   SiMysql,
-  SiPostman
+  SiPostman,
+  SiJenkins
 } from 'react-icons/si';
 
 const Skills = () => {
@@ -72,6 +74,7 @@ const Skills = () => {
       skills: [
         { name: 'Node.js', icon: FaNodeJs, color: '#339933', level: 88 },
         { name: 'Express', icon: SiExpress, color: '#FFFFFF', level: 85 },
+        { name: 'Java', icon: FaJava, color: '#ED8B00', level: 80 },
       ]
     },
     {
@@ -88,6 +91,8 @@ const Skills = () => {
       skills: [
         { name: 'Git', icon: FaGitAlt, color: '#F05032', level: 90 },
         { name: 'Docker', icon: FaDocker, color: '#2496ED', level: 75 },
+        { name: 'Kubernetes', icon: SiKubernetes, color: '#326CE5', level: 68 },
+        { name: 'Jenkins', icon: SiJenkins, color: '#D24939', level: 65 },
         { name: 'GitHub', icon: FaGithub, color: '#FFFFFF', level: 88 },
         { name: 'Postman', icon: SiPostman, color: '#FF6C37', level: 80 },
         { name: 'Linux', icon: FaLinux, color: '#FCC624', level: 75 },

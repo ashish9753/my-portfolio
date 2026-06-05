@@ -710,8 +710,10 @@ function HomePage({ auth, setAuth }) {
     {
       title: 'OOPS',
       description: 'Object Oriented Programming Concepts & Interview Questions',
-      cta: 'Coming Soon',
-      available: false
+      cta: 'Start Learning',
+      to: '/sheet/OOPS',
+      available: true,
+      accent: 'purple'
     },
     {
       title: 'Software Engineering',
@@ -807,6 +809,11 @@ function HomePage({ auth, setAuth }) {
       border: 'border-sky-500',
       title: 'text-sky-400',
       button: 'border-sky-500 text-sky-500 hover:bg-sky-500 hover:text-white'
+    },
+    purple: {
+      border: 'border-purple-500',
+      title: 'text-purple-400',
+      button: 'border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white'
     }
   };
 

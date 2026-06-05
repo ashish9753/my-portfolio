@@ -30,28 +30,28 @@ const About = () => {
   };
 
   const stats = [
-    { 
-      icon: FiCode, 
-      label: 'Projects Built', 
-      value: '4+',
+    {
+      icon: FiCode,
+      label: 'Projects Built',
+      value: '5+',
       href: 'https://github.com/ashish9753?tab=repositories'
     },
-    { 
-      icon: FiUsers, 
-      label: 'Current Year', 
+    {
+      icon: FiUsers,
+      label: 'Current Year',
       value: '3rd',
       href: 'https://www.linkedin.com/school/lovely-professional-university/posts/?feedView=all'
     },
-    { 
-      icon: FiAward, 
-      label: 'Certifications', 
-      value: '3+',
+    {
+      icon: FiAward,
+      label: 'Certifications',
+      value: '4+',
       href: 'https://www.linkedin.com/in/ashish2208/details/certifications/'
     },
-    { 
-      icon: FiHeart, 
-      label: 'Total Questions', 
-      value: '342',
+    {
+      icon: FiHeart,
+      label: 'DSA Solved',
+      value: '450+',
       href: 'https://codolio.com/profile/ashish_2208'
     }
   ];
@@ -91,21 +91,22 @@ const About = () => {
               
               <div className="space-y-4 text-gray-300 text-lg leading-relaxed">
                 <p>
-                  I'm currently a 3rd-year B.Tech Computer Science Engineering student at Lovely Professional University, 
-                  passionate about building scalable web solutions. I specialize in the MERN stack (MongoDB, Express.js, 
+                  I'm currently a 3rd-year B.Tech Computer Science Engineering student at Lovely Professional University,
+                  passionate about building scalable web solutions. I specialize in the MERN stack (MongoDB, Express.js,
                   React.js, Node.js) and have hands-on experience creating real-world applications.
                 </p>
-                
+
                 <p>
-                  My journey began with Java and JavaScript fundamentals, and has evolved into full-stack development 
-                  with modern frameworks like React and Tailwind CSS. I've successfully delivered commercial projects 
-                  including an Account Management System for Shyam Veneer company, demonstrating my ability to solve 
-                  real business problems through technology.
+                  I completed a Full Stack Web Development Hybrid Internship at SparkIIT (Sep–Dec 2025), where I
+                  developed 4 full-stack web applications using React.js and Tailwind CSS, improving UI responsiveness
+                  and reducing load time by ~25%.
                 </p>
-                
+
                 <p>
-                  Currently completing my Node.js certification and continuously improving my skills.
-                  Solved 400+ DSA problems across LeetCode & GeeksforGeeks; earned 100 Days (2025) & 50 Days (2026) badges; LeetCode rating: 1412.
+                  My journey began with Java and JavaScript fundamentals, and has evolved into full-stack development
+                  with modern frameworks, DevOps tools (Docker, Kubernetes, Jenkins, AWS), and production deployments.
+                  Solved 450+ DSA problems across LeetCode &amp; GeeksforGeeks; earned 100 Days Badge (2025 &amp; 2026);
+                  LeetCode rating: 1412.
                 </p>
               </div>
 
@@ -188,9 +189,9 @@ const About = () => {
                 { emoji: '🎓', text: 'Studying Computer Science at LPU, Punjab (3rd Year)' },
                 {
                   emoji: '💻',
-                  text: 'Solved 400+ DSA problems across LeetCode & GeeksforGeeks; earned 100 Days (2025) & 50 Days (2026) badges; LeetCode rating: 1412.'
+                  text: 'Solved 450+ DSA problems across LeetCode & GeeksforGeeks; earned 100 Days Badge (2025 & 2026); LeetCode rating: 1412.'
                 },
-                { emoji: '🏆', text: 'Meta certified in React Basics & Advanced Specialization' }
+                { emoji: '🏆', text: 'Full Stack Intern at SparkIIT (Sep–Dec 2025) & Meta certified in React Basics + Advanced Specialization' }
               ].map((fact, index) => (
                 <motion.div
                   key={index}
