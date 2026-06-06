@@ -2,104 +2,488 @@ import { useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../sheet-app/components/Footer';
 
+// ─── DBMS Theory Q&A Data ────────────────────────────────────────────────────
+const dbmsSections = [
+  {
+    title: '📘 DBMS Basics',
+    questions: [
+      {
+        q: 'What is DBMS? What are its advantages?',
+        a: `DBMS (Database Management System) is software used to store, manage, retrieve, and organize data efficiently.
+
+Examples: MySQL, Oracle, PostgreSQL, MongoDB, SQL Server
+
+Real-Life Example — College Management System:
+\`\`\`
+Roll No   Name     Branch
+101       Ashish   CSE
+102       Rahul    IT
+\`\`\`
+Instead of storing data in files, DBMS stores it in organized databases.
+
+Advantages of DBMS:
+• Reduces Data Redundancy – duplicate data is minimized
+• Data Consistency – if data changes, it updates everywhere
+• Data Security – only authorized users can access data
+• Data Sharing – multiple users can access simultaneously (e.g. ATM)
+• Backup & Recovery – data can be restored after failure`,
+      },
+      {
+        q: 'DBMS vs File System',
+        a: `\`\`\`
+Feature            DBMS                  File System
+Redundancy         Less (controlled)     High (data repeated)
+Security           Access control        Limited
+Data Integrity     Enforced (constraints)Not enforced
+Concurrent Access  Yes (multi-user)      Limited
+Backup & Recovery  Built-in              Manual / difficult
+Query Language     SQL                   None
+\`\`\`
+Key Insight: File system stores data in raw files with no structure enforcement. DBMS adds a management layer with rules, queries, and access control.`,
+      },
+      {
+        q: 'What are the types of Data Models?',
+        a: `A Data Model defines how data is organized and related.
+
+A. Hierarchical Model — Tree structure (one parent, many children):
+\`\`\`
+College
+ ├── CSE
+ │    └── Student1
+ └── IT
+      └── Student2
+\`\`\`
+B. Network Model — Many-to-Many relationships (graph structure).
+
+C. Relational Model — Data in Tables (most widely used):
+\`\`\`
+ID   Name
+ 1   Ashish
+ 2   Rahul
+\`\`\`
+D. Object-Oriented Model — Data as objects (used in OODBs).`,
+      },
+    ],
+  },
+  {
+    title: '📘 Architecture & Concepts',
+    questions: [
+      {
+        q: 'Schema vs Instance',
+        a: `Schema — the STRUCTURE of the database (the blueprint). Fixed design.
+\`\`\`
+Student(ID, Name, Branch)   ← schema (structure, no data)
+\`\`\`
+Instance — the ACTUAL DATA stored at a point in time. Changes frequently.
+\`\`\`
+ID   Name     Branch
+101  Ashish   CSE      ← instance (current snapshot of data)
+102  Rahul    IT
+\`\`\`
+Analogy:
+• Schema = blueprint of a house (fixed structure)
+• Instance = people living in the house (changes over time)`,
+      },
+      {
+        q: 'Three-Level Architecture & Data Independence',
+        a: `Three levels separate how data is stored from how users see it.
+
+1. Physical Level (Internal) — HOW data is physically stored on disk.
+   Example: B+ tree files, heap files on hard disk.
+
+2. Logical Level (Conceptual) — WHAT data is stored and relationships.
+   Example: Student(ID, Name, Branch) — full database schema.
+
+3. View Level (External) — WHAT a specific user sees.
+   Example: Student portal shows only marks, not salary.
+
+Data Independence — change one level without affecting another:
+• Physical Independence: move HDD → SSD without changing application
+• Logical Independence: add a new column without affecting user views`,
+      },
+      {
+        q: 'What are DBMS Users?',
+        a: `• Database Administrator (DBA) — manages the entire database: creates schemas, manages access, backup, performance tuning.
+
+• Application Developer — writes code that uses the database (e.g. backend APIs).
+
+• End User — uses the application without knowing SQL.
+  Example: student using a college portal to check marks.
+
+• Naive Users — casual users (e.g. bank teller using a form).
+• Sophisticated Users — write their own SQL queries (analysts).`,
+      },
+    ],
+  },
+  {
+    title: '📘 Keys in DBMS',
+    questions: [
+      {
+        q: 'All Types of Keys in DBMS',
+        a: `Given table:
+\`\`\`
+RollNo   Email              Name     Phone
+101      a@mail.com         Ashish   9876543210
+102      r@mail.com         Rahul    9123456789
+\`\`\`
+1. Super Key — any set of attributes that UNIQUELY identifies a row.
+   Examples: {RollNo}, {Email}, {RollNo, Name}, {RollNo, Email, Name}
+
+2. Candidate Key — MINIMAL super key (no redundant attribute).
+   Examples: {RollNo}, {Email}  ← removing any attribute breaks uniqueness
+
+3. Primary Key — ONE candidate key chosen to identify rows.
+   Rule: Unique + NOT NULL.
+   Example: RollNo (chosen as primary key)
+
+4. Alternate Key — candidate keys NOT chosen as primary key.
+   Example: Email (it can uniquely identify but RollNo was chosen)
+
+5. Composite Key — key made of TWO OR MORE columns.
+   Example: (StudentID + CourseID) together uniquely identify enrollment.
+
+6. Foreign Key — attribute in one table that REFERENCES primary key of another.
+\`\`\`
+Student Table        Marks Table
+ID   Name            ID   Marks
+101  Ashish          101  90    ← ID here is Foreign Key → references Student.ID
+\`\`\``,
+      },
+    ],
+  },
+  {
+    title: '📘 ER Model',
+    questions: [
+      {
+        q: 'Entity, Attributes & Their Types',
+        a: `Entity — a real-world object with an existence (Student, Teacher, Course).
+
+Attribute — property of an entity:
+• Simple — cannot be divided: Age, RollNo
+• Composite — can be divided: Name → FirstName + LastName
+• Single-Valued — one value per entity: DOB
+• Multi-Valued — multiple values: PhoneNumbers (a person can have many)
+• Derived — calculated from another: Age (derived from DOB)
+
+Entity Types:
+• Strong Entity — has its own primary key. Example: Student.
+• Weak Entity — depends on another entity. Has no primary key alone.
+  Example: Dependent (family member of Employee — can't exist without Employee).`,
+      },
+      {
+        q: 'ER Model & Relationship Types',
+        a: `ER Model (Entity-Relationship Model) — used for database design.
+Components: Entity, Attribute, Relationship.
+\`\`\`
+Student ──── Studies ──── Course
+\`\`\`
+Relationship Types (Cardinality):
+• One-to-One (1:1) — one person has one passport
+• One-to-Many (1:M) — one teacher teaches many students
+• Many-to-One (M:1) — many students belong to one department
+• Many-to-Many (M:N) — many students enroll in many courses
+
+Generalization — Bottom-Up: combine Student + Teacher → Person
+Specialization — Top-Down: Person → Student, Teacher (add specific attributes)
+Aggregation — treat a Relationship as an Entity (when a relationship itself participates in another relationship).`,
+      },
+    ],
+  },
+  {
+    title: '📘 Normalization',
+    questions: [
+      {
+        q: 'What is Normalization? Problems without it.',
+        a: `Normalization is the process of organizing a database to reduce redundancy and improve data integrity.
+
+Goals:
+• Eliminate duplicate data
+• Prevent anomalies
+• Ensure data consistency
+
+Problems WITHOUT Normalization:
+• Insertion Anomaly — can't insert data without unrelated data
+  (e.g. can't add a new course unless a student enrolls)
+• Update Anomaly — changing one piece of data requires multiple row updates
+  (e.g. department name stored in every student row)
+• Deletion Anomaly — deleting a row accidentally removes other useful data
+  (e.g. deleting the last student in a dept removes the dept info)
+
+Normal Forms: 1NF → 2NF → 3NF → BCNF (each builds on the previous)`,
+      },
+      {
+        q: '1NF – First Normal Form',
+        a: `Rule: Each column must have ATOMIC (indivisible) values. No repeating groups.
+
+❌ Violates 1NF — multiple values in one cell:
+\`\`\`
+ID   Name     Courses
+101  Ashish   Math, Physics, Chemistry
+\`\`\`
+✅ After 1NF — one value per cell:
+\`\`\`
+ID   Name     Course
+101  Ashish   Math
+101  Ashish   Physics
+101  Ashish   Chemistry
+\`\`\`
+Each cell has a single, atomic value. No repeating groups allowed.`,
+      },
+      {
+        q: '2NF – Second Normal Form',
+        a: `Rules: Must be in 1NF + Remove Partial Dependency.
+Partial Dependency: a non-key attribute depends on PART of a composite key.
+
+❌ Violates 2NF — StudentName depends only on StudentID (not full key):
+\`\`\`
+StudentID   CourseID   StudentName   Grade
+101         C01        Ashish        A       ← StudentName depends only on StudentID
+101         C02        Ashish        B         (partial dependency!)
+\`\`\`
+✅ After 2NF — split into two tables:
+\`\`\`
+Student(StudentID, StudentName)    Enrollment(StudentID, CourseID, Grade)
+101  Ashish                        101  C01  A
+102  Rahul                         101  C02  B
+\`\`\`
+Now every non-key attribute depends on the FULL primary key.`,
+      },
+      {
+        q: '3NF & BCNF',
+        a: `3NF — Must be in 2NF + Remove Transitive Dependency.
+Transitive Dependency: non-key A → non-key B → non-key C (A → C is transitive).
+
+❌ Violates 3NF — DeptName depends on DeptID, which depends on StudentID:
+\`\`\`
+StudentID   DeptID   DeptName
+101         D01      CSE        ← DeptName depends on DeptID, not StudentID (transitive!)
+102         D02      IT
+\`\`\`
+✅ After 3NF — remove transitive dependency:
+\`\`\`
+Student(StudentID, DeptID)    Department(DeptID, DeptName)
+101  D01                      D01  CSE
+102  D02                      D02  IT
+\`\`\`
+─────────────────────────────────────────────────────────
+BCNF (Boyce-Codd Normal Form) — Stricter version of 3NF.
+Rule: For every functional dependency X → Y, X must be a CANDIDATE KEY.
+
+BCNF handles edge cases that 3NF misses when there are multiple overlapping candidate keys.
+If table is in 3NF, it is usually also in BCNF (unless there are overlapping candidate keys).`,
+      },
+    ],
+  },
+  {
+    title: '📘 Transaction & ACID',
+    questions: [
+      {
+        q: 'What is a Transaction?',
+        a: `A Transaction is a set of operations executed as a SINGLE UNIT — either all succeed or all fail.
+
+Example — Bank Transfer (A sends ₹1000 to B):
+\`\`\`
+BEGIN TRANSACTION;
+  A = A - 1000;   -- debit A
+  B = B + 1000;   -- credit B
+COMMIT;           -- save changes
+\`\`\`
+If system crashes after debiting A but before crediting B → ROLLBACK undoes everything.
+
+States of a Transaction:
+Active → Partially Committed → Committed (success)
+Active → Failed → Aborted (rolled back)`,
+      },
+      {
+        q: 'ACID Properties',
+        a: `ACID ensures reliable database transactions.
+
+A — Atomicity: ALL or NOTHING.
+   If any step fails, entire transaction is rolled back.
+   Example: Money deducted from A but not added to B → rollback both.
+
+C — Consistency: Database moves from one VALID state to another.
+   Example: Total money before and after transfer must remain the same.
+
+I — Isolation: Concurrent transactions don't interfere with each other.
+   Example: Two users booking the last seat — only one succeeds.
+
+D — Durability: Once committed, data is PERMANENT even after system crash.
+   Achieved via: write-ahead logging (WAL), checkpoints.`,
+      },
+    ],
+  },
+  {
+    title: '📘 Concurrency Control',
+    questions: [
+      {
+        q: 'Locking & Two-Phase Locking (2PL)',
+        a: `Locking controls access to data during concurrent transactions.
+
+Shared Lock (S-Lock) — Read-only. Multiple transactions can hold S-Lock simultaneously.
+Exclusive Lock (X-Lock) — Read + Write. Only ONE transaction can hold it. No other lock allowed.
+\`\`\`
+Operation    S-Lock Held   X-Lock Held
+Request S    ✓ Allowed     ✗ Wait
+Request X    ✗ Wait        ✗ Wait
+\`\`\`
+Two-Phase Locking (2PL) — guarantees serializability:
+• Growing Phase — acquire locks, release NONE
+• Shrinking Phase — release locks, acquire NONE
+
+Once a transaction releases even one lock, it cannot acquire new locks.
+
+Schedule Types:
+• Serial Schedule — T1 fully runs, then T2 (no overlap)
+• Concurrent Schedule — T1 and T2 operations interleaved
+• Conflict Serializable — concurrent schedule equivalent to some serial schedule`,
+      },
+      {
+        q: 'Deadlock in DBMS',
+        a: `Deadlock: two transactions wait FOREVER for each other's locked resources.
+
+Example:
+\`\`\`
+T1 holds Resource A, waiting for Resource B
+T2 holds Resource B, waiting for Resource A
+→ Neither can proceed. DEADLOCK!
+\`\`\`
+Four Conditions (ALL must hold):
+• Mutual Exclusion – resource used by only one transaction at a time
+• Hold and Wait – transaction holds resources while waiting for more
+• No Preemption – resources can't be forcibly taken
+• Circular Wait – T1 waits for T2, T2 waits for T1
+
+Solutions:
+• Prevention – break one of the 4 conditions (e.g. request all resources at once)
+• Avoidance – use Wait-Die / Wound-Wait schemes
+• Detection & Recovery – detect cycle in wait-for graph → abort one transaction`,
+      },
+    ],
+  },
+  {
+    title: '📘 Recovery & Storage',
+    questions: [
+      {
+        q: 'Recovery System & Checkpoint',
+        a: `Recovery System restores the database to a consistent state after a crash.
+
+Log File — records every transaction operation:
+\`\`\`
+<T1, Start>
+<T1, A, 5000, 4000>   -- (transaction, attribute, old value, new value)
+<T1, Commit>
+\`\`\`
+On crash:
+• REDO: re-apply committed transactions (they may not have hit disk)
+• UNDO: rollback uncommitted transactions (incomplete work)
+
+Checkpoint — a saved consistent snapshot of the database.
+• Reduces recovery time (only redo/undo transactions after last checkpoint)
+• Without checkpoints: must scan entire log from the beginning`,
+      },
+      {
+        q: 'Indexing, B+ Tree & Hashing',
+        a: `Indexing — technique to speed up data retrieval (like a book's index).
+Without index: full table scan (O(n))
+With index: direct access (O(log n) or O(1))
+
+B+ Tree Index — most common database index structure:
+• All data stored in LEAF nodes (linked list for range queries)
+• Internal nodes store only keys for navigation
+• Advantages: fast search, insert, delete; great for range queries
+
+Hashing — maps a key directly to a storage location:
+\`\`\`
+Hash(RollNo = 101) → bucket address 5 → record stored at slot 5
+\`\`\`
+• Best for EQUALITY queries (WHERE id = 101)
+• NOT good for range queries (WHERE id BETWEEN 100 AND 200)
+
+RAID (Redundant Array of Independent Disks):
+• RAID 0: striping → performance, no redundancy
+• RAID 1: mirroring → redundancy, no extra capacity
+• RAID 5: striping + parity → balance of performance & fault tolerance`,
+      },
+    ],
+  },
+  {
+    title: '📘 Interview Questions',
+    questions: [
+      {
+        q: 'DBMS vs RDBMS',
+        a: `\`\`\`
+Feature            DBMS                  RDBMS
+Data Storage       Any format            Tables (rows & columns)
+Relationships      Not mandatory         Primary/Foreign Keys enforce links
+Normalization      Not required          Supported
+ACID Properties    May not support       Fully supported
+Examples           XML DB, File DB       MySQL, PostgreSQL, Oracle
+\`\`\`
+RDBMS is a type of DBMS that stores data in RELATIONAL tables and enforces relationships between them.`,
+      },
+      {
+        q: 'OLTP vs OLAP & Data Warehouse',
+        a: `\`\`\`
+Feature      OLTP                       OLAP
+Purpose      Day-to-day operations      Analysis & reporting
+Queries      Simple, fast               Complex, slow
+Data         Current (real-time)        Historical (years of data)
+Operations   INSERT, UPDATE, DELETE      Mostly SELECT
+Examples     ATM, booking, banking      BI dashboards, reports
+\`\`\`
+Data Warehouse — large centralized repository for OLAP analysis.
+Example: Company stores 10 years of sales data for trend analysis.
+
+ETL Process: Extract (from OLTP) → Transform (clean/format) → Load (into warehouse).`,
+      },
+      {
+        q: 'Most Asked DBMS Interview Questions (Quick List)',
+        a: `1.  What is DBMS? → Software to store, manage, retrieve data.
+2.  DBMS vs RDBMS? → RDBMS stores data in tables with relationships.
+3.  What is normalization? → Process to remove redundancy & anomalies.
+4.  1NF, 2NF, 3NF, BCNF? → Progressive rules to structure tables.
+5.  Primary Key? → Unique + NOT NULL identifier for each row.
+6.  Foreign Key? → Links two tables via primary key reference.
+7.  ACID? → Atomicity, Consistency, Isolation, Durability.
+8.  What is a transaction? → Set of operations that execute as one unit.
+9.  What is deadlock? → Two transactions wait forever for each other.
+10. Deadlock conditions? → Mutual Exclusion, Hold & Wait, No Preemption, Circular Wait.
+11. What is indexing? → Speed up search using B+ Tree or Hash structure.
+12. OLTP vs OLAP? → Operations (fast, current) vs Analysis (complex, historical).
+13. What is ER model? → Entity-Relationship diagram for database design.
+14. Data independence? → Changing one level doesn't affect others.
+15. Concurrency control? → Manage simultaneous transactions without conflict.`,
+      },
+    ],
+  },
+];
+
+// ─── SQL Commands Data (existing) ────────────────────────────────────────────
 const sqlSections = [
   {
     title: 'Step 1: Database Basics',
-    accent: 'yellow',
     items: [
       {
         q: '1. What is a Database?',
         a: 'A Database is a collection of data stored digitally so it can be accessed, searched, updated, and managed easily.',
         bullets: ['Student records', 'Employee details', 'Bank accounts'],
-        tip: 'A software used to manage a database is called a DBMS, such as MySQL, Oracle, or PostgreSQL.'
+        tip: 'A software used to manage a database is called a DBMS, such as MySQL, Oracle, or PostgreSQL.',
       },
       {
         q: '2. Types of Database',
         a: 'Databases are commonly divided into relational and non-relational databases.',
         table: {
-          headers: ['Type', 'How data is stored', 'Uses', 'Examples'],
+          headers: ['Type', 'How data is stored', 'Query Style', 'Examples'],
           rows: [
             ['Relational Database', 'Tables with rows and columns', 'SQL', 'MySQL, Oracle, SQL Server'],
-            ['Non-Relational Database', 'Documents, key-value, graph, or other formats', 'NoSQL query style', 'MongoDB']
-          ]
-        }
+            ['Non-Relational Database', 'Documents, key-value, graph', 'NoSQL', 'MongoDB, Redis'],
+          ],
+        },
       },
       {
         q: '3. What is SQL?',
-        a: 'SQL means Structured Query Language. It is used to interact with relational databases.',
-        bullets: ['Create data', 'Read data', 'Update data', 'Delete data'],
-        table: {
-          headers: ['CRUD Operation', 'Meaning'],
-          rows: [
-            ['Create', 'Insert new data'],
-            ['Read', 'Fetch data'],
-            ['Update', 'Modify data'],
-            ['Delete', 'Remove data']
-          ]
-        }
-      },
-      {
-        q: '4. Database Structure',
-        a: 'A database contains tables. A table contains rows and columns.',
-        table: {
-          caption: 'Student Table',
-          headers: ['RollNo', 'Name', 'Marks'],
-          rows: [
-            ['101', 'Ashish', '90'],
-            ['102', 'Rahul', '85']
-          ]
-        },
-        bullets: ['Row = complete student data', 'Column = single field such as Name or Marks']
-      }
-    ]
-  },
-  {
-    title: 'Step 2: Create Database and Table',
-    accent: 'yellow',
-    items: [
-      {
-        q: '5. Create, Use, and Delete Database',
-        a: 'These commands create a database, select it for work, and delete it when it is no longer needed.',
-        code: `CREATE DATABASE college;
-
-USE college;
-
-DROP DATABASE college;`,
-        tip: 'DROP DATABASE permanently deletes the database and its tables, so use it carefully.'
-      },
-      {
-        q: '6. Create Table',
-        a: 'CREATE TABLE defines the table name, columns, datatypes, and constraints.',
-        code: `CREATE TABLE table_name (
-    column_name datatype constraint
-);
-
-CREATE TABLE student (
-    rollno INT PRIMARY KEY,
-    name VARCHAR(50),
-    marks INT
-);`
-      },
-      {
-        q: '7. SQL Datatypes',
-        a: 'Datatypes tell SQL what kind of value a column can store.',
-        table: {
-          headers: ['Datatype', 'Meaning'],
-          rows: [
-            ['INT', 'Integer numbers'],
-            ['VARCHAR(n)', 'Variable length string'],
-            ['CHAR(n)', 'Fixed size string'],
-            ['FLOAT', 'Decimal values'],
-            ['DATE', 'Date values'],
-            ['BOOLEAN', 'True or false']
-          ]
-        },
-        code: `name VARCHAR(50)`,
-        tip: 'VARCHAR(50) means the name column can store up to 50 characters.'
-      },
-      {
-        q: '8. Types of SQL Commands',
-        a: 'SQL commands are grouped by their purpose.',
+        a: 'SQL (Structured Query Language) is used to interact with relational databases — Create, Read, Update, Delete.',
         table: {
           headers: ['Type', 'Full Form', 'Commands'],
           rows: [
@@ -107,476 +491,469 @@ CREATE TABLE student (
             ['DML', 'Data Manipulation Language', 'INSERT, UPDATE, DELETE'],
             ['DQL', 'Data Query Language', 'SELECT'],
             ['DCL', 'Data Control Language', 'GRANT, REVOKE'],
-            ['TCL', 'Transaction Control Language', 'COMMIT, ROLLBACK']
-          ]
-        }
-      }
-    ]
-  },
-  {
-    title: 'Step 3: Insert and Read Data',
-    accent: 'yellow',
-    items: [
-      {
-        q: '9. Insert Data',
-        a: 'INSERT INTO adds new rows into a table.',
-        code: `INSERT INTO table_name
-(column1, column2)
-VALUES
-(value1, value2);
-
-INSERT INTO student
-(rollno, name, marks)
-VALUES
-(101, 'Ashish', 90),
-(102, 'Rahul', 85);`
-      },
-      {
-        q: '10. SELECT Query',
-        a: 'SELECT is used to fetch data from a table.',
-        code: `-- Select all columns
-SELECT * FROM student;
-
--- Select specific columns
-SELECT name, marks FROM student;`
-      },
-      {
-        q: '11. WHERE Clause',
-        a: 'WHERE applies a condition and returns only matching rows.',
-        code: `SELECT * FROM table_name
-WHERE condition;
-
-SELECT * FROM student
-WHERE marks > 80;`
-      }
-    ]
-  },
-  {
-    title: 'Step 4: Conditions and Operators',
-    accent: 'yellow',
-    items: [
-      {
-        q: '12. Comparison Operators',
-        a: 'Comparison operators compare column values with a given value.',
-        table: {
-          headers: ['Operator', 'Meaning'],
-          rows: [
-            ['=', 'Equal'],
-            ['!=', 'Not equal'],
-            ['>', 'Greater than'],
-            ['<', 'Smaller than'],
-            ['>=', 'Greater than or equal'],
-            ['<=', 'Smaller than or equal']
-          ]
+            ['TCL', 'Transaction Control Language', 'COMMIT, ROLLBACK'],
+          ],
         },
-        code: `SELECT * FROM student
-WHERE marks >= 90;`
       },
-      {
-        q: '13. Logical Operators',
-        a: 'Logical operators combine or reverse conditions.',
-        code: `-- AND: both conditions must be true
-SELECT * FROM student
-WHERE marks > 80 AND city = 'Delhi';
-
--- OR: any one condition can be true
-SELECT * FROM student
-WHERE city = 'Delhi' OR city = 'Mumbai';
-
--- NOT: reverses the condition
-SELECT * FROM student
-WHERE NOT city = 'Delhi';`
-      },
-      {
-        q: '14. BETWEEN Operator',
-        a: 'BETWEEN checks if a value lies inside a range.',
-        code: `SELECT * FROM student
-WHERE marks BETWEEN 80 AND 90;`
-      },
-      {
-        q: '15. IN Operator',
-        a: 'IN checks whether a value exists inside a list.',
-        code: `SELECT * FROM student
-WHERE city IN ('Delhi', 'Mumbai');`
-      }
-    ]
+    ],
   },
   {
-    title: 'Step 5: Filtering, Sorting, and Calculations',
-    accent: 'yellow',
+    title: 'Step 2: Create Database & Table',
     items: [
       {
-        q: '16. LIMIT Clause',
-        a: 'LIMIT controls how many rows are returned.',
-        code: `SELECT * FROM student
-LIMIT 3;`,
-        tip: 'This shows only the first 3 rows.'
-      },
-      {
-        q: '17. ORDER BY Clause',
-        a: 'ORDER BY sorts the result in ascending or descending order.',
-        code: `-- Ascending
-SELECT * FROM student
-ORDER BY marks ASC;
-
--- Descending
-SELECT * FROM student
-ORDER BY marks DESC;`
-      },
-      {
-        q: '18. Aggregate Functions',
-        a: 'Aggregate functions perform calculations on rows.',
-        table: {
-          headers: ['Function', 'Work'],
-          rows: [
-            ['COUNT()', 'Count rows'],
-            ['MAX()', 'Maximum value'],
-            ['MIN()', 'Minimum value'],
-            ['SUM()', 'Total value'],
-            ['AVG()', 'Average value']
-          ]
-        },
-        code: `-- Average marks
-SELECT AVG(marks)
-FROM student;
-
--- Maximum marks
-SELECT MAX(marks)
-FROM student;`
-      },
-      {
-        q: '19. GROUP BY',
-        a: 'GROUP BY groups same data together, then aggregate functions can calculate group-wise results.',
-        code: `-- Count students city-wise
-SELECT city, COUNT(*)
-FROM student
-GROUP BY city;`
-      },
-      {
-        q: '20. HAVING Clause',
-        a: 'HAVING applies a condition after GROUP BY. It filters grouped results.',
-        code: `SELECT city, MAX(marks)
-FROM student
-GROUP BY city
-HAVING MAX(marks) > 90;`
-      }
-    ]
-  },
-  {
-    title: 'Step 6: Modify and Delete Data',
-    accent: 'yellow',
-    items: [
-      {
-        q: '21. UPDATE Query',
-        a: 'UPDATE modifies existing rows in a table.',
-        code: `UPDATE table_name
-SET column = value
-WHERE condition;
-
-UPDATE student
-SET marks = 95
-WHERE rollno = 101;`,
-        tip: 'Always use WHERE with UPDATE unless you really want to update every row.'
-      },
-      {
-        q: '22. DELETE Query',
-        a: 'DELETE removes selected rows from a table.',
-        code: `DELETE FROM student
-WHERE rollno = 101;`,
-        tip: 'Without WHERE, DELETE can remove all rows from the table.'
-      },
-      {
-        q: '26. TRUNCATE',
-        a: 'TRUNCATE deletes all table data, but the table structure remains.',
-        code: `TRUNCATE TABLE student;`
-      }
-    ]
-  },
-  {
-    title: 'Step 7: Keys, Constraints, and ALTER TABLE',
-    accent: 'yellow',
-    items: [
-      {
-        q: '23. Keys in SQL',
-        a: 'Keys identify rows and connect tables.',
-        table: {
-          headers: ['Key', 'Meaning', 'Example'],
-          rows: [
-            ['Primary Key', 'Unique, cannot be NULL, identifies each row', 'rollno INT PRIMARY KEY'],
-            ['Foreign Key', 'Connects one table to another table', 'FOREIGN KEY (dept_id) REFERENCES department(id)']
-          ]
-        }
-      },
-      {
-        q: '24. Constraints',
-        a: 'Constraints are rules applied to columns.',
-        table: {
-          headers: ['Constraint', 'Meaning'],
-          rows: [
-            ['NOT NULL', 'Cannot be empty'],
-            ['UNIQUE', 'No duplicate values'],
-            ['PRIMARY KEY', 'Unique plus not null'],
-            ['FOREIGN KEY', 'Connects tables'],
-            ['DEFAULT', 'Sets default value'],
-            ['CHECK', 'Applies a condition']
-          ]
-        },
-        code: `age INT CHECK(age >= 18)`
-      },
-      {
-        q: '25. ALTER TABLE',
-        a: 'ALTER TABLE changes the structure of an existing table.',
-        code: `-- Add column
-ALTER TABLE student
-ADD age INT;
-
--- Drop column
-ALTER TABLE student
-DROP COLUMN age;
-
--- Rename table
-ALTER TABLE student
-RENAME TO students;
-
--- Modify column
-ALTER TABLE student
-MODIFY age VARCHAR(3);`
-      }
-    ]
-  },
-  {
-    title: 'Step 8: Joins and Set Operations',
-    accent: 'yellow',
-    items: [
-      {
-        q: '27. What are Joins in SQL?',
-        a: 'Joins combine rows from two or more tables using a related column.',
-        tip: 'Example relation: student.id can match course.id.'
-      },
-      {
-        q: '28. INNER JOIN',
-        a: 'INNER JOIN returns only matching records from both tables.',
-        code: `SELECT *
-FROM student
-INNER JOIN course
-ON student.id = course.id;`
-      },
-      {
-        q: '29. LEFT JOIN',
-        a: 'LEFT JOIN returns all rows from the left table and matching rows from the right table.',
-        code: `SELECT *
-FROM student
-LEFT JOIN course
-ON student.id = course.id;`
-      },
-      {
-        q: '30. RIGHT JOIN',
-        a: 'RIGHT JOIN returns all rows from the right table and matching rows from the left table.',
-        code: `SELECT *
-FROM student
-RIGHT JOIN course
-ON student.id = course.id;`
-      },
-      {
-        q: '31. FULL JOIN',
-        a: 'FULL JOIN returns all rows from both tables. MySQL commonly simulates it using LEFT JOIN, UNION, and RIGHT JOIN.',
-        code: `SELECT *
-FROM student
-LEFT JOIN course
-ON student.id = course.id
-UNION
-SELECT *
-FROM student
-RIGHT JOIN course
-ON student.id = course.id;`
-      },
-      {
-        q: '32. SELF JOIN',
-        a: 'SELF JOIN joins a table with itself. It is useful for hierarchy data like employee and manager.',
-        code: `SELECT a.name, b.name
-FROM employee a
-JOIN employee b
-ON a.manager_id = b.id;`
-      },
-      {
-        q: '33. UNION',
-        a: 'UNION combines the results of multiple SELECT statements.',
-        bullets: ['Both SELECT queries must return the same number of columns', 'Column datatypes should be similar'],
-        code: `SELECT name FROM student
-UNION
-SELECT name FROM teacher;`
-      }
-    ]
-  },
-  {
-    title: 'Step 9: Advanced SQL',
-    accent: 'yellow',
-    items: [
-      {
-        q: '34. Sub Queries',
-        a: 'A sub query is a query written inside another query.',
-        code: `SELECT column_name
-FROM table_name
-WHERE column_name > (
-    SELECT AVG(column_name)
-    FROM table_name
-);
-
--- Students scoring above average
-SELECT name
-FROM student
-WHERE marks > (
-    SELECT AVG(marks)
-    FROM student
-);`
-      },
-      {
-        q: '35. SQL Views',
-        a: 'A View is a virtual table created from a SELECT query.',
-        code: `CREATE VIEW top_students AS
-SELECT name, marks
-FROM student
-WHERE marks > 90;
-
-SELECT * FROM top_students;`,
-        tip: 'Views help you save commonly used SELECT queries.'
-      }
-    ]
-  },
-  {
-    title: 'Step 10: Interview Questions',
-    accent: 'yellow',
-    items: [
-      {
-        q: '36. Difference between DELETE, DROP, and TRUNCATE',
-        a: 'These commands remove data at different levels.',
-        table: {
-          headers: ['Command', 'Deletes Data', 'Deletes Table'],
-          rows: [
-            ['DELETE', 'Yes, selected rows', 'No'],
-            ['TRUNCATE', 'Yes, all rows', 'No'],
-            ['DROP', 'Yes', 'Yes']
-          ]
-        }
-      },
-      {
-        q: 'Difference between WHERE and HAVING',
-        a: 'WHERE filters normal rows before grouping. HAVING filters grouped rows after GROUP BY.',
-        table: {
-          headers: ['WHERE', 'HAVING'],
-          rows: [
-            ['Before grouping', 'After grouping'],
-            ['Works on normal rows', 'Works on grouped rows']
-          ]
-        }
-      },
-      {
-        q: 'Difference between Primary Key and Foreign Key',
-        a: 'Primary Key identifies a row. Foreign Key connects tables.',
-        table: {
-          headers: ['Primary Key', 'Foreign Key'],
-          rows: [
-            ['Unique', 'Can repeat'],
-            ['Cannot be NULL', 'Can be NULL'],
-            ['Identifies a row', 'Connects tables']
-          ]
-        }
-      }
-    ]
-  },
-  {
-    title: 'Step 11: Full Practice',
-    accent: 'yellow',
-    items: [
-      {
-        q: '37. Full Practice Table',
-        a: 'Run this complete setup first, then practice queries on the student table.',
+        q: '4. Create, Use, Drop Database',
+        a: 'These commands create a database, select it for work, and permanently delete it.',
         code: `CREATE DATABASE college;
 
 USE college;
 
-CREATE TABLE student (
-    rollno INT PRIMARY KEY,
-    name VARCHAR(50),
-    marks INT,
-    grade VARCHAR(2),
-    city VARCHAR(20)
-);
-
-INSERT INTO student
-(rollno, name, marks, grade, city)
-VALUES
-(101, 'Ashish', 90, 'A', 'Indore'),
-(102, 'Rahul', 85, 'B', 'Delhi'),
-(103, 'Riya', 95, 'A', 'Mumbai'),
-(104, 'Aman', 70, 'C', 'Pune');`
+DROP DATABASE college;`,
+        tip: 'DROP DATABASE permanently deletes the database and all its tables.',
       },
       {
-        q: '38. Practice Queries',
-        a: 'These are the most useful starter queries for practice.',
-        code: `-- Students with marks greater than 80
+        q: '5. Create Table',
+        a: 'CREATE TABLE defines the table name, columns, datatypes, and constraints.',
+        code: `CREATE TABLE student (
+    rollno  INT          PRIMARY KEY,
+    name    VARCHAR(50)  NOT NULL,
+    marks   INT,
+    city    VARCHAR(20)  DEFAULT 'Unknown'
+);`,
+      },
+      {
+        q: '6. SQL Datatypes',
+        a: 'Datatypes tell SQL what kind of value a column can store.',
+        table: {
+          headers: ['Datatype', 'Meaning'],
+          rows: [
+            ['INT', 'Integer numbers'],
+            ['VARCHAR(n)', 'Variable length string up to n chars'],
+            ['CHAR(n)', 'Fixed size string'],
+            ['FLOAT / DECIMAL', 'Decimal values'],
+            ['DATE', 'Date values (YYYY-MM-DD)'],
+            ['BOOLEAN', 'True or false'],
+          ],
+        },
+      },
+    ],
+  },
+  {
+    title: 'Step 3: Insert & Read Data',
+    items: [
+      {
+        q: '7. INSERT Data',
+        a: 'INSERT INTO adds new rows into a table.',
+        code: `INSERT INTO student (rollno, name, marks, city)
+VALUES
+    (101, 'Ashish', 90, 'Indore'),
+    (102, 'Rahul',  85, 'Delhi'),
+    (103, 'Riya',   95, 'Mumbai'),
+    (104, 'Aman',   70, 'Pune');`,
+      },
+      {
+        q: '8. SELECT Query',
+        a: 'SELECT fetches data from a table.',
+        code: `-- All columns
+SELECT * FROM student;
+
+-- Specific columns
+SELECT name, marks FROM student;
+
+-- With condition
 SELECT * FROM student
-WHERE marks > 80;
+WHERE marks > 80;`,
+      },
+      {
+        q: '9. WHERE Clause & Operators',
+        a: 'WHERE filters rows by condition. Combine with operators for powerful queries.',
+        code: `-- Comparison: =  !=  >  <  >=  <=
+SELECT * FROM student WHERE marks >= 90;
 
--- Students from Delhi
+-- AND: both conditions true
 SELECT * FROM student
-WHERE city = 'Delhi';
+WHERE marks > 80 AND city = 'Delhi';
 
--- Highest marks
-SELECT MAX(marks)
-FROM student;
-
--- Sort by marks descending
+-- OR: either condition true
 SELECT * FROM student
-ORDER BY marks DESC;
+WHERE city = 'Delhi' OR city = 'Mumbai';
 
--- Count students city-wise
+-- BETWEEN: inclusive range
+SELECT * FROM student WHERE marks BETWEEN 80 AND 95;
+
+-- IN: match list of values
+SELECT * FROM student WHERE city IN ('Delhi', 'Mumbai');
+
+-- LIKE: pattern match  %=any chars  _=one char
+SELECT * FROM student WHERE name LIKE 'A%';`,
+      },
+    ],
+  },
+  {
+    title: 'Step 4: Sort, Filter, Aggregate',
+    items: [
+      {
+        q: '10. ORDER BY & LIMIT',
+        a: 'ORDER BY sorts results. LIMIT controls how many rows are returned.',
+        code: `-- Sort by marks descending
+SELECT * FROM student ORDER BY marks DESC;
+
+-- Sort ascending (default)
+SELECT * FROM student ORDER BY name ASC;
+
+-- Top 3 students
+SELECT * FROM student
+ORDER BY marks DESC
+LIMIT 3;`,
+      },
+      {
+        q: '11. Aggregate Functions',
+        a: 'Aggregate functions perform calculations across multiple rows.',
+        table: {
+          headers: ['Function', 'What it does'],
+          rows: [
+            ['COUNT(*)', 'Total number of rows'],
+            ['MAX(col)', 'Maximum value'],
+            ['MIN(col)', 'Minimum value'],
+            ['SUM(col)', 'Total sum'],
+            ['AVG(col)', 'Average value'],
+          ],
+        },
+        code: `SELECT COUNT(*) FROM student;       -- total students
+SELECT MAX(marks) FROM student;    -- highest marks
+SELECT MIN(marks) FROM student;    -- lowest marks
+SELECT AVG(marks) FROM student;    -- average marks
+SELECT SUM(marks) FROM student;    -- total marks`,
+      },
+      {
+        q: '12. GROUP BY & HAVING',
+        a: 'GROUP BY groups same values. HAVING filters grouped results (like WHERE but for groups).',
+        code: `-- Count students per city
 SELECT city, COUNT(*)
 FROM student
-GROUP BY city;`
-      }
-    ]
-  }
+GROUP BY city;
+
+-- Cities where average marks > 85
+SELECT city, AVG(marks)
+FROM student
+GROUP BY city
+HAVING AVG(marks) > 85;`,
+        tip: 'WHERE filters before grouping. HAVING filters after grouping.',
+      },
+    ],
+  },
+  {
+    title: 'Step 5: Update, Delete, Alter',
+    items: [
+      {
+        q: '13. UPDATE & DELETE',
+        a: 'UPDATE modifies existing rows. DELETE removes selected rows.',
+        code: `-- Update marks for one student
+UPDATE student
+SET marks = 95
+WHERE rollno = 101;
+
+-- Update multiple columns
+UPDATE student
+SET marks = 88, city = 'Pune'
+WHERE rollno = 102;
+
+-- Delete one student
+DELETE FROM student WHERE rollno = 101;
+
+-- Delete all rows (table stays)
+TRUNCATE TABLE student;`,
+        tip: 'Always use WHERE with UPDATE and DELETE, or you will affect every row.',
+      },
+      {
+        q: '14. ALTER TABLE',
+        a: 'ALTER TABLE changes the structure of an existing table.',
+        code: `-- Add a column
+ALTER TABLE student ADD age INT;
+
+-- Drop a column
+ALTER TABLE student DROP COLUMN age;
+
+-- Rename the table
+ALTER TABLE student RENAME TO students;
+
+-- Modify a column type
+ALTER TABLE student MODIFY marks FLOAT;`,
+      },
+    ],
+  },
+  {
+    title: 'Step 6: Keys & Constraints',
+    items: [
+      {
+        q: '15. Constraints in SQL',
+        a: 'Constraints enforce rules on column data.',
+        table: {
+          headers: ['Constraint', 'Meaning'],
+          rows: [
+            ['NOT NULL', 'Column cannot be empty'],
+            ['UNIQUE', 'No duplicate values allowed'],
+            ['PRIMARY KEY', 'Unique + NOT NULL — identifies each row'],
+            ['FOREIGN KEY', 'Links to primary key of another table'],
+            ['DEFAULT', 'Sets a default value if none provided'],
+            ['CHECK', 'Validates a condition before insert/update'],
+          ],
+        },
+        code: `CREATE TABLE student (
+    rollno  INT          PRIMARY KEY,
+    name    VARCHAR(50)  NOT NULL,
+    email   VARCHAR(100) UNIQUE,
+    age     INT          CHECK(age >= 18),
+    city    VARCHAR(20)  DEFAULT 'Unknown'
+);`,
+      },
+      {
+        q: '16. Foreign Key',
+        a: 'A Foreign Key creates a link between two tables using the primary key of the referenced table.',
+        code: `CREATE TABLE department (
+    dept_id   INT         PRIMARY KEY,
+    dept_name VARCHAR(50)
+);
+
+CREATE TABLE student (
+    rollno  INT PRIMARY KEY,
+    name    VARCHAR(50),
+    dept_id INT,
+    FOREIGN KEY (dept_id) REFERENCES department(dept_id)
+);`,
+        tip: 'A student cannot have a dept_id that does not exist in the department table.',
+      },
+    ],
+  },
+  {
+    title: 'Step 7: Joins',
+    items: [
+      {
+        q: '17. INNER JOIN',
+        a: 'Returns only rows that have MATCHING values in BOTH tables.',
+        code: `SELECT student.name, department.dept_name
+FROM student
+INNER JOIN department
+ON student.dept_id = department.dept_id;`,
+      },
+      {
+        q: '18. LEFT, RIGHT & FULL JOIN',
+        a: 'LEFT JOIN: all from left + matches from right. RIGHT JOIN: opposite. FULL JOIN: all from both.',
+        code: `-- LEFT JOIN: all students, even if no department
+SELECT s.name, d.dept_name
+FROM student s
+LEFT JOIN department d ON s.dept_id = d.dept_id;
+
+-- RIGHT JOIN: all departments, even if no students
+SELECT s.name, d.dept_name
+FROM student s
+RIGHT JOIN department d ON s.dept_id = d.dept_id;
+
+-- FULL JOIN (MySQL: simulate with UNION)
+SELECT s.name, d.dept_name FROM student s
+LEFT JOIN department d ON s.dept_id = d.dept_id
+UNION
+SELECT s.name, d.dept_name FROM student s
+RIGHT JOIN department d ON s.dept_id = d.dept_id;`,
+      },
+      {
+        q: '19. SELF JOIN & UNION',
+        a: 'SELF JOIN joins a table with itself. UNION combines results of two SELECT queries.',
+        code: `-- SELF JOIN: find employee and their manager
+SELECT e.name AS Employee, m.name AS Manager
+FROM employee e
+JOIN employee m ON e.manager_id = m.id;
+
+-- UNION: combine student and teacher names (no duplicates)
+SELECT name FROM student
+UNION
+SELECT name FROM teacher;
+
+-- UNION ALL: include duplicates
+SELECT name FROM student
+UNION ALL
+SELECT name FROM teacher;`,
+      },
+    ],
+  },
+  {
+    title: 'Step 8: Advanced SQL',
+    items: [
+      {
+        q: '20. Subqueries',
+        a: 'A subquery is a query nested inside another query.',
+        code: `-- Students scoring above average
+SELECT name
+FROM student
+WHERE marks > (SELECT AVG(marks) FROM student);
+
+-- Students in same city as Ashish
+SELECT name FROM student
+WHERE city = (SELECT city FROM student WHERE name = 'Ashish');`,
+      },
+      {
+        q: '21. Views',
+        a: 'A View is a virtual table based on a SELECT query. It does not store data itself.',
+        code: `-- Create a view of top students
+CREATE VIEW top_students AS
+SELECT name, marks
+FROM student
+WHERE marks > 90;
+
+-- Use the view like a table
+SELECT * FROM top_students;
+
+-- Drop the view
+DROP VIEW top_students;`,
+        tip: 'Views help simplify complex queries and restrict access to sensitive columns.',
+      },
+    ],
+  },
+  {
+    title: 'Step 9: Practice & Interview',
+    items: [
+      {
+        q: '22. Full Practice Setup',
+        a: 'Run this complete setup, then practice queries on the student table.',
+        code: `CREATE DATABASE college;
+USE college;
+
+CREATE TABLE student (
+    rollno INT PRIMARY KEY,
+    name   VARCHAR(50),
+    marks  INT,
+    grade  VARCHAR(2),
+    city   VARCHAR(20)
+);
+
+INSERT INTO student (rollno, name, marks, grade, city)
+VALUES
+    (101, 'Ashish', 90, 'A', 'Indore'),
+    (102, 'Rahul',  85, 'B', 'Delhi'),
+    (103, 'Riya',   95, 'A', 'Mumbai'),
+    (104, 'Aman',   70, 'C', 'Pune');`,
+      },
+      {
+        q: '23. DELETE vs TRUNCATE vs DROP',
+        a: 'Three different ways to remove data at different levels.',
+        table: {
+          headers: ['Command', 'Removes', 'Table Structure', 'Rollback?', 'Type'],
+          rows: [
+            ['DELETE', 'Selected rows (WHERE)', 'Stays', 'Yes (DML)', 'DML'],
+            ['TRUNCATE', 'All rows', 'Stays', 'No (DDL)', 'DDL'],
+            ['DROP', 'All data + table', 'Gone', 'No (DDL)', 'DDL'],
+          ],
+        },
+      },
+      {
+        q: '24. WHERE vs HAVING',
+        a: 'WHERE filters individual rows. HAVING filters grouped results after GROUP BY.',
+        code: `-- WHERE: filter before grouping
+SELECT * FROM student WHERE marks > 80;
+
+-- HAVING: filter after grouping
+SELECT city, AVG(marks)
+FROM student
+GROUP BY city
+HAVING AVG(marks) > 85;`,
+        table: {
+          headers: ['WHERE', 'HAVING'],
+          rows: [
+            ['Used before GROUP BY', 'Used after GROUP BY'],
+            ['Filters individual rows', 'Filters grouped rows'],
+            ['Cannot use aggregate functions', 'Can use aggregate functions'],
+          ],
+        },
+      },
+    ],
+  },
 ];
 
-const accentStyles = {
-  yellow: {
-    text: 'text-yellow-400',
-    border: 'border-yellow-400/25',
-    bg: 'bg-yellow-400/[0.07]',
-    soft: 'bg-yellow-400/10 text-yellow-300 border-yellow-400/20'
+// ─── SQL Syntax Highlighter ───────────────────────────────────────────────────
+const SQL_KW = new Set([
+  'SELECT','FROM','WHERE','INSERT','INTO','VALUES','UPDATE','SET','DELETE',
+  'CREATE','DROP','ALTER','TABLE','DATABASE','USE','ADD','COLUMN','RENAME','TO',
+  'JOIN','INNER','LEFT','RIGHT','FULL','OUTER','SELF','CROSS','ON',
+  'GROUP','BY','ORDER','HAVING','LIMIT','UNION','ALL','DISTINCT','AS',
+  'AND','OR','NOT','IN','BETWEEN','LIKE','IS','NULL',
+  'PRIMARY','KEY','FOREIGN','REFERENCES','DEFAULT','CHECK','UNIQUE','CASCADE',
+  'COMMIT','ROLLBACK','TRUNCATE','SAVEPOINT','GRANT','REVOKE',
+  'VIEW','INDEX','IF','EXISTS','CONSTRAINT','WITH','ASC','DESC',
+  'BEGIN','TRANSACTION','AUTO_INCREMENT','SHOW','DESCRIBE',
+]);
+const SQL_FUNC = new Set(['COUNT','MAX','MIN','AVG','SUM','NOW','COALESCE','UPPER','LOWER','LENGTH','CONCAT','SUBSTR']);
+const SQL_TYPE = new Set(['INT','INTEGER','VARCHAR','CHAR','FLOAT','DECIMAL','DATE','DATETIME','TIMESTAMP','BOOLEAN','BOOL','TEXT','BIGINT','SMALLINT']);
+
+function highlightSQLLine(line) {
+  const commentIdx = line.indexOf('--');
+  const main = commentIdx >= 0 ? line.slice(0, commentIdx) : line;
+  const comment = commentIdx >= 0 ? line.slice(commentIdx) : null;
+  const tokens = [];
+  let i = 0;
+  while (i < main.length) {
+    if (main[i] === "'") {
+      let j = i + 1;
+      while (j < main.length && main[j] !== "'") j++;
+      tokens.push(<span key={i} style={{ color: '#ce9178' }}>{main.slice(i, j + 1)}</span>);
+      i = j + 1; continue;
+    }
+    if (/[a-zA-Z_]/.test(main[i])) {
+      let j = i;
+      while (j < main.length && /\w/.test(main[j])) j++;
+      const word = main.slice(i, j);
+      const up = word.toUpperCase();
+      let color = '#d4d4d4';
+      if (SQL_KW.has(up)) color = '#569cd6';
+      else if (SQL_FUNC.has(up)) color = '#dcdcaa';
+      else if (SQL_TYPE.has(up)) color = '#4ec9b0';
+      tokens.push(<span key={i} style={{ color }}>{word}</span>);
+      i = j; continue;
+    }
+    if (/[0-9]/.test(main[i])) {
+      let j = i;
+      while (j < main.length && /[0-9.]/.test(main[j])) j++;
+      tokens.push(<span key={i} style={{ color: '#b5cea8' }}>{main.slice(i, j)}</span>);
+      i = j; continue;
+    }
+    tokens.push(<span key={i} style={{ color: '#d4d4d4' }}>{main[i]}</span>);
+    i++;
   }
-};
+  if (comment) tokens.push(<span key="cmt" style={{ color: '#6a9955' }}>{comment}</span>);
+  return tokens;
+}
 
-const totalNotes = sqlSections.reduce((sum, section) => sum + section.items.length, 0);
-
-const getSearchText = (item) => JSON.stringify(item).toLowerCase();
+function CodeBlock({ code }) {
+  return (
+    <div className="my-3 rounded-lg overflow-hidden border border-[#333] shadow-lg">
+      <div className="bg-[#252526] px-3 py-1.5 flex items-center justify-between">
+        <div className="flex gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+        </div>
+        <span className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">SQL</span>
+      </div>
+      <pre className="bg-[#1e1e1e] px-5 py-3 overflow-x-auto font-mono text-[13px] leading-6 m-0 whitespace-pre">
+        {code.split('\n').map((line, li) => <div key={li}>{highlightSQLLine(line)}</div>)}
+      </pre>
+    </div>
+  );
+}
 
 function DataTable({ table }) {
   return (
-    <div className="mt-4 overflow-hidden rounded-xl border border-[#2a2a2a] bg-[#0b0b0b]">
+    <div className="mt-3 overflow-hidden rounded-xl border border-[#2a2a2a] bg-[#0b0b0b]">
       {table.caption && (
-        <div className="border-b border-[#222] px-4 py-2 text-sm font-semibold text-gray-300">
-          {table.caption}
-        </div>
+        <div className="border-b border-[#222] px-4 py-2 text-sm font-semibold text-gray-300">{table.caption}</div>
       )}
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[520px] text-left text-sm">
+        <table className="w-full min-w-[480px] text-left text-sm">
           <thead className="bg-white/[0.04] text-gray-300">
-            <tr>
-              {table.headers.map(header => (
-                <th key={header} className="px-4 py-3 font-semibold">{header}</th>
-              ))}
-            </tr>
+            <tr>{table.headers.map(h => <th key={h} className="px-4 py-3 font-semibold">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-[#202020]">
-            {table.rows.map((row, rowIdx) => (
-              <tr key={rowIdx} className="hover:bg-white/[0.03]">
-                {row.map((cell, cellIdx) => (
-                  <td key={`${rowIdx}-${cellIdx}`} className="px-4 py-3 text-gray-300">
-                    {cell}
-                  </td>
-                ))}
+            {table.rows.map((row, ri) => (
+              <tr key={ri} className="hover:bg-white/[0.03]">
+                {row.map((cell, ci) => <td key={ci} className="px-4 py-3 text-gray-300">{cell}</td>)}
               </tr>
             ))}
           </tbody>
@@ -586,47 +963,23 @@ function DataTable({ table }) {
   );
 }
 
-function CodeBlock({ code, accent }) {
-  const styles = accentStyles[accent] || accentStyles.yellow;
-
+function AnswerContent({ item }) {
   return (
-    <div className={`mt-4 overflow-hidden rounded-xl border ${styles.border} bg-[#050505]`}>
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-2">
-        <span className={`text-xs font-bold uppercase tracking-wide ${styles.text}`}>SQL</span>
-        <span className="text-[11px] text-gray-600">Example</span>
-      </div>
-      <pre className="overflow-x-auto p-4 text-sm leading-relaxed text-gray-100">
-        <code>{code}</code>
-      </pre>
-    </div>
-  );
-}
-
-function AnswerContent({ item, accent }) {
-  const styles = accentStyles[accent] || accentStyles.yellow;
-
-  return (
-    <div className="px-3 pb-5 pt-1">
-      <p className="text-[15px] leading-relaxed text-gray-300">{item.a}</p>
-
+    <div className="px-3 pb-5 pt-1 space-y-2">
+      <p className="text-[15px] leading-relaxed text-yellow-300/80">{item.a}</p>
       {item.bullets && (
-        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+        <ul className="grid gap-2 sm:grid-cols-2 mt-2">
           {item.bullets.map(point => (
-            <li
-              key={point}
-              className={`rounded-lg border px-3 py-2 text-sm ${styles.soft}`}
-            >
+            <li key={point} className="rounded-lg border border-yellow-400/20 bg-yellow-400/10 px-3 py-2 text-sm text-yellow-300">
               {point}
             </li>
           ))}
         </ul>
       )}
-
       {item.table && <DataTable table={item.table} />}
-      {item.code && <CodeBlock code={item.code} accent={accent} />}
-
+      {item.code && <CodeBlock code={item.code} />}
       {item.tip && (
-        <div className={`mt-4 rounded-xl border px-4 py-3 text-sm leading-relaxed ${styles.soft}`}>
+        <div className="rounded-xl border border-yellow-400/20 bg-yellow-400/10 px-4 py-3 text-sm text-yellow-300 leading-relaxed mt-2">
           <span className="font-bold">Remember: </span>{item.tip}
         </div>
       )}
@@ -634,13 +987,73 @@ function AnswerContent({ item, accent }) {
   );
 }
 
+// ─── DBMS Theory renderer (backtick-delimited blocks) ─────────────────────────
+function renderDBMSAnswer(text) {
+  const lines = text.split('\n');
+  const segments = [];
+  let i = 0;
+  while (i < lines.length) {
+    if (lines[i].trim() === '```') {
+      i++;
+      const blockLines = [];
+      while (i < lines.length && lines[i].trim() !== '```') { blockLines.push(lines[i]); i++; }
+      i++;
+      if (blockLines.length) segments.push({ type: 'block', lines: blockLines });
+    } else {
+      const textLines = [];
+      while (i < lines.length && lines[i].trim() !== '```') { textLines.push(lines[i]); i++; }
+      const content = textLines.join('\n').trim();
+      if (content) segments.push({ type: 'text', content });
+    }
+  }
+  return segments.map((seg, idx) => {
+    if (seg.type === 'block') {
+      const isSQL = seg.lines.some(l => /\b(SELECT|INSERT|CREATE|UPDATE|DELETE|FROM|WHERE|TABLE|DATABASE)\b/i.test(l));
+      return (
+        <div key={idx} className="my-3 rounded-lg overflow-hidden border border-[#333] shadow-lg">
+          <div className="bg-[#252526] px-3 py-1.5 flex items-center justify-between">
+            <div className="flex gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+            </div>
+            <span className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">{isSQL ? 'SQL' : 'Example'}</span>
+          </div>
+          <pre className="bg-[#1e1e1e] px-5 py-3 overflow-x-auto font-mono text-[13px] leading-6 m-0 whitespace-pre">
+            {seg.lines.map((line, li) => (
+              <div key={li}>{isSQL ? highlightSQLLine(line) : <span style={{ color: '#d4d4d4' }}>{line}</span>}</div>
+            ))}
+          </pre>
+        </div>
+      );
+    }
+    return (
+      <div key={idx} className="text-[15px] text-yellow-300/80 leading-relaxed whitespace-pre-line">
+        {seg.content}
+      </div>
+    );
+  });
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+const totalDbmsQ = dbmsSections.reduce((s, sec) => s + sec.questions.length, 0);
+const totalSqlNotes = sqlSections.reduce((s, sec) => s + sec.items.length, 0);
+const totalNotes = totalDbmsQ + totalSqlNotes;
+
 function DBMSSheet({ auth, setAuth }) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [sqlOpen, setSqlOpen] = useState(true);
+
+  // Both panels closed by default
+  const [dbmsOpen, setDbmsOpen] = useState(false);
+  const [sqlOpen, setSqlOpen] = useState(false);
+
   const [openAnswers, setOpenAnswers] = useState({});
-  const [collapsedSections, setCollapsedSections] = useState(
-    () => sqlSections.reduce((acc, _, i) => ({ ...acc, [i]: i !== 0 }), {})
+  const [collapsedDbms, setCollapsedDbms] = useState(
+    () => dbmsSections.reduce((acc, _, i) => ({ ...acc, [i]: true }), {})
+  );
+  const [collapsedSql, setCollapsedSql] = useState(
+    () => sqlSections.reduce((acc, _, i) => ({ ...acc, [i]: true }), {})
   );
   const questionRefs = useRef({});
 
@@ -648,6 +1061,8 @@ function DBMSSheet({ auth, setAuth }) {
     try { return JSON.parse(localStorage.getItem('dbms_sql_last_read')) || null; }
     catch { return null; }
   });
+
+  const revealedCount = Object.values(openAnswers).filter(Boolean).length;
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -670,10 +1085,15 @@ function DBMSSheet({ auth, setAuth }) {
 
   const jumpToLastRead = () => {
     if (!lastRead) return;
-    const parts = lastRead.key.split('-');
-    const sectionIdx = parseInt(parts[1], 10);
-    setSqlOpen(true);
-    setCollapsedSections(prev => ({ ...prev, [sectionIdx]: false }));
+    const [, panel, sIdx] = lastRead.key.split('-');
+    const sectionIdx = parseInt(sIdx, 10);
+    if (panel === 'dbms') {
+      setDbmsOpen(true);
+      setCollapsedDbms(prev => ({ ...prev, [sectionIdx]: false }));
+    } else {
+      setSqlOpen(true);
+      setCollapsedSql(prev => ({ ...prev, [sectionIdx]: false }));
+    }
     setOpenAnswers(prev => ({ ...prev, [lastRead.key]: true }));
     setTimeout(() => {
       const el = questionRefs.current[lastRead.key];
@@ -686,20 +1106,26 @@ function DBMSSheet({ auth, setAuth }) {
     localStorage.removeItem('dbms_sql_last_read');
   };
 
-  const toggleSection = (sectionIdx) => {
-    setCollapsedSections(prev => ({ ...prev, [sectionIdx]: !prev[sectionIdx] }));
-  };
-
   const q = searchQuery.toLowerCase().trim();
-  const filteredSections = useMemo(() => (
-    sqlSections.map(section => ({
-      ...section,
-      items: q ? section.items.filter(item => getSearchText(item).includes(q)) : section.items
-    })).filter(section => section.items.length > 0)
-  ), [q]);
 
-  const revealedCount = Object.values(openAnswers).filter(Boolean).length;
-  const totalVisible = filteredSections.reduce((sum, section) => sum + section.items.length, 0);
+  const filteredDbms = useMemo(() => dbmsSections.map(sec => ({
+    ...sec,
+    questions: q ? sec.questions.filter(item =>
+      item.q.toLowerCase().includes(q) || item.a.toLowerCase().includes(q)
+    ) : sec.questions,
+  })).filter(sec => sec.questions.length > 0), [q]);
+
+  const filteredSql = useMemo(() => sqlSections.map(sec => ({
+    ...sec,
+    items: q ? sec.items.filter(item =>
+      JSON.stringify(item).toLowerCase().includes(q)
+    ) : sec.items,
+  })).filter(sec => sec.items.length > 0), [q]);
+
+  const totalVisible = filteredDbms.reduce((s, sec) => s + sec.questions.length, 0)
+    + filteredSql.reduce((s, sec) => s + sec.items.length, 0);
+
+  const noResults = q && filteredDbms.length === 0 && filteredSql.length === 0;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -713,199 +1139,249 @@ function DBMSSheet({ auth, setAuth }) {
             </Link>
             <div>
               <h1 className="text-2xl font-bold leading-tight">
-                <span className="text-yellow-400">DBMS</span> SQL Notes
+                <span className="text-yellow-400">DBMS</span> – Theory & SQL Notes
               </h1>
-              <p className="text-xs text-gray-500">{totalNotes} notes - {sqlSections.length} sections - beginner friendly examples</p>
+              <p className="text-xs text-gray-500">{totalDbmsQ} theory Q&A · {totalSqlNotes} SQL notes · {dbmsSections.length + sqlSections.length} sections</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden text-sm text-gray-400 sm:block">{auth.user?.username}</span>
-            <button onClick={handleLogout} className="rounded-lg bg-red-600 px-3 py-1.5 text-sm transition-colors hover:bg-red-700">
-              Logout
-            </button>
+            <button onClick={handleLogout} className="rounded-lg bg-red-600 px-3 py-1.5 text-sm transition-colors hover:bg-red-700">Logout</button>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl space-y-8 px-6 py-8 sm:px-10 lg:px-16">
-        <section className="grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
-          <div className="rounded-2xl border border-yellow-400/20 bg-[#101010] p-6">
-            <div className="mb-4 inline-flex rounded-full border border-yellow-400/20 bg-yellow-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-yellow-300">
-              Module 1: SQL Commands
+      <main className="mx-auto max-w-6xl space-y-6 px-6 py-8 sm:px-10 lg:px-16">
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: 'Total Topics', value: totalNotes, color: 'text-yellow-400' },
+            { label: 'Revealed', value: revealedCount, color: 'text-emerald-400' },
+            { label: 'Sections', value: dbmsSections.length + sqlSections.length, color: 'text-sky-400' },
+          ].map(s => (
+            <div key={s.label} className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6 text-center">
+              <div className={`text-4xl font-bold ${s.color}`}>{s.value}</div>
+              <div className="text-sm text-gray-500 mt-1">{s.label}</div>
             </div>
-            <h2 className="text-3xl font-bold leading-tight text-white">
-              Learn DBMS from database basics to joins, views, and practice queries.
-            </h2>
-            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-400">
-              Each topic has simple meaning, colorful quick points, tables, and runnable SQL examples so revision stays easy and practical.
-            </p>
-          </div>
+          ))}
+        </div>
 
-          <div className="grid grid-cols-3 gap-3 lg:grid-cols-1">
-            {[
-              { label: 'Notes', value: totalNotes, color: 'text-yellow-400' },
-              { label: 'Opened', value: revealedCount, color: 'text-sky-400' },
-              { label: 'Sections', value: sqlSections.length, color: 'text-amber-400' }
-            ].map(stat => (
-              <div key={stat.label} className="rounded-xl border border-[#1f1f1f] bg-[#111] p-4 text-center">
-                <div className={`text-3xl font-bold ${stat.color}`}>{stat.value}</div>
-                <div className="mt-1 text-xs text-gray-500">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-
+        {/* Search */}
         <div className="relative">
           <svg className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
             type="text"
-            placeholder="Search SQL command, keyword, or example..."
+            placeholder="Search theory, SQL command, or keyword..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full rounded-xl border border-[#2a2a2a] bg-[#141414] px-5 py-4 pl-12 pr-11 text-base text-white placeholder-gray-600 transition-colors focus:border-yellow-400/70 focus:outline-none"
+            className="w-full rounded-xl border border-[#2a2a2a] bg-[#141414] px-5 py-4 pl-12 pr-11 text-base text-white placeholder-gray-600 transition-colors focus:border-yellow-400/60 focus:outline-none"
           />
           {searchQuery && (
-            <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-lg leading-none text-gray-500 transition-colors hover:text-gray-300">
-              x
-            </button>
+            <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-lg leading-none text-gray-500 hover:text-gray-300">×</button>
           )}
         </div>
 
+        {/* Last read banner */}
         {lastRead && (
           <div className="flex items-center justify-between gap-3 rounded-xl border border-yellow-400/30 bg-yellow-400/[0.08] px-4 py-3">
-            <div className="min-w-0">
-              <p className="mb-0.5 text-xs text-gray-500">Last read - {lastRead.sectionTitle}</p>
-              <p className="truncate text-sm font-medium text-white">{lastRead.question}</p>
+            <div className="min-w-0 flex items-center gap-2">
+              <span className="text-yellow-400 flex-shrink-0">📍</span>
+              <div className="min-w-0">
+                <p className="mb-0.5 text-xs text-gray-500">Last read · {lastRead.sectionTitle}</p>
+                <p className="truncate text-sm font-medium text-white">{lastRead.question}</p>
+              </div>
             </div>
             <div className="flex flex-shrink-0 items-center gap-2">
-              <button onClick={jumpToLastRead} className="rounded-lg bg-yellow-400 px-3 py-1.5 text-xs font-bold text-black transition-colors hover:bg-yellow-300">
-                Resume
-              </button>
-              <button onClick={clearLastRead} className="text-sm text-gray-600 transition-colors hover:text-gray-400">
-                x
-              </button>
+              <button onClick={jumpToLastRead} className="rounded-lg bg-yellow-400 px-3 py-1.5 text-xs font-bold text-black hover:bg-yellow-300">Resume →</button>
+              <button onClick={clearLastRead} className="text-sm text-gray-600 hover:text-gray-400">✕</button>
             </div>
           </div>
         )}
 
-        {q && filteredSections.length === 0 && (
+        {noResults && (
           <div className="py-16 text-center text-gray-600">
-            <p className="text-sm">No DBMS note matches <span className="text-gray-400">"{searchQuery}"</span></p>
+            <div className="text-4xl mb-3">🔍</div>
+            <p className="text-sm">No results for <span className="text-gray-400">"{searchQuery}"</span></p>
             <button onClick={() => setSearchQuery('')} className="mt-3 text-xs text-yellow-400 hover:underline">Clear search</button>
           </div>
         )}
 
+        {/* ── DBMS Theory Accordion ── */}
         <section className="overflow-hidden rounded-2xl border border-[#2a2a2a]">
           <button
-            onClick={() => setSqlOpen(prev => !prev)}
+            onClick={() => setDbmsOpen(p => !p)}
             className="group flex w-full items-center justify-between bg-[#111] px-6 py-5 transition-colors hover:bg-[#161616]"
           >
             <div className="flex items-center gap-4 text-left">
-              <span className="grid h-11 w-11 place-items-center rounded-xl border border-yellow-400/25 bg-yellow-400/10 text-lg font-black text-yellow-300">
-                SQL
-              </span>
+              <span className="grid h-11 w-11 place-items-center rounded-xl border border-yellow-400/25 bg-yellow-400/10 text-sm font-black text-yellow-300">DB</span>
               <div>
-                <p className="text-xl font-bold text-yellow-400">SQL Commands and DBMS Notes</p>
-                <p className="mt-0.5 text-xs text-gray-500">{sqlSections.length} sections - {totalNotes} notes</p>
+                <p className="text-xl font-bold text-yellow-400">DBMS Theory – Q&A</p>
+                <p className="mt-0.5 text-xs text-gray-500">{dbmsSections.length} sections · {totalDbmsQ} questions</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-1 text-xs text-gray-500">{totalNotes} topics</span>
+              <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-1 text-xs text-gray-500">{totalDbmsQ} topics</span>
+              <svg className={`h-5 w-5 text-yellow-400/70 transition-transform duration-300 ${dbmsOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </button>
+
+          {(dbmsOpen || (q && filteredDbms.length > 0)) && (
+            <div className="border-t border-[#1f1f1f] bg-[#0d0d0d] px-4 py-4 space-y-0">
+              {filteredDbms.map((section, sIdx) => {
+                const origIdx = dbmsSections.findIndex(s => s.title === section.title);
+                const isCollapsed = q ? false : collapsedDbms[origIdx];
+                return (
+                  <div key={sIdx}>
+                    <button onClick={() => setCollapsedDbms(p => ({ ...p, [origIdx]: !p[origIdx] }))} className="w-full flex items-center justify-between py-4 group">
+                      <div className="flex items-center gap-3">
+                        <span className="text-yellow-400 font-bold text-lg">{section.title}</span>
+                        <span className="text-sm text-gray-500 bg-[#1a1a1a] px-2.5 py-0.5 rounded-full">{section.questions.length}Q</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="h-px w-20 bg-[#1f1f1f] hidden sm:block" />
+                        <svg className={`w-4 h-4 text-yellow-400/60 transition-transform duration-200 ${isCollapsed ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </button>
+                    <div className="h-px bg-[#1f1f1f] mb-2" />
+                    {!isCollapsed && (
+                      <div>
+                        {section.questions.map((item, qIdx) => {
+                          const key = `dbms-${origIdx}-${qIdx}`;
+                          const isOpen = openAnswers[key];
+                          const isLastRead = lastRead?.key === key;
+                          return (
+                            <div key={key} ref={el => questionRefs.current[key] = el}
+                              className={`border-b transition-all rounded-sm ${isOpen ? 'bg-yellow-400/[0.06] border-yellow-400/20' : isLastRead ? 'border-yellow-400/15' : 'border-[#161616]'}`}>
+                              <div className="flex items-center gap-1">
+                                <button onClick={() => toggleAnswer(key, item.q, section.title)}
+                                  className="flex-1 flex items-center justify-between px-2 py-5 text-left hover:bg-white/[0.03] transition-colors rounded">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    {isLastRead && <span className="text-yellow-400 text-xs flex-shrink-0">📌</span>}
+                                    <span className={`text-[17px] leading-snug ${isLastRead ? 'text-yellow-200' : 'text-gray-200'}`}>{item.q}</span>
+                                  </div>
+                                  <svg className={`w-3.5 h-3.5 text-gray-600 flex-shrink-0 ml-3 transition-transform duration-200 ${isOpen ? 'rotate-180 text-yellow-400' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                </button>
+                                <a href={`https://chatgpt.com/?q=${encodeURIComponent(`${item.q} in DBMS, explain with example`)}`}
+                                  target="_blank" rel="noopener noreferrer" title="Ask ChatGPT"
+                                  className="flex-shrink-0 p-2 mr-1 text-gray-500 hover:text-gray-300 hover:scale-125 transition-all duration-300 rounded animate-spin [animation-duration:6s]"
+                                  onClick={e => e.stopPropagation()}>
+                                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.648zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.843-3.371 2.019-1.168a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.4-.679zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.496 4.496 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.603 1.497v2.999l-2.597 1.5-2.603-1.495z"/>
+                                  </svg>
+                                </a>
+                                <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${item.q} DBMS explained`)}`}
+                                  target="_blank" rel="noopener noreferrer" title="Search on YouTube"
+                                  className="flex-shrink-0 p-2 mr-1 text-red-500 hover:text-red-400 hover:scale-125 transition-all duration-300 rounded"
+                                  onClick={e => e.stopPropagation()}>
+                                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                  </svg>
+                                </a>
+                              </div>
+                              {isOpen && (
+                                <div className="px-3 pb-5 pt-1 space-y-1">
+                                  {renderDBMSAnswer(item.a)}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* ── SQL Commands Accordion ── */}
+        <section className="overflow-hidden rounded-2xl border border-[#2a2a2a]">
+          <button
+            onClick={() => setSqlOpen(p => !p)}
+            className="group flex w-full items-center justify-between bg-[#111] px-6 py-5 transition-colors hover:bg-[#161616]"
+          >
+            <div className="flex items-center gap-4 text-left">
+              <span className="grid h-11 w-11 place-items-center rounded-xl border border-yellow-400/25 bg-yellow-400/10 text-sm font-black text-yellow-300">SQL</span>
+              <div>
+                <p className="text-xl font-bold text-yellow-400">SQL Commands & Practice</p>
+                <p className="mt-0.5 text-xs text-gray-500">{sqlSections.length} sections · {totalSqlNotes} notes</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-1 text-xs text-gray-500">{totalSqlNotes} topics</span>
               <svg className={`h-5 w-5 text-yellow-400/70 transition-transform duration-300 ${sqlOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </div>
           </button>
 
-          {(sqlOpen || q) && (
-            <div className="space-y-0 border-t border-[#1f1f1f] bg-[#0d0d0d] px-4 py-4">
-              {filteredSections.map(section => {
-                const originalIdx = sqlSections.findIndex(s => s.title === section.title);
-                const isCollapsed = q ? false : collapsedSections[originalIdx];
-                const styles = accentStyles[section.accent] || accentStyles.yellow;
-
+          {(sqlOpen || (q && filteredSql.length > 0)) && (
+            <div className="border-t border-[#1f1f1f] bg-[#0d0d0d] px-4 py-4 space-y-0">
+              {filteredSql.map((section, sIdx) => {
+                const origIdx = sqlSections.findIndex(s => s.title === section.title);
+                const isCollapsed = q ? false : collapsedSql[origIdx];
                 return (
-                  <div key={section.title}>
-                    <button
-                      onClick={() => toggleSection(originalIdx)}
-                      className="group flex w-full items-center justify-between py-4"
-                    >
-                      <div className="flex items-center gap-3 text-left">
-                        <span className={`text-lg font-bold ${styles.text}`}>{section.title}</span>
-                        <span className="rounded-full bg-[#1a1a1a] px-2.5 py-0.5 text-sm text-gray-500">{section.items.length} notes</span>
+                  <div key={sIdx}>
+                    <button onClick={() => setCollapsedSql(p => ({ ...p, [origIdx]: !p[origIdx] }))} className="w-full flex items-center justify-between py-4 group">
+                      <div className="flex items-center gap-3">
+                        <span className="text-yellow-400 font-bold text-lg">{section.title}</span>
+                        <span className="text-sm text-gray-500 bg-[#1a1a1a] px-2.5 py-0.5 rounded-full">{section.items.length} notes</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="hidden h-px w-20 bg-[#1f1f1f] sm:block" />
-                        <svg className={`h-4 w-4 ${styles.text} opacity-70 transition-transform duration-200 ${isCollapsed ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="h-px w-20 bg-[#1f1f1f] hidden sm:block" />
+                        <svg className={`w-4 h-4 text-yellow-400/60 transition-transform duration-200 ${isCollapsed ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                       </div>
                     </button>
-                    <div className="mb-2 h-px bg-[#1f1f1f]" />
-
+                    <div className="h-px bg-[#1f1f1f] mb-2" />
                     {!isCollapsed && (
                       <div>
-                        {section.items.map((item, itemIdx) => {
-                          const key = `sql-${originalIdx}-${itemIdx}`;
+                        {section.items.map((item, iIdx) => {
+                          const key = `sql-${origIdx}-${iIdx}`;
                           const isOpen = openAnswers[key];
                           const isLastRead = lastRead?.key === key;
-
                           return (
-                            <article
-                              key={key}
-                              ref={el => questionRefs.current[key] = el}
-                              className={`rounded-sm border-b transition-all ${
-                                isOpen
-                                  ? `${styles.bg} ${styles.border}`
-                                  : isLastRead
-                                  ? styles.border
-                                  : 'border-[#161616]'
-                              }`}
-                            >
+                            <article key={key} ref={el => questionRefs.current[key] = el}
+                              className={`border-b transition-all rounded-sm ${isOpen ? 'bg-yellow-400/[0.06] border-yellow-400/20' : isLastRead ? 'border-yellow-400/15' : 'border-[#161616]'}`}>
                               <div className="flex items-center gap-1">
-                                <button
-                                  onClick={() => toggleAnswer(key, item.q, section.title)}
-                                  className="flex flex-1 items-center justify-between rounded px-2 py-5 text-left transition-colors hover:bg-white/[0.03]"
-                                >
+                                <button onClick={() => toggleAnswer(key, item.q, section.title)}
+                                  className="flex flex-1 items-center justify-between rounded px-2 py-5 text-left transition-colors hover:bg-white/[0.03]">
                                   <div className="flex min-w-0 items-center gap-2">
-                                    {isLastRead && <span className={`flex-shrink-0 text-xs ${styles.text}`}>Last</span>}
-                                    <span className={`text-[17px] leading-snug ${isLastRead ? styles.text : 'text-gray-200'}`}>{item.q}</span>
+                                    {isLastRead && <span className="text-yellow-400 text-xs flex-shrink-0">📌</span>}
+                                    <span className={`text-[17px] leading-snug ${isLastRead ? 'text-yellow-200' : 'text-gray-200'}`}>{item.q}</span>
                                   </div>
-                                  <svg className={`ml-3 h-3.5 w-3.5 flex-shrink-0 text-gray-600 transition-transform duration-200 ${isOpen ? `rotate-180 ${styles.text}` : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <svg className={`ml-3 h-3.5 w-3.5 flex-shrink-0 text-gray-600 transition-transform duration-200 ${isOpen ? 'rotate-180 text-yellow-400' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                   </svg>
                                 </button>
-
-                                <a
-                                  href={`https://chatgpt.com/?q=${encodeURIComponent(`${item.q} in DBMS SQL, explain with simple example`)}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="Ask ChatGPT"
-                                  className="mr-1 flex-shrink-0 rounded p-2 text-red-400 transition-all duration-300 hover:scale-125 hover:text-red-300"
-                                  onClick={e => e.stopPropagation()}
-                                >
+                                <a href={`https://chatgpt.com/?q=${encodeURIComponent(`${item.q} in SQL DBMS, explain with example`)}`}
+                                  target="_blank" rel="noopener noreferrer" title="Ask ChatGPT"
+                                  className="mr-1 flex-shrink-0 rounded p-2 text-gray-500 hover:text-gray-300 hover:scale-125 transition-all duration-300 animate-spin [animation-duration:6s]"
+                                  onClick={e => e.stopPropagation()}>
                                   <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.648zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.843-3.371 2.019-1.168a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.4-.679zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.496 4.496 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.603 1.497v2.999l-2.597 1.5-2.603-1.495z" />
+                                    <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.648zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.843-3.371 2.019-1.168a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.4-.679zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.496 4.496 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.603 1.497v2.999l-2.597 1.5-2.603-1.495z"/>
                                   </svg>
                                 </a>
-
-                                <a
-                                  href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${item.q} DBMS SQL explained`)}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="Search on YouTube"
-                                  className="mr-1 flex-shrink-0 rounded p-2 text-red-500 transition-all duration-300 hover:scale-125 hover:text-red-400"
-                                  onClick={e => e.stopPropagation()}
-                                >
+                                <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${item.q} SQL explained`)}`}
+                                  target="_blank" rel="noopener noreferrer" title="Search on YouTube"
+                                  className="mr-1 flex-shrink-0 rounded p-2 text-red-500 hover:text-red-400 hover:scale-125 transition-all duration-300"
+                                  onClick={e => e.stopPropagation()}>
                                   <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                                   </svg>
                                 </a>
                               </div>
-
-                              {isOpen && <AnswerContent item={item} accent={section.accent} />}
+                              {isOpen && <AnswerContent item={item} />}
                             </article>
                           );
                         })}
@@ -918,7 +1394,7 @@ function DBMSSheet({ auth, setAuth }) {
           )}
         </section>
 
-        {q && filteredSections.length > 0 && (
+        {q && !noResults && (
           <p className="pt-2 text-center text-xs text-gray-600">{totalVisible} result{totalVisible !== 1 ? 's' : ''} for "{searchQuery}"</p>
         )}
       </main>
