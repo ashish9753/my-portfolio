@@ -2,6 +2,151 @@ import { useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../sheet-app/components/Footer';
 
+// ─── ER Diagram Symbols Visual Chart ─────────────────────────────────────────
+function ERSymbolsChart() {
+  const S = '#4ec9b0';
+  const F = '#0a2520';
+  const T = '#a8d8cb';
+
+  const Cell = ({ svg, label, sub }) => (
+    <div className="flex items-center gap-3 py-2.5 border-b border-[#1e1e1e] last:border-0">
+      <div className="flex-shrink-0 flex items-center justify-center" style={{ width: 90, height: 50 }}>
+        {svg}
+      </div>
+      <div>
+        <p className="text-sm font-semibold text-gray-200 leading-tight">{label}</p>
+        {sub && <p className="text-xs text-gray-500 mt-0.5 leading-tight">{sub}</p>}
+      </div>
+    </div>
+  );
+
+  const ColHdr = ({ label }) => (
+    <p className="text-[10px] font-bold text-yellow-400/70 uppercase tracking-widest pt-3 pb-1">{label}</p>
+  );
+
+  return (
+    <div className="my-3 rounded-xl overflow-hidden border border-[#333] shadow-lg">
+      <div className="bg-[#252526] px-3 py-1.5 flex items-center justify-between">
+        <div className="flex gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+        </div>
+        <span className="text-[10px] text-gray-500 font-mono tracking-widest">CHEN&apos;S NOTATION — ER DIAGRAM SYMBOLS</span>
+      </div>
+      <div className="bg-[#141414] px-4 pb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
+
+          {/* ── Left: Structure Symbols ── */}
+          <div>
+            <ColHdr label="Structure Symbols" />
+            <Cell label="Entity" sub="Strong real-world object — has its own primary key (e.g. Student, Teacher)"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <rect x="8" y="10" width="74" height="30" rx="2" fill={F} stroke={S} strokeWidth="2"/>
+                <text x="45" y="30" fill={T} fontSize="12" textAnchor="middle" fontFamily="monospace">Entity</text>
+              </svg>}
+            />
+            <Cell label="Weak Entity" sub="Depends on strong entity — no independent primary key (e.g. Dependent)"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <rect x="4" y="7" width="82" height="36" rx="2" fill={F} stroke={S} strokeWidth="2"/>
+                <rect x="9" y="12" width="72" height="26" rx="1" fill="none" stroke={S} strokeWidth="1.5"/>
+                <text x="45" y="30" fill={T} fontSize="11" textAnchor="middle" fontFamily="monospace">Weak</text>
+              </svg>}
+            />
+            <Cell label="Associative Entity (Aggregation)" sub="A relationship treated as an entity — participates in another relationship"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <rect x="4" y="7" width="82" height="36" rx="2" fill={F} stroke={S} strokeWidth="2"/>
+                <polygon points="45,8 86,25 45,42 4,25" fill={F} stroke={S} strokeWidth="2"/>
+                <text x="45" y="29" fill={T} fontSize="10" textAnchor="middle" fontFamily="monospace">Assoc</text>
+              </svg>}
+            />
+            <Cell label="Relationship" sub="Diamond connecting two entities (e.g. Enrolls, Teaches, BelongsTo)"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <polygon points="45,4 87,25 45,46 3,25" fill={F} stroke={S} strokeWidth="2"/>
+                <text x="45" y="29" fill={T} fontSize="9.5" textAnchor="middle" fontFamily="monospace">Relation</text>
+              </svg>}
+            />
+            <Cell label="Identifying Relationship" sub="Double diamond — connects weak entity to its owner (identifying entity)"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <polygon points="45,4 87,25 45,46 3,25" fill={F} stroke={S} strokeWidth="2"/>
+                <polygon points="45,10 80,25 45,40 10,25" fill="none" stroke={S} strokeWidth="1.5"/>
+                <text x="45" y="29" fill={T} fontSize="9" textAnchor="middle" fontFamily="monospace">Identify</text>
+              </svg>}
+            />
+            <ColHdr label="Line / Participation Types" />
+            <Cell label="Partial Participation (Single Line)" sub="Some entities participate — not mandatory (e.g. Employee optionally manages dept)"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <line x1="5" y1="25" x2="85" y2="25" stroke={S} strokeWidth="2.5"/>
+              </svg>}
+            />
+            <Cell label="Total Participation (Double Line)" sub="Every entity MUST participate (e.g. every Student must enroll in a Course)"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <line x1="5" y1="21" x2="85" y2="21" stroke={S} strokeWidth="2.5"/>
+                <line x1="5" y1="29" x2="85" y2="29" stroke={S} strokeWidth="2.5"/>
+              </svg>}
+            />
+            <Cell label="Optional Relationship (Dashed Line)" sub="Participation is optional — entity may or may not be in this relationship"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <line x1="5" y1="25" x2="85" y2="25" stroke={S} strokeWidth="2.5" strokeDasharray="8,5"/>
+              </svg>}
+            />
+          </div>
+
+          {/* ── Right: Attribute Symbols ── */}
+          <div>
+            <ColHdr label="Attribute Symbols" />
+            <Cell label="Simple Attribute" sub="Single atomic value — cannot be divided further (e.g. Age, Salary, City)"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <ellipse cx="45" cy="25" rx="40" ry="19" fill={F} stroke={S} strokeWidth="2"/>
+                <text x="45" y="30" fill={T} fontSize="11" textAnchor="middle" fontFamily="monospace">Attribute</text>
+              </svg>}
+            />
+            <Cell label="Key Attribute" sub="Primary key — uniquely identifies entity; shown with underlined text"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <ellipse cx="45" cy="25" rx="40" ry="19" fill={F} stroke={S} strokeWidth="2"/>
+                <text x="45" y="28" fill={T} fontSize="11" textAnchor="middle" fontFamily="monospace" textDecoration="underline">Key Attr</text>
+              </svg>}
+            />
+            <Cell label="Partial Key (Discriminator)" sub="Weak entity's identifier — distinguishes weak entities with same owner"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <ellipse cx="45" cy="25" rx="40" ry="19" fill={F} stroke={S} strokeWidth="2"/>
+                <text x="45" y="28" fill={T} fontSize="10" textAnchor="middle" fontFamily="monospace" textDecoration="underline">PartKey</text>
+                <line x1="15" y1="32" x2="75" y2="32" stroke={S} strokeWidth="1" strokeDasharray="4,3"/>
+              </svg>}
+            />
+            <Cell label="Multi-Valued Attribute" sub="Double ellipse — stores multiple values per entity (e.g. PhoneNumbers, Skills)"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <ellipse cx="45" cy="25" rx="40" ry="19" fill={F} stroke={S} strokeWidth="2"/>
+                <ellipse cx="45" cy="25" rx="30" ry="11" fill="none" stroke={S} strokeWidth="1.5"/>
+                <text x="45" y="29" fill={T} fontSize="9.5" textAnchor="middle" fontFamily="monospace">Multi-value</text>
+              </svg>}
+            />
+            <Cell label="Derived Attribute" sub="Dashed ellipse — computed from another attribute (e.g. Age from DOB, Experience from JoinDate)"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <ellipse cx="45" cy="25" rx="40" ry="19" fill={F} stroke={S} strokeWidth="2" strokeDasharray="5,3"/>
+                <text x="45" y="30" fill={T} fontSize="10" textAnchor="middle" fontFamily="monospace">Derived</text>
+              </svg>}
+            />
+            <Cell label="Composite Attribute" sub="Made of sub-parts connected by lines (e.g. Name → FirstName + LastName)"
+              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
+                <ellipse cx="45" cy="13" rx="27" ry="11" fill={F} stroke={S} strokeWidth="1.5"/>
+                <text x="45" y="17" fill={T} fontSize="9" textAnchor="middle" fontFamily="monospace">Name</text>
+                <line x1="33" y1="23" x2="20" y2="32" stroke={S} strokeWidth="1.5"/>
+                <ellipse cx="16" cy="40" rx="15" ry="9" fill={F} stroke={S} strokeWidth="1.5"/>
+                <text x="16" y="43" fill={T} fontSize="8" textAnchor="middle" fontFamily="monospace">First</text>
+                <line x1="57" y1="23" x2="70" y2="32" stroke={S} strokeWidth="1.5"/>
+                <ellipse cx="74" cy="40" rx="15" ry="9" fill={F} stroke={S} strokeWidth="1.5"/>
+                <text x="74" y="43" fill={T} fontSize="8" textAnchor="middle" fontFamily="monospace">Last</text>
+              </svg>}
+            />
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── DBMS Theory Q&A Data ────────────────────────────────────────────────────
 const dbmsSections = [
   {
@@ -287,6 +432,10 @@ Aggregation:
 Treat a Relationship as an Entity so it can participate in another relationship.
 Example: (Student ──Enrolls── Course) entity is Monitored by Teacher
 \`\`\``,
+      },
+      {
+        q: 'ER Diagram Symbols — Visual Reference (Chen\'s Notation)',
+        render: () => <ERSymbolsChart />,
       },
       {
         q: 'How to Draw an ER Diagram — Step-by-Step with Example',
@@ -1447,7 +1596,7 @@ function DBMSSheet({ auth, setAuth }) {
                               </div>
                               {isOpen && (
                                 <div className="px-3 pb-5 pt-1 space-y-1">
-                                  {renderDBMSAnswer(item.a)}
+                                  {item.render ? item.render() : renderDBMSAnswer(item.a)}
                                 </div>
                               )}
                             </div>
