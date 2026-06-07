@@ -139,10 +139,26 @@ RollNo   Email              Name     Phone
 4. Alternate Key — candidate keys NOT chosen as primary key.
    Example: Email (it can uniquely identify but RollNo was chosen)
 
-5. Composite Key — key made of TWO OR MORE columns.
+5. Unique Key — similar to Primary Key but ALLOWS ONE NULL value. Can have multiple unique keys per table.
+   Example: Email column is unique (no duplicates), but one student may not have email (NULL allowed once).
+\`\`\`
+-- Primary Key: RollNo → Unique + NOT NULL
+-- Unique Key:  Email  → Unique + NULL allowed (once)
+
+CREATE TABLE student (
+    RollNo INT PRIMARY KEY,
+    Email  VARCHAR(100) UNIQUE,   -- Unique Key
+    Name   VARCHAR(50)  NOT NULL
+);
+\`\`\`
+Difference:
+• Primary Key → Unique + NOT NULL, only ONE per table
+• Unique Key  → Unique + ONE NULL allowed, MULTIPLE per table
+
+6. Composite Key — key made of TWO OR MORE columns.
    Example: (StudentID + CourseID) together uniquely identify enrollment.
 
-6. Foreign Key — attribute in one table that REFERENCES primary key of another.
+7. Foreign Key — attribute in one table that REFERENCES primary key of another.
 \`\`\`
 Student Table        Marks Table
 ID   Name            ID   Marks
@@ -155,37 +171,180 @@ ID   Name            ID   Marks
     title: '📘 ER Model',
     questions: [
       {
-        q: 'Entity, Attributes & Their Types',
-        a: `Entity — a real-world object with an existence (Student, Teacher, Course).
+        q: 'ER Diagram Symbols — Shapes & What They Mean',
+        a: `ER Diagram uses specific shapes for each component. Learn these shapes first.
+\`\`\`
+Shape                  Meaning              Example
+═══════════════════════════════════════════════════════
+┌─────────────┐
+│   Student   │        Entity               Any real-world object
+└─────────────┘        (Rectangle)
 
-Attribute — property of an entity:
-• Simple — cannot be divided: Age, RollNo
-• Composite — can be divided: Name → FirstName + LastName
-• Single-Valued — one value per entity: DOB
-• Multi-Valued — multiple values: PhoneNumbers (a person can have many)
-• Derived — calculated from another: Age (derived from DOB)
+  ┌─────────────┐
+══│  Dependent  │══    Weak Entity          Depends on another entity
+  └─────────────┘      (Double Rectangle)   (no independent key)
 
-Entity Types:
-• Strong Entity — has its own primary key. Example: Student.
-• Weak Entity — depends on another entity. Has no primary key alone.
-  Example: Dependent (family member of Employee — can't exist without Employee).`,
+    ◯ Name             Attribute            Property of an entity
+                       (Ellipse)
+
+  ◉ RollNo             Key Attribute        Underlined ellipse → Primary Key
+                       (Underlined)
+
+  ◯ → ◯ ◯             Composite Attr.      Name → {FirstName, LastName}
+  Name  First Last     (Ellipse + children)
+
+  ═══ PhoneNo          Multi-Valued Attr.   Can hold multiple values
+                       (Double Ellipse)
+
+  ◯ - - Age            Derived Attribute    Calculated from another attr.
+                       (Dashed Ellipse)
+
+  ◇  Studies           Relationship         Connects two entities
+                       (Diamond)
+
+══◇══ Borrows ══◇══    Weak Relationship    Connects weak entity
+                       (Double Diamond)
+
+ 1    ——◇——    M       Cardinality          1:M relationship label
+\`\`\``,
       },
       {
-        q: 'ER Model & Relationship Types',
-        a: `ER Model (Entity-Relationship Model) — used for database design.
-Components: Entity, Attribute, Relationship.
+        q: 'Entity, Attributes & Their Types (Detailed)',
+        a: `Entity — a real-world object that exists independently in the database.
 \`\`\`
-Student ──── Studies ──── Course
+Strong Entity (Rectangle):       Weak Entity (Double Rectangle):
+┌──────────┐                     ╔══════════╗
+│  Student │                     ║Dependent ║   depends on Employee
+└──────────┘                     ╚══════════╝
+Has its own Primary Key          Has NO primary key alone
+Example: Student, Employee       Example: Employee's family member
 \`\`\`
-Relationship Types (Cardinality):
-• One-to-One (1:1) — one person has one passport
-• One-to-Many (1:M) — one teacher teaches many students
-• Many-to-One (M:1) — many students belong to one department
-• Many-to-Many (M:N) — many students enroll in many courses
+Attribute Types:
+\`\`\`
+Type              Shape           Example
+──────────────────────────────────────────────────────
+Simple            ◯               Age, RollNo, Salary
+Composite         ◯ splits into   Name → FirstName + LastName
+                  ◯ and ◯
+Key Attribute     ◉ (underlined)  RollNo (Primary Key)
+Multi-Valued      ══◯══           PhoneNumbers, Skills
+Derived           - - ◯ - -       Age (from DOB), Experience (from JoinDate)
+\`\`\`
+Real diagram layout for Student entity:
+\`\`\`
+              ◉ RollNo
+              |
+  ◯ Name ─── ┌──────────┐ ─── ═══PhoneNo═══
+              │  Student │
+  ◯ Branch ── └──────────┘ ─── - -Age- -
+              |
+              ◯ DOB
+\`\`\``,
+      },
+      {
+        q: 'Relationship Types & Cardinality (with Diagrams)',
+        a: `Relationship — shown as a Diamond connecting two entities.
+Cardinality — how many instances of one entity relate to another.
+\`\`\`
+1:1  One-to-One
+     One person has exactly one passport.
 
-Generalization — Bottom-Up: combine Student + Teacher → Person
-Specialization — Top-Down: Person → Student, Teacher (add specific attributes)
-Aggregation — treat a Relationship as an Entity (when a relationship itself participates in another relationship).`,
+     ┌────────┐   1 ──◇── 1   ┌──────────┐
+     │ Person │    Has         │ Passport │
+     └────────┘               └──────────┘
+
+1:M  One-to-Many
+     One teacher teaches many students.
+
+     ┌─────────┐   1 ──◇── M   ┌─────────┐
+     │ Teacher │   Teaches      │ Student │
+     └─────────┘               └─────────┘
+
+M:N  Many-to-Many
+     Many students enroll in many courses.
+
+     ┌─────────┐   M ──◇── N   ┌────────┐
+     │ Student │   Enrolls      │ Course │
+     └─────────┘               └────────┘
+
+M:1  Many-to-One
+     Many students belong to one department.
+
+     ┌─────────┐   M ──◇── 1   ┌────────┐
+     │ Student │  BelongsTo     │  Dept  │
+     └─────────┘               └────────┘
+\`\`\`
+Generalization, Specialization & Aggregation:
+\`\`\`
+Generalization (Bottom-Up):      Specialization (Top-Down):
+Combine specific → general       Split general → specific
+
+Student ──┐                          ┌── Student
+          ├──▷ Person                Person ──▷ Teacher
+Teacher ──┘                          └── Staff
+
+Aggregation:
+Treat a Relationship as an Entity so it can participate in another relationship.
+Example: (Student ──Enrolls── Course) entity is Monitored by Teacher
+\`\`\``,
+      },
+      {
+        q: 'How to Draw an ER Diagram — Step-by-Step with Example',
+        a: `Follow these 5 steps to create an ER diagram for ANY system.
+
+Step 1 — Identify ENTITIES (nouns in the problem):
+Step 2 — Identify ATTRIBUTES for each entity.
+Step 3 — Identify RELATIONSHIPS between entities.
+Step 4 — Decide CARDINALITY of each relationship.
+Step 5 — Draw the diagram.
+
+─────────────────────────────────────────────────────────
+EXAMPLE: College Management System
+─────────────────────────────────────────────────────────
+Problem: "Students enroll in courses. Each course is taught by one teacher.
+Students belong to one department. Teachers can teach multiple courses."
+
+Step 1 — Entities:
+  Student, Course, Teacher, Department
+
+Step 2 — Attributes:
+\`\`\`
+Student    → ◉RollNo, Name, Email, PhoneNo (multi), DOB
+Course     → ◉CourseID, CourseName, Credits
+Teacher    → ◉TeacherID, Name, Salary, - -Experience- -
+Department → ◉DeptID, DeptName, Location
+\`\`\`
+Step 3 & 4 — Relationships + Cardinality:
+\`\`\`
+Student  ──(M:N)── Enrolls  ── Course
+Course   ──(M:1)── TaughtBy ── Teacher
+Student  ──(M:1)── BelongsTo── Department
+Teacher  ──(M:1)── WorksIn  ── Department
+\`\`\`
+Step 5 — Full ER Diagram:
+\`\`\`
+◉RollNo  ◯Name  ═══Phone             ◉CourseID ◯Credits
+   |       |       |                     |         |
+┌──────────────────┐  M ──Enrolls── N ┌───────────────┐
+│     Student      │                  │    Course      │
+└──────────────────┘                  └───────────────┘
+        | M                                   | M
+     BelongsTo                            TaughtBy
+        | 1                                   | 1
+┌──────────────────┐                  ┌───────────────┐
+│   Department     │──── WorksIn ─────│   Teacher     │
+└──────────────────┘   (Teacher M:1)  └───────────────┘
+◉DeptID ◯DeptName                  ◉TeacherID ◯Salary
+\`\`\`
+Step 6 — Convert ER Diagram to Tables (Relational Schema):
+\`\`\`
+Student(RollNo, Name, Email, DOB, DeptID→Dept)
+Course(CourseID, CourseName, Credits, TeacherID→Teacher)
+Teacher(TeacherID, Name, Salary, DeptID→Dept)
+Department(DeptID, DeptName, Location)
+Enrollment(RollNo→Student, CourseID→Course, EnrollDate)  ← M:N becomes its own table
+\`\`\`
+Rule: M:N relationship always becomes a SEPARATE TABLE with both foreign keys.`,
       },
     ],
   },
