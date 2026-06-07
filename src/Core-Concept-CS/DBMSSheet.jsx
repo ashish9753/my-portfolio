@@ -2,28 +2,22 @@ import { useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../sheet-app/components/Footer';
 
-// ─── ER Diagram Symbols Visual Chart ─────────────────────────────────────────
-function ERSymbolsChart() {
-  const S = '#4ec9b0';
-  const F = '#0a2520';
-  const T = '#a8d8cb';
-
-  const Cell = ({ svg, label, sub }) => (
-    <div className="flex items-center gap-3 py-2.5 border-b border-[#1e1e1e] last:border-0">
-      <div className="flex-shrink-0 flex items-center justify-center" style={{ width: 90, height: 50 }}>
+// ─── ER Symbol Card ──────────────────────────────────────────────────────────
+function ERSymCard({ svg, label, sub, color = 'text-teal-300' }) {
+  return (
+    <div className="flex items-center gap-4 py-3 border-b border-[#1e1e1e] last:border-0">
+      <div className="flex-shrink-0 flex items-center justify-center rounded-xl bg-[#0d0d0d] border border-[#2a2a2a]" style={{ width: 110, height: 58 }}>
         {svg}
       </div>
       <div>
-        <p className="text-sm font-semibold text-gray-200 leading-tight">{label}</p>
-        {sub && <p className="text-xs text-gray-500 mt-0.5 leading-tight">{sub}</p>}
+        <p className={`text-sm font-bold leading-tight ${color}`}>{label}</p>
+        <p className="text-xs text-gray-500 mt-1 leading-snug">{sub}</p>
       </div>
     </div>
   );
+}
 
-  const ColHdr = ({ label }) => (
-    <p className="text-[10px] font-bold text-yellow-400/70 uppercase tracking-widest pt-3 pb-1">{label}</p>
-  );
-
+function ERCardShell({ title, children }) {
   return (
     <div className="my-3 rounded-xl overflow-hidden border border-[#333] shadow-lg">
       <div className="bg-[#252526] px-3 py-1.5 flex items-center justify-between">
@@ -32,118 +26,98 @@ function ERSymbolsChart() {
           <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
           <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
         </div>
-        <span className="text-[10px] text-gray-500 font-mono tracking-widest">CHEN&apos;S NOTATION — ER DIAGRAM SYMBOLS</span>
+        <span className="text-[10px] text-gray-500 font-mono tracking-widest uppercase">{title}</span>
       </div>
-      <div className="bg-[#141414] px-4 pb-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
-
-          {/* ── Left: Structure Symbols ── */}
-          <div>
-            <ColHdr label="Structure Symbols" />
-            <Cell label="Entity" sub="Strong real-world object — has its own primary key (e.g. Student, Teacher)"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <rect x="8" y="10" width="74" height="30" rx="2" fill={F} stroke={S} strokeWidth="2"/>
-                <text x="45" y="30" fill={T} fontSize="12" textAnchor="middle" fontFamily="monospace">Entity</text>
-              </svg>}
-            />
-            <Cell label="Weak Entity" sub="Depends on strong entity — no independent primary key (e.g. Dependent)"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <rect x="4" y="7" width="82" height="36" rx="2" fill={F} stroke={S} strokeWidth="2"/>
-                <rect x="9" y="12" width="72" height="26" rx="1" fill="none" stroke={S} strokeWidth="1.5"/>
-                <text x="45" y="30" fill={T} fontSize="11" textAnchor="middle" fontFamily="monospace">Weak</text>
-              </svg>}
-            />
-            <Cell label="Associative Entity (Aggregation)" sub="A relationship treated as an entity — participates in another relationship"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <rect x="4" y="7" width="82" height="36" rx="2" fill={F} stroke={S} strokeWidth="2"/>
-                <polygon points="45,8 86,25 45,42 4,25" fill={F} stroke={S} strokeWidth="2"/>
-                <text x="45" y="29" fill={T} fontSize="10" textAnchor="middle" fontFamily="monospace">Assoc</text>
-              </svg>}
-            />
-            <Cell label="Relationship" sub="Diamond connecting two entities (e.g. Enrolls, Teaches, BelongsTo)"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <polygon points="45,4 87,25 45,46 3,25" fill={F} stroke={S} strokeWidth="2"/>
-                <text x="45" y="29" fill={T} fontSize="9.5" textAnchor="middle" fontFamily="monospace">Relation</text>
-              </svg>}
-            />
-            <Cell label="Identifying Relationship" sub="Double diamond — connects weak entity to its owner (identifying entity)"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <polygon points="45,4 87,25 45,46 3,25" fill={F} stroke={S} strokeWidth="2"/>
-                <polygon points="45,10 80,25 45,40 10,25" fill="none" stroke={S} strokeWidth="1.5"/>
-                <text x="45" y="29" fill={T} fontSize="9" textAnchor="middle" fontFamily="monospace">Identify</text>
-              </svg>}
-            />
-            <ColHdr label="Line / Participation Types" />
-            <Cell label="Partial Participation (Single Line)" sub="Some entities participate — not mandatory (e.g. Employee optionally manages dept)"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <line x1="5" y1="25" x2="85" y2="25" stroke={S} strokeWidth="2.5"/>
-              </svg>}
-            />
-            <Cell label="Total Participation (Double Line)" sub="Every entity MUST participate (e.g. every Student must enroll in a Course)"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <line x1="5" y1="21" x2="85" y2="21" stroke={S} strokeWidth="2.5"/>
-                <line x1="5" y1="29" x2="85" y2="29" stroke={S} strokeWidth="2.5"/>
-              </svg>}
-            />
-            <Cell label="Optional Relationship (Dashed Line)" sub="Participation is optional — entity may or may not be in this relationship"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <line x1="5" y1="25" x2="85" y2="25" stroke={S} strokeWidth="2.5" strokeDasharray="8,5"/>
-              </svg>}
-            />
-          </div>
-
-          {/* ── Right: Attribute Symbols ── */}
-          <div>
-            <ColHdr label="Attribute Symbols" />
-            <Cell label="Simple Attribute" sub="Single atomic value — cannot be divided further (e.g. Age, Salary, City)"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <ellipse cx="45" cy="25" rx="40" ry="19" fill={F} stroke={S} strokeWidth="2"/>
-                <text x="45" y="30" fill={T} fontSize="11" textAnchor="middle" fontFamily="monospace">Attribute</text>
-              </svg>}
-            />
-            <Cell label="Key Attribute" sub="Primary key — uniquely identifies entity; shown with underlined text"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <ellipse cx="45" cy="25" rx="40" ry="19" fill={F} stroke={S} strokeWidth="2"/>
-                <text x="45" y="28" fill={T} fontSize="11" textAnchor="middle" fontFamily="monospace" textDecoration="underline">Key Attr</text>
-              </svg>}
-            />
-            <Cell label="Partial Key (Discriminator)" sub="Weak entity's identifier — distinguishes weak entities with same owner"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <ellipse cx="45" cy="25" rx="40" ry="19" fill={F} stroke={S} strokeWidth="2"/>
-                <text x="45" y="28" fill={T} fontSize="10" textAnchor="middle" fontFamily="monospace" textDecoration="underline">PartKey</text>
-                <line x1="15" y1="32" x2="75" y2="32" stroke={S} strokeWidth="1" strokeDasharray="4,3"/>
-              </svg>}
-            />
-            <Cell label="Multi-Valued Attribute" sub="Double ellipse — stores multiple values per entity (e.g. PhoneNumbers, Skills)"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <ellipse cx="45" cy="25" rx="40" ry="19" fill={F} stroke={S} strokeWidth="2"/>
-                <ellipse cx="45" cy="25" rx="30" ry="11" fill="none" stroke={S} strokeWidth="1.5"/>
-                <text x="45" y="29" fill={T} fontSize="9.5" textAnchor="middle" fontFamily="monospace">Multi-value</text>
-              </svg>}
-            />
-            <Cell label="Derived Attribute" sub="Dashed ellipse — computed from another attribute (e.g. Age from DOB, Experience from JoinDate)"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <ellipse cx="45" cy="25" rx="40" ry="19" fill={F} stroke={S} strokeWidth="2" strokeDasharray="5,3"/>
-                <text x="45" y="30" fill={T} fontSize="10" textAnchor="middle" fontFamily="monospace">Derived</text>
-              </svg>}
-            />
-            <Cell label="Composite Attribute" sub="Made of sub-parts connected by lines (e.g. Name → FirstName + LastName)"
-              svg={<svg viewBox="0 0 90 50" width={90} height={50}>
-                <ellipse cx="45" cy="13" rx="27" ry="11" fill={F} stroke={S} strokeWidth="1.5"/>
-                <text x="45" y="17" fill={T} fontSize="9" textAnchor="middle" fontFamily="monospace">Name</text>
-                <line x1="33" y1="23" x2="20" y2="32" stroke={S} strokeWidth="1.5"/>
-                <ellipse cx="16" cy="40" rx="15" ry="9" fill={F} stroke={S} strokeWidth="1.5"/>
-                <text x="16" y="43" fill={T} fontSize="8" textAnchor="middle" fontFamily="monospace">First</text>
-                <line x1="57" y1="23" x2="70" y2="32" stroke={S} strokeWidth="1.5"/>
-                <ellipse cx="74" cy="40" rx="15" ry="9" fill={F} stroke={S} strokeWidth="1.5"/>
-                <text x="74" y="43" fill={T} fontSize="8" textAnchor="middle" fontFamily="monospace">Last</text>
-              </svg>}
-            />
-          </div>
-
-        </div>
-      </div>
+      <div className="bg-[#141414] px-4 pb-2">{children}</div>
     </div>
+  );
+}
+
+function EntitySymbolsChart() {
+  const S = '#4ec9b0', F = '#0a2520', T = '#a8d8cb';
+  return (
+    <ERCardShell title="Entity & Attribute Symbols">
+      <ERSymCard color="text-teal-300" label="Entity — Rectangle"
+        sub="Any real-world object you want to store data about. Example: Student, Teacher, Course."
+        svg={<svg viewBox="0 0 110 58" width={110} height={58}>
+          <rect x="10" y="12" width="90" height="34" rx="3" fill={F} stroke={S} strokeWidth="2.5"/>
+          <text x="55" y="34" fill={T} fontSize="14" textAnchor="middle" fontFamily="monospace">Student</text>
+        </svg>}
+      />
+      <ERSymCard color="text-teal-300" label="Weak Entity — Double Rectangle"
+        sub="Depends on another entity to exist. Has no own primary key. Example: Dependent (of Employee)."
+        svg={<svg viewBox="0 0 110 58" width={110} height={58}>
+          <rect x="6" y="8" width="98" height="42" rx="3" fill={F} stroke={S} strokeWidth="2.5"/>
+          <rect x="11" y="13" width="88" height="32" rx="2" fill="none" stroke={S} strokeWidth="1.5"/>
+          <text x="55" y="34" fill={T} fontSize="13" textAnchor="middle" fontFamily="monospace">Dependent</text>
+        </svg>}
+      />
+      <ERSymCard color="text-teal-300" label="Attribute — Oval / Ellipse"
+        sub="A property of an entity. Example: Student has Name, Age, City."
+        svg={<svg viewBox="0 0 110 58" width={110} height={58}>
+          <ellipse cx="55" cy="29" rx="48" ry="22" fill={F} stroke={S} strokeWidth="2.5"/>
+          <text x="55" y="34" fill={T} fontSize="13" textAnchor="middle" fontFamily="monospace">Name</text>
+        </svg>}
+      />
+      <ERSymCard color="text-teal-300" label="Key Attribute — Underlined Oval"
+        sub="The primary key. Uniquely identifies every row. Example: RollNo for Student."
+        svg={<svg viewBox="0 0 110 58" width={110} height={58}>
+          <ellipse cx="55" cy="29" rx="48" ry="22" fill={F} stroke={S} strokeWidth="2.5"/>
+          <text x="55" y="32" fill={T} fontSize="13" textAnchor="middle" fontFamily="monospace" textDecoration="underline">RollNo</text>
+        </svg>}
+      />
+      <ERSymCard color="text-teal-300" label="Multi-Valued — Double Oval"
+        sub="Stores multiple values. Example: PhoneNumbers (a student can have many numbers)."
+        svg={<svg viewBox="0 0 110 58" width={110} height={58}>
+          <ellipse cx="55" cy="29" rx="48" ry="22" fill={F} stroke={S} strokeWidth="2.5"/>
+          <ellipse cx="55" cy="29" rx="36" ry="13" fill="none" stroke={S} strokeWidth="1.5"/>
+          <text x="55" y="33" fill={T} fontSize="11" textAnchor="middle" fontFamily="monospace">PhoneNo</text>
+        </svg>}
+      />
+      <ERSymCard color="text-teal-300" label="Derived — Dashed Oval"
+        sub="Calculated from another attribute. Example: Age is derived from Date of Birth."
+        svg={<svg viewBox="0 0 110 58" width={110} height={58}>
+          <ellipse cx="55" cy="29" rx="48" ry="22" fill={F} stroke={S} strokeWidth="2.5" strokeDasharray="6,3"/>
+          <text x="55" y="34" fill={T} fontSize="13" textAnchor="middle" fontFamily="monospace">Age</text>
+        </svg>}
+      />
+    </ERCardShell>
+  );
+}
+
+function RelationSymbolsChart() {
+  const S = '#569cd6', F = '#0a1020', T = '#9cdcfe';
+  return (
+    <ERCardShell title="Relationship & Cardinality Symbols">
+      <ERSymCard color="text-sky-300" label="Relationship — Diamond"
+        sub="Shows how two entities are connected. Example: Student Enrolls in Course, Teacher Teaches Course."
+        svg={<svg viewBox="0 0 110 58" width={110} height={58}>
+          <polygon points="55,5 105,29 55,53 5,29" fill={F} stroke={S} strokeWidth="2.5"/>
+          <text x="55" y="33" fill={T} fontSize="12" textAnchor="middle" fontFamily="monospace">Enrolls</text>
+        </svg>}
+      />
+      <ERSymCard color="text-sky-300" label="Identifying Relationship — Double Diamond"
+        sub="Connects a Weak Entity to its owner. Example: Dependent is identified through Employee."
+        svg={<svg viewBox="0 0 110 58" width={110} height={58}>
+          <polygon points="55,5 105,29 55,53 5,29" fill={F} stroke={S} strokeWidth="2.5"/>
+          <polygon points="55,11 96,29 55,47 14,29" fill="none" stroke={S} strokeWidth="1.5"/>
+          <text x="55" y="33" fill={T} fontSize="11" textAnchor="middle" fontFamily="monospace">Has</text>
+        </svg>}
+      />
+      <ERSymCard color="text-sky-300" label="Single Line — Partial Participation"
+        sub="Not every entity has to be in this relationship. Example: Not every Employee manages a Department."
+        svg={<svg viewBox="0 0 110 58" width={110} height={58}>
+          <line x1="8" y1="29" x2="102" y2="29" stroke={S} strokeWidth="3"/>
+        </svg>}
+      />
+      <ERSymCard color="text-sky-300" label="Double Line — Total Participation"
+        sub="Every entity MUST be in this relationship. Example: Every Student must enroll in at least one Course."
+        svg={<svg viewBox="0 0 110 58" width={110} height={58}>
+          <line x1="8" y1="24" x2="102" y2="24" stroke={S} strokeWidth="3"/>
+          <line x1="8" y1="34" x2="102" y2="34" stroke={S} strokeWidth="3"/>
+        </svg>}
+      />
+    </ERCardShell>
   );
 }
 
@@ -316,184 +290,84 @@ ID   Name            ID   Marks
     title: '📘 ER Model',
     questions: [
       {
-        q: 'ER Diagram Symbols — Shapes & What They Mean',
-        a: `ER Diagram uses specific shapes for each component. Learn these shapes first.
-\`\`\`
-Shape                  Meaning              Example
-═══════════════════════════════════════════════════════
-┌─────────────┐
-│   Student   │        Entity               Any real-world object
-└─────────────┘        (Rectangle)
-
-  ┌─────────────┐
-══│  Dependent  │══    Weak Entity          Depends on another entity
-  └─────────────┘      (Double Rectangle)   (no independent key)
-
-    ◯ Name             Attribute            Property of an entity
-                       (Ellipse)
-
-  ◉ RollNo             Key Attribute        Underlined ellipse → Primary Key
-                       (Underlined)
-
-  ◯ → ◯ ◯             Composite Attr.      Name → {FirstName, LastName}
-  Name  First Last     (Ellipse + children)
-
-  ═══ PhoneNo          Multi-Valued Attr.   Can hold multiple values
-                       (Double Ellipse)
-
-  ◯ - - Age            Derived Attribute    Calculated from another attr.
-                       (Dashed Ellipse)
-
-  ◇  Studies           Relationship         Connects two entities
-                       (Diamond)
-
-══◇══ Borrows ══◇══    Weak Relationship    Connects weak entity
-                       (Double Diamond)
-
- 1    ——◇——    M       Cardinality          1:M relationship label
-\`\`\``,
+        q: 'What is Entity & Attribute? — Theory + Symbols',
+        render: () => (
+          <div className="space-y-3 px-1 pb-2">
+            <div className="text-[15px] text-yellow-300/80 leading-relaxed space-y-2">
+              <p>An <span className="text-yellow-300 font-semibold">Entity</span> is any real-world thing we want to store data about in our database.</p>
+              <p>An <span className="text-yellow-300 font-semibold">Attribute</span> is a property or detail of that entity — it describes the entity.</p>
+              <div className="bg-[#111] border border-[#2a2a2a] rounded-xl px-4 py-3 text-sm space-y-2">
+                <p>📦 <span className="text-teal-300 font-semibold">Student</span> is an entity → its attributes: <span className="text-gray-200">RollNo, Name, PhoneNumbers, Age</span></p>
+                <p>📦 <span className="text-teal-300 font-semibold">Course</span> is an entity → its attributes: <span className="text-gray-200">CourseID, CourseName, Credits</span></p>
+                <p>📦 <span className="text-teal-300 font-semibold">Teacher</span> is an entity → its attributes: <span className="text-gray-200">TeacherID, Name, Salary, Experience</span></p>
+              </div>
+              <p className="text-sm text-gray-400">Each shape below is a symbol used in ER diagrams to draw these entities and attributes on paper.</p>
+            </div>
+            <EntitySymbolsChart />
+          </div>
+        ),
       },
       {
-        q: 'Entity, Attributes & Their Types (Detailed)',
-        a: `Entity — a real-world object that exists independently in the database.
-\`\`\`
-Strong Entity (Rectangle):       Weak Entity (Double Rectangle):
-┌──────────┐                     ╔══════════╗
-│  Student │                     ║Dependent ║   depends on Employee
-└──────────┘                     ╚══════════╝
-Has its own Primary Key          Has NO primary key alone
-Example: Student, Employee       Example: Employee's family member
-\`\`\`
-Attribute Types:
-\`\`\`
-Type              Shape           Example
-──────────────────────────────────────────────────────
-Simple            ◯               Age, RollNo, Salary
-Composite         ◯ splits into   Name → FirstName + LastName
-                  ◯ and ◯
-Key Attribute     ◉ (underlined)  RollNo (Primary Key)
-Multi-Valued      ══◯══           PhoneNumbers, Skills
-Derived           - - ◯ - -       Age (from DOB), Experience (from JoinDate)
-\`\`\`
-Real diagram layout for Student entity:
-\`\`\`
-              ◉ RollNo
-              |
-  ◯ Name ─── ┌──────────┐ ─── ═══PhoneNo═══
-              │  Student │
-  ◯ Branch ── └──────────┘ ─── - -Age- -
-              |
-              ◯ DOB
-\`\`\``,
+        q: 'What is a Relationship? — Cardinality + Symbols',
+        render: () => (
+          <div className="space-y-3 px-1 pb-2">
+            <div className="text-[15px] text-yellow-300/80 leading-relaxed space-y-2">
+              <p>A <span className="text-yellow-300 font-semibold">Relationship</span> shows how two entities are connected to each other.</p>
+              <p><span className="text-yellow-300 font-semibold">Cardinality</span> tells us the count — how many of one entity relates to how many of another.</p>
+              <div className="bg-[#111] border border-[#2a2a2a] rounded-xl px-4 py-3 text-sm space-y-2">
+                <p>🔗 <span className="text-sky-300 font-semibold">1:1</span> One-to-One &nbsp;— One person has one Aadhaar card</p>
+                <p>🔗 <span className="text-sky-300 font-semibold">1:M</span> One-to-Many &nbsp;— One teacher teaches many students</p>
+                <p>🔗 <span className="text-sky-300 font-semibold">M:N</span> Many-to-Many — Many students enroll in many courses</p>
+              </div>
+              <p className="text-sm text-gray-400">A <span className="text-yellow-300">Diamond</span> shape in ER diagrams represents a relationship. The lines connecting it show participation rules.</p>
+            </div>
+            <RelationSymbolsChart />
+          </div>
+        ),
       },
       {
-        q: 'Relationship Types & Cardinality (with Diagrams)',
-        a: `Relationship — shown as a Diamond connecting two entities.
-Cardinality — how many instances of one entity relate to another.
+        q: 'ER Diagram Example — Student Enrolls in Course',
+        a: `Problem: "Students enroll in courses. Each course is taught by one teacher."
+
+Step 1 — Identify ENTITIES:
+  Student,  Course,  Teacher
+
+Step 2 — List ATTRIBUTES for each:
 \`\`\`
-1:1  One-to-One
-     One person has exactly one passport.
-
-     ┌────────┐   1 ──◇── 1   ┌──────────┐
-     │ Person │    Has         │ Passport │
-     └────────┘               └──────────┘
-
-1:M  One-to-Many
-     One teacher teaches many students.
-
-     ┌─────────┐   1 ──◇── M   ┌─────────┐
-     │ Teacher │   Teaches      │ Student │
-     └─────────┘               └─────────┘
-
-M:N  Many-to-Many
-     Many students enroll in many courses.
-
-     ┌─────────┐   M ──◇── N   ┌────────┐
-     │ Student │   Enrolls      │ Course │
-     └─────────┘               └────────┘
-
-M:1  Many-to-One
-     Many students belong to one department.
-
-     ┌─────────┐   M ──◇── 1   ┌────────┐
-     │ Student │  BelongsTo     │  Dept  │
-     └─────────┘               └────────┘
+Student  →  ◉RollNo,  Name,  ══PhoneNo══,  - -Age- -
+Course   →  ◉CourseID,  CourseName,  Credits
+Teacher  →  ◉TeacherID,  Name,  Salary
 \`\`\`
-Generalization, Specialization & Aggregation:
+Step 3 — Identify RELATIONSHIPS + Cardinality:
 \`\`\`
-Generalization (Bottom-Up):      Specialization (Top-Down):
-Combine specific → general       Split general → specific
-
-Student ──┐                          ┌── Student
-          ├──▷ Person                Person ──▷ Teacher
-Teacher ──┘                          └── Staff
-
-Aggregation:
-Treat a Relationship as an Entity so it can participate in another relationship.
-Example: (Student ──Enrolls── Course) entity is Monitored by Teacher
-\`\`\``,
-      },
-      {
-        q: 'ER Diagram Symbols — Visual Reference (Chen\'s Notation)',
-        render: () => <ERSymbolsChart />,
-      },
-      {
-        q: 'How to Draw an ER Diagram — Step-by-Step with Example',
-        a: `Follow these 5 steps to create an ER diagram for ANY system.
-
-Step 1 — Identify ENTITIES (nouns in the problem):
-Step 2 — Identify ATTRIBUTES for each entity.
-Step 3 — Identify RELATIONSHIPS between entities.
-Step 4 — Decide CARDINALITY of each relationship.
-Step 5 — Draw the diagram.
-
-─────────────────────────────────────────────────────────
-EXAMPLE: College Management System
-─────────────────────────────────────────────────────────
-Problem: "Students enroll in courses. Each course is taught by one teacher.
-Students belong to one department. Teachers can teach multiple courses."
-
-Step 1 — Entities:
-  Student, Course, Teacher, Department
-
-Step 2 — Attributes:
+Student  ═══(M:N)═══ Enrolls  ───── Course
+Course   ──────(M:1)─── TaughtBy ── Teacher
 \`\`\`
-Student    → ◉RollNo, Name, Email, PhoneNo (multi), DOB
-Course     → ◉CourseID, CourseName, Credits
-Teacher    → ◉TeacherID, Name, Salary, - -Experience- -
-Department → ◉DeptID, DeptName, Location
+Step 4 — Full ER Diagram:
 \`\`\`
-Step 3 & 4 — Relationships + Cardinality:
+  ◉RollNo  ◯Name  ══PhoneNo══  ◯Age(derived)
+      |      |         |            |
+  ╔══════════════════════╗
+  ║       Student        ║ ══════(M)─── Enrolls ───(N)══════ ┌──────────────┐
+  ╚══════════════════════╝                                     │    Course    │
+                                                              └──────────────┘
+                                                               ◉CourseID  ◯Credits
+                                                                     |(M)
+                                                                 TaughtBy
+                                                                     |(1)
+                                                              ┌──────────────┐
+                                                              │   Teacher    │
+                                                              └──────────────┘
+                                                              ◉TeacherID  ◯Salary
 \`\`\`
-Student  ──(M:N)── Enrolls  ── Course
-Course   ──(M:1)── TaughtBy ── Teacher
-Student  ──(M:1)── BelongsTo── Department
-Teacher  ──(M:1)── WorksIn  ── Department
+Step 5 — Convert to Tables (M:N becomes its own table):
 \`\`\`
-Step 5 — Full ER Diagram:
+Student(RollNo, Name, PhoneNo, Age)
+Course(CourseID, CourseName, Credits, TeacherID)
+Teacher(TeacherID, Name, Salary)
+Enrollment(RollNo, CourseID, EnrollDate)   ← new table for M:N
 \`\`\`
-◉RollNo  ◯Name  ═══Phone             ◉CourseID ◯Credits
-   |       |       |                     |         |
-┌──────────────────┐  M ──Enrolls── N ┌───────────────┐
-│     Student      │                  │    Course      │
-└──────────────────┘                  └───────────────┘
-        | M                                   | M
-     BelongsTo                            TaughtBy
-        | 1                                   | 1
-┌──────────────────┐                  ┌───────────────┐
-│   Department     │──── WorksIn ─────│   Teacher     │
-└──────────────────┘   (Teacher M:1)  └───────────────┘
-◉DeptID ◯DeptName                  ◉TeacherID ◯Salary
-\`\`\`
-Step 6 — Convert ER Diagram to Tables (Relational Schema):
-\`\`\`
-Student(RollNo, Name, Email, DOB, DeptID→Dept)
-Course(CourseID, CourseName, Credits, TeacherID→Teacher)
-Teacher(TeacherID, Name, Salary, DeptID→Dept)
-Department(DeptID, DeptName, Location)
-Enrollment(RollNo→Student, CourseID→Course, EnrollDate)  ← M:N becomes its own table
-\`\`\`
-Rule: M:N relationship always becomes a SEPARATE TABLE with both foreign keys.`,
+Key Rule: When cardinality is M:N, always create a SEPARATE table with both keys.`,
       },
     ],
   },
