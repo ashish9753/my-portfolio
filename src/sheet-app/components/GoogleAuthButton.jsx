@@ -22,7 +22,7 @@ const loadGoogleScript = () => {
   });
 };
 
-function GoogleAuthButton({ setAuth, setError, setLoading, navigate, text = 'signin_with' }) {
+function GoogleAuthButton({ setAuth, setError, setLoading, navigate, text = 'signin_with', onNeedsSetup }) {
   const buttonRef = useRef(null);
   const [ready, setReady] = useState(false);
 
@@ -58,6 +58,31 @@ function GoogleAuthButton({ setAuth, setError, setLoading, navigate, text = 'sig
         try {
           const response = await axios.post(`${AUTH_API}/google`, { credential });
 
+          // New Google user: email is verified, but they still need to choose a
+          // username and password before the account is created.
+          if (response.data?.needsSetup) {
+            setLoading(false);
+            if (onNeedsSetup) {
+              onNeedsSetup({
+                setupToken: response.data.setupToken,
+                email: response.data.email,
+                suggestedUsername: response.data.suggestedUsername || ''
+              });
+            } else {
+              // No setup UI here (e.g. on the login screen) — send them to signup.
+              navigate('/sheet/signup', {
+                state: {
+                  googleSetup: {
+                    setupToken: response.data.setupToken,
+                    email: response.data.email,
+                    suggestedUsername: response.data.suggestedUsername || ''
+                  }
+                }
+              });
+            }
+            return;
+          }
+
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('user', JSON.stringify(response.data.user));
 
@@ -85,7 +110,7 @@ function GoogleAuthButton({ setAuth, setError, setLoading, navigate, text = 'sig
       width: buttonRef.current.offsetWidth || 360,
       text
     });
-  }, [navigate, ready, setAuth, setError, setLoading, text]);
+  }, [navigate, ready, setAuth, setError, setLoading, text, onNeedsSetup]);
 
   return (
     <div className="w-full overflow-hidden rounded-lg border border-slate-700/80 bg-slate-900/60">

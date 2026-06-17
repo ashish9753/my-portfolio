@@ -16,7 +16,7 @@ const getLoginErrorMessage = (err) => {
     return 'Login API returned a server error. The base server is online, but /api/auth/login is failing.';
   }
   if (serverMessage) return serverMessage;
-  if (err.response?.status === 401) return 'Invalid email or password.';
+  if (err.response?.status === 401) return 'Invalid email/username or password.';
   if (err.response?.status === 403) return 'Your account is blocked. Please contact support.';
   if (err.request) return 'Cannot reach the login server. Check backend, CORS, or mixed-content settings.';
   return 'Login failed. Please try again.';
@@ -24,7 +24,7 @@ const getLoginErrorMessage = (err) => {
 
 function Login({ setAuth }) {
   const [formData, setFormData] = useState({
-    email: '',
+    identifier: '',
     password: ''
   });
   const [error, setError] = useState('');
@@ -44,11 +44,12 @@ function Login({ setAuth }) {
     setLoading(true);
 
     try {
-      const email = formData.email.trim().toLowerCase();
+      const identifier = formData.identifier.trim();
       const response = await axios.post(`${AUTH_API}/login`, {
-        email,
-        username: email,
-        identifier: email,
+        identifier,
+        // Sent for backward compatibility with the API's accepted fields
+        email: identifier,
+        username: identifier,
         password: formData.password
       });
 
@@ -163,15 +164,16 @@ function Login({ setAuth }) {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-slate-300">Email</label>
+                <label className="block text-sm font-medium text-slate-300">Email or username</label>
                 <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
+                  type="text"
+                  name="identifier"
+                  value={formData.identifier}
                   onChange={handleChange}
                   required
+                  autoComplete="username"
                   className="w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-[#9333ea] focus:outline-none focus:ring-2 focus:ring-[#9333ea]/40"
-                  placeholder="Enter your email"
+                  placeholder="Enter your email or username"
                 />
               </div>
 

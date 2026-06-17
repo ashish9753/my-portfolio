@@ -294,7 +294,9 @@ function HomePage({ auth, setAuth }) {
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
-    newPassword: ''
+    oldPassword: '',
+    newPassword: '',
+    confirmNewPassword: ''
   });
   const [passwordError, setPasswordError] = useState('');
   const [isSavingPassword, setIsSavingPassword] = useState(false);
@@ -466,7 +468,7 @@ function HomePage({ auth, setAuth }) {
 
   const openPasswordModal = () => {
     setPasswordError('');
-    setPasswordForm({ newPassword: '' });
+    setPasswordForm({ oldPassword: '', newPassword: '', confirmNewPassword: '' });
     setIsPasswordOpen(true);
   };
 
@@ -498,9 +500,9 @@ function HomePage({ auth, setAuth }) {
       setIsSavingEdit(true);
       setEditError('');
       const token = localStorage.getItem('token');
+      // Email is Google-verified and fixed, so only the username is updatable.
       const payload = {
-        username: editForm.username.trim(),
-        email: editForm.email.trim()
+        username: editForm.username.trim()
       };
       const response = await axios.patch(`${AUTH_API}/me`, payload, {
         headers: {
@@ -531,12 +533,27 @@ function HomePage({ auth, setAuth }) {
     event.preventDefault();
     if (!auth?.isAuthenticated) return;
 
+    if (!passwordForm.oldPassword) {
+      setPasswordError('Please enter your current password.');
+      return;
+    }
+    if (passwordForm.newPassword.length < 6) {
+      setPasswordError('New password must be at least 6 characters.');
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmNewPassword) {
+      setPasswordError('New passwords do not match.');
+      return;
+    }
+
     try {
       setIsSavingPassword(true);
       setPasswordError('');
       const token = localStorage.getItem('token');
       await axios.patch(`${AUTH_API}/me/password`, {
-        newPassword: passwordForm.newPassword
+        oldPassword: passwordForm.oldPassword,
+        newPassword: passwordForm.newPassword,
+        confirmNewPassword: passwordForm.confirmNewPassword
       }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -997,10 +1014,11 @@ function HomePage({ auth, setAuth }) {
                     type="email"
                     name="email"
                     value={editForm.email}
-                    onChange={handleEditChange}
-                    className="w-full rounded-lg border border-[#2a2a2a] bg-[#0d0d0d] px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                    required
+                    readOnly
+                    disabled
+                    className="w-full rounded-lg border border-[#2a2a2a] bg-[#0a0a0a] px-4 py-2.5 text-sm text-gray-500 cursor-not-allowed"
                   />
+                  <p className="mt-1.5 text-xs text-gray-500">Verified with Google — your email can't be changed.</p>
                 </div>
                 <div className="flex justify-end gap-3 pt-2">
                   <button
@@ -1045,12 +1063,38 @@ function HomePage({ auth, setAuth }) {
 
               <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-4">
                 <div>
+                  <label className="block text-sm text-gray-300 mb-2">Current password</label>
+                  <input
+                    type="password"
+                    name="oldPassword"
+                    value={passwordForm.oldPassword}
+                    onChange={handlePasswordChange}
+                    autoComplete="current-password"
+                    className="w-full rounded-lg border border-[#2a2a2a] bg-[#0d0d0d] px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    required
+                  />
+                </div>
+                <div>
                   <label className="block text-sm text-gray-300 mb-2">New password</label>
                   <input
                     type="password"
                     name="newPassword"
                     value={passwordForm.newPassword}
                     onChange={handlePasswordChange}
+                    autoComplete="new-password"
+                    className="w-full rounded-lg border border-[#2a2a2a] bg-[#0d0d0d] px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    required
+                    minLength={6}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">Confirm new password</label>
+                  <input
+                    type="password"
+                    name="confirmNewPassword"
+                    value={passwordForm.confirmNewPassword}
+                    onChange={handlePasswordChange}
+                    autoComplete="new-password"
                     className="w-full rounded-lg border border-[#2a2a2a] bg-[#0d0d0d] px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     required
                     minLength={6}
