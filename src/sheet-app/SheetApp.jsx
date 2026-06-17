@@ -56,18 +56,41 @@ function SheetApp() {
     });
   };
 
-  // Check for existing auth on mount
+  // Read the JWT expiry (in ms) without verifying the signature — used only to
+  // decide when to auto-logout on the client. The server still enforces it.
+  const getTokenExpiryMs = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return typeof payload.exp === 'number' ? payload.exp * 1000 : null;
+    } catch {
+      return null;
+    }
+  };
+
+  // Check for existing auth on mount and enforce the 7-day session expiry
   useEffect(() => {
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
-    
-    if (token && user) {
-      setAuth({
-        isAuthenticated: true,
-        user: JSON.parse(user),
-        token: token
-      });
+
+    if (!token || !user) return;
+
+    const expiryMs = getTokenExpiryMs(token);
+    // Treat a malformed/expired token as logged out
+    if (!expiryMs || expiryMs <= Date.now()) {
+      handleLogout();
+      return;
     }
+
+    setAuth({
+      isAuthenticated: true,
+      user: JSON.parse(user),
+      token: token
+    });
+
+    // Auto-logout the moment the session expires while the app is open
+    const msUntilExpiry = expiryMs - Date.now();
+    const timer = setTimeout(handleLogout, msUntilExpiry);
+    return () => clearTimeout(timer);
   }, []);
 
   // Protected Route Component

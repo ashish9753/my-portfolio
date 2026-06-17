@@ -6,18 +6,21 @@ import LoadingScreen from '../../components/LoadingScreen.jsx';
 // const ADMIN_API = 'https://api.ashishdev.com/api/admin';
  const ADMIN_API = 'https://dsa-sheet-backend-7r7i.onrender.com/api/admin';
 const MAIN_ADMIN_EMAIL = 'admin@ashishdev.com';
-const ADMIN_QUESTION_TOPICS = [
+// Fallback list shown before live data loads (or when the DB is empty).
+// Spellings here MUST match the values actually stored in the database so that
+// filtering and adding line up with existing questions.
+const FALLBACK_TOPICS = [
   'Sorting',
   'Array',
   'Binary Search',
   'String',
   'LinkedList',
   'Recursion',
-  'BitManipulation',
-  'StackAndQueues',
-  'SlidingWindow',
-  'BinaryTrees',
-  'BinarySearchTrees',
+  'Bit Manipulation',
+  'Stack and Queues',
+  'Sliding Window',
+  'Binary Trees',
+  'Binary Search Trees',
   'Heaps',
   'Greedy',
   'Graphs',
@@ -43,11 +46,12 @@ function AdminPage({ auth }) {
   const [questionSearch, setQuestionSearch] = useState('');
   const [debouncedQuestionSearch, setDebouncedQuestionSearch] = useState('');
   const [questionTopic, setQuestionTopic] = useState('all');
+  const [liveTopics, setLiveTopics] = useState([]);
   const [showBlockedOnly, setShowBlockedOnly] = useState(false);
   const [actionUserId, setActionUserId] = useState(null);
   const [actionQuestionId, setActionQuestionId] = useState(null);
   const [editUser, setEditUser] = useState(null);
-  const [editForm, setEditForm] = useState({ username: '', email: '', role: 'user' });
+  const [editForm, setEditForm] = useState({ username: '', email: '', role: 'user', password: '' });
   const [questionEditor, setQuestionEditor] = useState(undefined);
   const [questionForm, setQuestionForm] = useState(EMPTY_QUESTION);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
@@ -78,6 +82,14 @@ function AdminPage({ auth }) {
     ? new Date(date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' })
     : null;
 
+  // Every selectable topic = real topics from the DB merged with the fallback
+  // list, de-duplicated and sorted. This drives both the filter and the
+  // Add/Edit question form so they always match the actual data.
+  const topicOptions = useMemo(() => {
+    const set = new Set([...FALLBACK_TOPICS, ...liveTopics].filter(Boolean));
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [liveTopics]);
+
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -102,6 +114,11 @@ function AdminPage({ auth }) {
       const url = `${ADMIN_API}/questions${params.toString() ? `?${params}` : ''}`;
       const res = await axios.get(url, { headers });
       setQuestions(res.data?.questions || []);
+      // The backend returns the full distinct topic list (unaffected by the
+      // current filter), so the dropdowns always reflect every real topic.
+      if (Array.isArray(res.data?.topics)) {
+        setLiveTopics(res.data.topics);
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load questions.');
     } finally {
@@ -199,18 +216,25 @@ function AdminPage({ auth }) {
   const openEditModal = (user) => {
     if (!canActOnUser(user)) return;
     setEditUser(user);
-    setEditForm({ username: user.username || '', email: user.email || '', role: user.role || 'user' });
+    setEditForm({ username: user.username || '', email: user.email || '', role: user.role || 'user', password: '' });
   };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     if (!editUser) return;
     try {
+      const trimmedPassword = editForm.password.trim();
+      if (trimmedPassword && trimmedPassword.length < 6) {
+        setError('New password must be at least 6 characters.');
+        return;
+      }
       setIsSavingEdit(true);
       const res = await axios.patch(`${ADMIN_API}/users/${editUser._id}`, {
         username: editForm.username.trim(),
         email: editForm.email.trim(),
-        role: editForm.role
+        role: editForm.role,
+        // Only sent when the admin actually typed a new password
+        ...(trimmedPassword ? { password: trimmedPassword } : {})
       }, { headers });
       const upd = res.data?.user || res.data || null;
       if (upd) setUsers(prev => prev.map(item => item._id === editUser._id ? { ...item, ...upd } : item));
@@ -477,7 +501,7 @@ function AdminPage({ auth }) {
               <input value={questionSearch} onChange={e => setQuestionSearch(e.target.value)} placeholder="Search questions..." className="w-full lg:flex-1 rounded-lg border border-[#252525] bg-[#0a0a0a] px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50" />
               <select value={questionTopic} onChange={e => setQuestionTopic(e.target.value)} className="rounded-lg border border-[#252525] bg-[#0a0a0a] px-3 py-2 text-sm text-white focus:outline-none">
                 <option value="all">All topics</option>
-                {ADMIN_QUESTION_TOPICS.map(topic => <option key={topic} value={topic}>{topic}</option>)}
+                {topicOptions.map(topic => <option key={topic} value={topic}>{topic}</option>)}
               </select>
               <button onClick={handleResetQuestionFilters} className="px-4 py-2 rounded-lg border border-[#252525] bg-[#161616] hover:bg-[#1e1e1e] text-sm font-medium">Reset Filter</button>
               <button onClick={() => openQuestionModal()} className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-sm font-semibold">Add Question</button>
@@ -551,6 +575,18 @@ function AdminPage({ auth }) {
                   <option value="admin">Admin</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1.5">Reset password</label>
+                <input
+                  type="text"
+                  value={editForm.password}
+                  onChange={e => setEditForm(p => ({ ...p, password: e.target.value }))}
+                  autoComplete="new-password"
+                  placeholder="Leave blank to keep current password"
+                  className="w-full rounded-lg border border-[#252525] bg-[#0a0a0a] px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+                />
+                <p className="mt-1 text-[11px] text-gray-600">Min 6 characters. The user can change it later from their profile.</p>
+              </div>
               <div className="flex justify-end gap-2 pt-1">
                 <button type="button" onClick={() => setEditUser(null)} className="px-4 py-2 rounded-lg border border-[#252525] text-sm text-gray-400 hover:bg-[#161616]">Cancel</button>
                 <button type="submit" disabled={isSavingEdit} className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-sm font-semibold text-white disabled:opacity-60">{isSavingEdit ? 'Saving...' : 'Save changes'}</button>
@@ -578,9 +614,17 @@ function AdminPage({ auth }) {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs text-gray-500 mb-1.5">Topic</label>
-                  <select value={questionForm.topic} onChange={e => setQuestionForm(p => ({ ...p, topic: e.target.value }))} className="w-full rounded-lg border border-[#252525] bg-[#0a0a0a] px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50" required>
-                    {ADMIN_QUESTION_TOPICS.map(topic => <option key={topic} value={topic}>{topic}</option>)}
-                  </select>
+                  <input
+                    list="admin-topic-options"
+                    value={questionForm.topic}
+                    onChange={e => setQuestionForm(p => ({ ...p, topic: e.target.value }))}
+                    placeholder="Pick or type a topic"
+                    className="w-full rounded-lg border border-[#252525] bg-[#0a0a0a] px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+                    required
+                  />
+                  <datalist id="admin-topic-options">
+                    {topicOptions.map(topic => <option key={topic} value={topic} />)}
+                  </datalist>
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1.5">Difficulty</label>

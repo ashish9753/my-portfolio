@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 import GoogleAuthButton from './GoogleAuthButton';
 
@@ -31,6 +31,78 @@ function Signup({ setAuth }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Google-verified signup that still needs a username + password.
+  // setupData = { setupToken, email, suggestedUsername }
+  const [setupData, setSetupData] = useState(null);
+  const [setupForm, setSetupForm] = useState({ username: '', password: '', confirmPassword: '' });
+  const [setupError, setSetupError] = useState('');
+  const [setupLoading, setSetupLoading] = useState(false);
+
+  // Arriving from the Login page after Google verified a brand-new account
+  useEffect(() => {
+    const incoming = location.state?.googleSetup;
+    if (incoming?.setupToken) {
+      beginSetup(incoming);
+      // Clear the navigation state so a refresh doesn't re-trigger it
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const beginSetup = (data) => {
+    setError('');
+    setSetupError('');
+    setSetupData(data);
+    setSetupForm({ username: data.suggestedUsername || '', password: '', confirmPassword: '' });
+  };
+
+  const handleSetupChange = (e) => {
+    setSetupForm({ ...setupForm, [e.target.name]: e.target.value });
+  };
+
+  const handleSetupSubmit = async (e) => {
+    e.preventDefault();
+    setSetupError('');
+
+    if (setupForm.username.trim().length < 3) {
+      setSetupError('Username must be at least 3 characters');
+      return;
+    }
+    if (setupForm.password.length < 6) {
+      setSetupError('Password must be at least 6 characters');
+      return;
+    }
+    if (setupForm.password !== setupForm.confirmPassword) {
+      setSetupError('Passwords do not match');
+      return;
+    }
+
+    setSetupLoading(true);
+    try {
+      const response = await axios.post(`${AUTH_API}/google/complete`, {
+        setupToken: setupData.setupToken,
+        username: setupForm.username.trim(),
+        password: setupForm.password
+      });
+
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
+      setAuth({
+        isAuthenticated: true,
+        user: response.data.user,
+        token: response.data.token
+      });
+
+      navigate('/sheet');
+    } catch (err) {
+      setSetupError(getSignupErrorMessage(err));
+    } finally {
+      setSetupLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -183,6 +255,81 @@ function Signup({ setAuth }) {
               </div>
             )}
 
+            {setupData ? (
+              <form onSubmit={handleSetupSubmit} className="space-y-4">
+                <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
+                  ✓ Email verified with Google: <span className="font-semibold">{setupData.email}</span>. Choose your username and password to finish.
+                </div>
+                {setupError && (
+                  <div className="rounded-md border border-rose-500/80 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
+                    {setupError}
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-300">Email</label>
+                  <input
+                    type="email"
+                    value={setupData.email}
+                    disabled
+                    readOnly
+                    className="w-full rounded-lg border border-slate-700/80 bg-slate-900/40 px-4 py-3 text-sm text-slate-400 cursor-not-allowed"
+                  />
+                  <p className="mt-1 text-xs text-slate-500">Verified by Google — this can't be changed.</p>
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-300">Username</label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={setupForm.username}
+                    onChange={handleSetupChange}
+                    required
+                    minLength={3}
+                    autoComplete="username"
+                    className="w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-[#9333ea] focus:outline-none focus:ring-2 focus:ring-[#9333ea]/40"
+                    placeholder="Choose a unique username"
+                  />
+                  <p className="mt-1 text-xs text-slate-500">Minimum 3 characters, must be unique.</p>
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-300">Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={setupForm.password}
+                    onChange={handleSetupChange}
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                    className="w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-[#9333ea] focus:outline-none focus:ring-2 focus:ring-[#9333ea]/40"
+                    placeholder="Create a password"
+                  />
+                  <p className="mt-1 text-xs text-slate-500">Minimum 6 characters.</p>
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-300">Confirm password</label>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={setupForm.confirmPassword}
+                    onChange={handleSetupChange}
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                    className="w-full rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                    placeholder="Confirm your password"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={setupLoading}
+                  className="mt-1 w-full rounded-lg bg-[#3730a3] py-3 text-sm font-semibold text-white shadow-lg shadow-[rgba(55,48,163,0.65)] auth-primary-btn hover:bg-[#4f46e5] disabled:cursor-not-allowed disabled:bg-slate-700 disabled:shadow-none"
+                >
+                  {setupLoading ? 'Creating account…' : 'Create account'}
+                </button>
+              </form>
+            ) : (
+            <>
             <form onSubmit={handleSubmit} className="space-y-4">
               {GOOGLE_ONLY_SIGNUP && (
                 <div className="relative mb-4">
@@ -205,6 +352,7 @@ function Signup({ setAuth }) {
                       setLoading={setLoading}
                       navigate={navigate}
                       text="signup_with"
+                      onNeedsSetup={beginSetup}
                     />
                   </div>
                 </div>
@@ -288,6 +436,8 @@ function Signup({ setAuth }) {
               <span className="text-slate-300">Terms</span> and{' '}
               <span className="text-slate-300">Privacy Policy</span>.
             </p>
+            </>
+            )}
           </div>
         </div>
       </div>
