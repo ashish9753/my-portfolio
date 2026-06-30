@@ -1050,6 +1050,564 @@ HAVING AVG(marks) > 85;`,
   },
 ];
 
+// ─── SQL Oracle Commands Quick Revision Data ─────────────────────────────────
+// Classic EMP / DEPT dataset reference (Oracle-style) for fast exam revision.
+const oracleSections = [
+  {
+    title: 'Step 1: Datatypes & Constraints',
+    items: [
+      {
+        q: '1. Database & Datatype',
+        a: 'A Database is a place/medium used to store data in a systematic and organised manner. A Datatype identifies which type of data is stored in a column.',
+        table: {
+          headers: ['Datatype', 'Description'],
+          rows: [
+            ['CHAR', 'Fixed-length text. Reserves the full size even if unused.'],
+            ['VARCHAR / VARCHAR2', 'Variable-length text. VARCHAR up to 2000, VARCHAR2 up to ~9000 (engine dependent).'],
+            ['NUMBER', 'Numeric values.'],
+            ['DATE', 'Date / time values.'],
+            ['CLOB', 'Character Large Object — up to 4 GB of text.'],
+            ['BLOB', 'Binary Large Object — up to 4 GB: images, videos, audio.'],
+          ],
+        },
+        tip: 'varchar(10) storing "Dingo" uses 5 blocks; CHAR keeps all 10 reserved, VARCHAR releases the unused 5.',
+      },
+      {
+        q: '2. Constraints',
+        a: 'Constraints are the rules given to a column for validation.',
+        table: {
+          headers: ['Constraint', 'Meaning'],
+          rows: [
+            ['UNIQUE', 'Cannot accept duplicate / repeated values.'],
+            ['NOT NULL', 'Cannot be left empty — a value is mandatory.'],
+            ['CHECK', 'Accepts only values that satisfy a given condition.'],
+            ['PRIMARY KEY', 'Uniquely identifies each row (UNIQUE + NOT NULL).'],
+            ['FOREIGN KEY', 'Links a column to the primary key of another table.'],
+          ],
+        },
+        tip: 'A repeating EID violates UNIQUE/PRIMARY KEY; a blank Ename violates NOT NULL.',
+      },
+      {
+        q: '3. SQL Statement Categories',
+        a: 'SQL commands are grouped into five categories by purpose.',
+        table: {
+          headers: ['Category', 'Full Form', 'Commands'],
+          rows: [
+            ['DDL', 'Data Definition Language', 'CREATE, RENAME, ALTER, TRUNCATE, DROP'],
+            ['DML', 'Data Manipulation Language', 'INSERT, UPDATE, DELETE'],
+            ['TCL', 'Transaction Control Language', 'COMMIT, ROLLBACK, SAVEPOINT'],
+            ['DCL', 'Data Control Language', 'GRANT, REVOKE'],
+            ['DQL', 'Data Query Language', 'SELECT'],
+          ],
+        },
+      },
+    ],
+  },
+  {
+    title: 'Step 2: Sample Tables (EMP / DEPT)',
+    items: [
+      {
+        q: '4. EMP Table',
+        a: 'All queries below run against this classic 14-row EMP table.',
+        table: {
+          headers: ['empno', 'ename', 'job', 'mgr', 'hiredate', 'sal', 'comm', 'deptno'],
+          rows: [
+            ['7369', 'SMITH', 'CLERK', '7902', '1980-12-17', '800', 'NULL', '20'],
+            ['7499', 'ALLEN', 'SALESMAN', '7698', '1981-02-20', '1600', '300', '30'],
+            ['7521', 'WARD', 'SALESMAN', '7698', '1981-02-22', '1250', '500', '30'],
+            ['7566', 'JONES', 'MANAGER', '7839', '1981-04-02', '2975', 'NULL', '20'],
+            ['7654', 'MARTIN', 'SALESMAN', '7698', '1981-09-28', '1250', '1400', '30'],
+            ['7698', 'BLAKE', 'MANAGER', '7839', '1981-05-01', '2850', 'NULL', '30'],
+            ['7782', 'CLARK', 'MANAGER', '7839', '1981-06-09', '2450', 'NULL', '10'],
+            ['7788', 'SCOTT', 'ANALYST', '7566', '1982-12-09', '3000', 'NULL', '20'],
+            ['7839', 'KING', 'PRESIDENT', 'NULL', '1981-11-17', '5000', 'NULL', '10'],
+            ['7844', 'TURNER', 'SALESMAN', '7698', '1981-09-08', '1500', '0', '30'],
+            ['7876', 'ADAMS', 'CLERK', '7788', '1983-01-12', '1100', 'NULL', '20'],
+            ['7900', 'JAMES', 'CLERK', '7698', '1981-12-03', '950', 'NULL', '30'],
+            ['7902', 'FORD', 'ANALYST', '7566', '1981-12-03', '3000', 'NULL', '20'],
+            ['7934', 'MILLER', 'CLERK', '7782', '1982-01-23', '1300', 'NULL', '10'],
+          ],
+        },
+      },
+      {
+        q: '5. DEPT Table',
+        a: 'The DEPT table holds the four departments.',
+        table: {
+          headers: ['deptno', 'dname', 'loc'],
+          rows: [
+            ['10', 'ACCOUNTING', 'NEW YORK'],
+            ['20', 'RESEARCH', 'DALLAS'],
+            ['30', 'SALES', 'CHICAGO'],
+            ['40', 'OPERATIONS', 'BOSTON'],
+          ],
+        },
+        tip: 'Two facts that drive join results: dept 40 (OPERATIONS) has NO employees, and every employee except KING has a manager.',
+      },
+    ],
+  },
+  {
+    title: 'Step 3: SELECT, DISTINCT & WHERE',
+    items: [
+      {
+        q: '6. SELECT & DISTINCT',
+        a: 'SELECT reads columns from a table. DISTINCT removes duplicate values and must be the first argument in the SELECT list.',
+        code: `-- Syntax
+SELECT * / [DISTINCT] column_name / expression [alias]
+FROM table_name;
+
+-- Display emp name, deptno, hiredate and job
+SELECT ename, deptno, hiredate, job
+FROM emp;
+
+-- Remove duplicate deptno values
+SELECT DISTINCT deptno
+FROM emp;`,
+      },
+      {
+        q: '7. Expressions & Aliases',
+        a: 'Columns can be combined in expressions and renamed with AS.',
+        code: `-- Annual and half-yearly salary
+SELECT ename,
+       sal * 12 AS annual_sal,
+       (sal * 12) / 2 AS half_year_sal
+FROM emp;
+
+-- SMITH's salary
+SELECT ename, sal
+FROM emp
+WHERE ename = 'SMITH';`,
+      },
+      {
+        q: '8. WHERE Clause',
+        a: 'WHERE filters records (rows) and executes after FROM, working on one row at a time.',
+        code: `-- Emps earning more than 1000
+SELECT *
+FROM emp
+WHERE sal > 1000;
+
+-- Emps hired after 1980
+SELECT ename, hiredate
+FROM emp
+WHERE hiredate > '1980-12-31';
+
+-- Emps earning more than 1000 and less than 5000
+SELECT ename, sal
+FROM emp
+WHERE sal > 1000 AND sal < 5000;`,
+      },
+    ],
+  },
+  {
+    title: 'Step 4: Operators & LIKE',
+    items: [
+      {
+        q: '9. Operator Categories',
+        a: 'SQL operators grouped by purpose.',
+        table: {
+          headers: ['Category', 'Operators'],
+          rows: [
+            ['Arithmetic', '+  −  *  /'],
+            ['Concatenation', '||'],
+            ['Comparison', '=  != (<>)'],
+            ['Relational', '>  <  >=  <='],
+            ['Logical', 'AND  OR  NOT'],
+            ['Special', 'IN, NOT IN, BETWEEN, NOT BETWEEN, IS, IS NOT, LIKE, NOT LIKE'],
+            ['Subquery', 'ANY, ALL, EXISTS, NOT EXISTS'],
+            ['Set', 'UNION, UNION ALL, INTERSECT, MINUS'],
+          ],
+        },
+      },
+      {
+        q: '10. Concatenation, IN, BETWEEN, IS NULL',
+        a: 'Common special operators in action.',
+        code: `-- Concatenation (||)  ->  Mr. ALLEN, Mr. KING ...
+SELECT 'Mr. ' || ename AS name
+FROM emp;
+
+-- IN: match any value in a list
+SELECT *
+FROM emp
+WHERE deptno IN (10, 20, 30, 60);
+
+-- NOT BETWEEN: outside a range
+SELECT *
+FROM emp
+WHERE sal NOT BETWEEN 1000 AND 5000;
+
+-- IS NULL: emps not getting commission
+SELECT ename
+FROM emp
+WHERE comm IS NULL;`,
+      },
+      {
+        q: '11. LIKE — Pattern Matching',
+        a: '% matches multiple characters (zero or more); _ matches exactly one character.',
+        table: {
+          headers: ['Pattern', 'Matches'],
+          rows: [
+            ["'A%'", 'names starting with A'],
+            ["'%A'", 'names ending with A'],
+            ["'%A%'", 'names containing A anywhere'],
+            ["'_A%'", 'A as the second character'],
+          ],
+        },
+        code: `-- starts with A
+SELECT * FROM emp WHERE ename LIKE 'A%';
+
+-- A is the 2nd char
+SELECT * FROM emp WHERE ename LIKE '_A%';
+
+-- names that do NOT contain S
+SELECT * FROM emp WHERE ename NOT LIKE '%S%';`,
+      },
+    ],
+  },
+  {
+    title: 'Step 5: Functions',
+    items: [
+      {
+        q: '12. Single-Row Function (SRF)',
+        a: 'Number of inputs = number of outputs. One input row gives one output row.',
+        bullets: ['LENGTH()', 'UPPER()', 'LOWER()'],
+        code: `SELECT LENGTH(ename)
+FROM emp;`,
+      },
+      {
+        q: '13. Multi-Row Function (MRF) — Aggregates',
+        a: 'Aggregates: MAX(), MIN(), AVG(), SUM(), COUNT(). Rules: cannot accept NULL, cannot take more than one argument, cannot be paired with another column name, cannot be used in WHERE, and COUNT() is the only one that accepts * as an argument.',
+        code: `-- Minimum salary of a MANAGER
+SELECT MIN(sal)
+FROM emp
+WHERE job = 'MANAGER';
+
+-- Maximum salary
+SELECT MAX(sal)
+FROM emp;`,
+      },
+      {
+        q: '14. Combined Aggregates',
+        a: 'Count, min, max, avg and sum of salary for emps in depts 10/20/30, salary 1000–5000, no commission, and 5-letter names.',
+        code: `SELECT COUNT(*) AS emp_count,
+       MIN(sal)  AS min_sal,
+       MAX(sal)  AS max_sal,
+       AVG(sal)  AS avg_sal,
+       SUM(sal)  AS total_sal
+FROM emp
+WHERE deptno IN (10, 20, 30)
+  AND sal BETWEEN 1000 AND 5000
+  AND comm IS NULL
+  AND LENGTH(ename) = 5;
+
+-- Sum of salary of emps who have a reporting manager
+SELECT SUM(sal)
+FROM emp
+WHERE mgr IS NOT NULL;`,
+      },
+    ],
+  },
+  {
+    title: 'Step 6: GROUP BY, HAVING & ORDER BY',
+    items: [
+      {
+        q: '15. GROUP BY',
+        a: 'GROUP BY executes after FROM and groups rows that share a value so an aggregate can run per group.',
+        code: `-- Count of emps in each department
+SELECT deptno, COUNT(*) AS emp_count
+FROM emp
+GROUP BY deptno;`,
+        table: {
+          caption: 'Result',
+          headers: ['deptno', 'emp_count'],
+          rows: [['10', '3'], ['20', '5'], ['30', '6']],
+        },
+      },
+      {
+        q: '16. HAVING vs WHERE',
+        a: 'WHERE filters rows BEFORE grouping (no aggregates allowed). HAVING filters groups AFTER grouping (aggregates allowed).',
+        table: {
+          headers: ['WHERE', 'HAVING'],
+          rows: [
+            ['Filters rows before grouping', 'Filters groups after grouping'],
+            ['Used before GROUP BY', 'Used after GROUP BY'],
+            ['Aggregate functions not allowed', 'Aggregate functions allowed'],
+            ['Works on individual records', 'Works on groups of records'],
+            ['e.g. WHERE sal > 2000', 'e.g. HAVING AVG(sal) > 2000'],
+          ],
+        },
+        code: `-- Departments whose average salary is greater than 2000
+SELECT deptno, AVG(sal)
+FROM emp
+GROUP BY deptno
+HAVING AVG(sal) > 2000;
+
+-- Display duplicate salaries
+SELECT sal, COUNT(*)
+FROM emp
+GROUP BY sal
+HAVING COUNT(*) > 1;`,
+      },
+      {
+        q: '17. ORDER BY',
+        a: 'ORDER BY arranges records ascending (ASC, default) or descending (DESC). It is the last clause to execute.',
+        code: `-- Full clause execution order
+SELECT column / group_function
+FROM table_name
+WHERE <row_condition>
+GROUP BY column_name
+HAVING <group_condition>
+ORDER BY column_name ASC / DESC;
+
+-- Emp names in descending order
+SELECT ename
+FROM emp
+ORDER BY ename DESC;`,
+      },
+    ],
+  },
+  {
+    title: 'Step 7: Subqueries',
+    items: [
+      {
+        q: '18. Subquery Working Principle',
+        a: 'A query written inside another query is a subquery. The inner query runs FIRST and its output becomes the input of the outer query, so the outer query depends on the inner query.',
+        code: `-- Emp names earning less than KING
+SELECT ename, sal
+FROM emp
+WHERE sal < (
+    SELECT sal FROM emp WHERE ename = 'KING'
+);`,
+      },
+      {
+        q: '19. Case 1 — Indirect / Unknown Condition',
+        a: "When the comparison value isn't given directly, fetch it first with a subquery.",
+        code: `-- Emps in the same dept as ALLEN
+SELECT ename
+FROM emp
+WHERE deptno = (
+    SELECT deptno FROM emp WHERE ename = 'ALLEN'
+);
+
+-- Emps in dept 20 hired after SMITH
+SELECT ename
+FROM emp
+WHERE deptno = 20 AND hiredate > (
+    SELECT hiredate FROM emp WHERE ename = 'SMITH'
+);
+
+-- Emps working in the RESEARCH dept
+SELECT ename
+FROM emp
+WHERE deptno = (
+    SELECT deptno FROM dept WHERE dname = 'RESEARCH'
+);`,
+      },
+      {
+        q: '20. Case 2 — Condition in Another Table',
+        a: 'Pull the matching value from the related table inside the subquery.',
+        code: `-- ADAMS' department name
+SELECT dname
+FROM dept
+WHERE deptno = (
+    SELECT deptno FROM emp WHERE ename = 'ADAMS'
+);
+
+-- Emps getting commission and working in SALES
+SELECT *
+FROM emp
+WHERE comm IS NOT NULL AND deptno = (
+    SELECT deptno FROM dept WHERE dname = 'SALES'
+);
+
+-- Emps earning less than SCOTT and working in NEW YORK
+SELECT *
+FROM emp
+WHERE sal < (SELECT sal FROM emp WHERE ename = 'SCOTT')
+  AND deptno = (SELECT deptno FROM dept WHERE loc = 'NEW YORK');`,
+      },
+    ],
+  },
+  {
+    title: 'Step 8: ALL / ANY & Nested Subqueries',
+    items: [
+      {
+        q: '21. ALL & ANY Operators',
+        a: 'Used with a relational operator against a subquery that returns multiple values. ALL must satisfy against EVERY value (acts like AND); ANY must satisfy against ANY ONE value (acts like OR).',
+        code: `-- Emps earning more than every MANAGER (> ALL)
+SELECT ename
+FROM emp
+WHERE sal > ALL (
+    SELECT sal FROM emp WHERE job = 'MANAGER'
+);
+
+-- Emps earning more than any one MANAGER (> ANY)
+SELECT ename
+FROM emp
+WHERE sal > ANY (
+    SELECT sal FROM emp WHERE job = 'MANAGER'
+);`,
+        tip: 'Single-row subquery returns one value (use =, >, <). Multi-row subquery returns many values (use IN, ANY, ALL).',
+      },
+      {
+        q: '22. Nth Maximum / Minimum Salary',
+        a: 'Nest subqueries to step down (or up) the salary ladder. You can nest up to 255 levels.',
+        code: `-- Second maximum salary
+SELECT MAX(sal)
+FROM emp
+WHERE sal < (SELECT MAX(sal) FROM emp);
+
+-- Third maximum salary
+SELECT MAX(sal)
+FROM emp
+WHERE sal < (
+    SELECT MAX(sal) FROM emp
+    WHERE sal < (SELECT MAX(sal) FROM emp)
+);
+
+-- 4th minimum salary
+SELECT MIN(sal)
+FROM emp
+WHERE sal > (
+    SELECT MIN(sal) FROM emp
+    WHERE sal > (
+        SELECT MIN(sal) FROM emp
+        WHERE sal > (SELECT MIN(sal) FROM emp)
+    )
+);`,
+      },
+      {
+        q: '23. Manager-Chain Subqueries',
+        a: 'Follow the mgr column up the hierarchy using nested subqueries.',
+        code: `-- Display SMITH's manager
+SELECT ename
+FROM emp
+WHERE empno = (
+    SELECT mgr FROM emp WHERE ename = 'SMITH'
+);
+
+-- SMITH's manager's manager name
+SELECT ename
+FROM emp
+WHERE empno = (
+    SELECT mgr FROM emp
+    WHERE empno = (
+        SELECT mgr FROM emp WHERE ename = 'SMITH'
+    )
+);`,
+      },
+    ],
+  },
+  {
+    title: 'Step 9: Joins',
+    items: [
+      {
+        q: '24. Cross Join',
+        a: 'Each record of table-1 merges with every record of table-2 (Cartesian product). 14 emps × 4 depts = 56 rows.',
+        code: `SELECT ename, dname
+FROM emp CROSS JOIN dept;`,
+      },
+      {
+        q: '25. Inner Join',
+        a: 'Returns only matching records based on the join condition. Dept 40 (OPERATIONS) has no employees so it disappears — result = 14 rows.',
+        code: `SELECT ename, dname
+FROM dept d
+INNER JOIN emp e
+ON d.deptno = e.deptno;
+
+-- ename & dname of those working as MANAGER
+SELECT ename, dname
+FROM dept d
+INNER JOIN emp e
+ON d.deptno = e.deptno
+WHERE job = 'MANAGER';`,
+      },
+      {
+        q: '26. Outer Join (Left / Right / Full)',
+        a: 'Retrieves matching AND unmatched records. LEFT keeps all left rows, RIGHT keeps all right rows, FULL keeps both. Right/Full join EMP↔DEPT keeps the unmatched OPERATIONS row (NULL ename) = 15 rows.',
+        code: `-- LEFT: all EMP rows + matching dept
+SELECT ename, dname
+FROM emp e
+LEFT OUTER JOIN dept d
+ON e.deptno = d.deptno;
+
+-- RIGHT: all DEPT rows + matching emp (OPERATIONS kept, ename NULL)
+SELECT ename, dname
+FROM emp e
+RIGHT OUTER JOIN dept d
+ON e.deptno = d.deptno;
+
+-- FULL OUTER (Oracle / SQL Server)
+SELECT ename, dname
+FROM emp
+FULL OUTER JOIN dept
+ON emp.deptno = dept.deptno;
+
+-- MySQL has no FULL OUTER JOIN — emulate with UNION:
+SELECT ename, dname FROM emp
+LEFT JOIN dept ON emp.deptno = dept.deptno
+UNION
+SELECT ename, dname FROM emp
+RIGHT JOIN dept ON emp.deptno = dept.deptno;`,
+      },
+      {
+        q: '27. Natural Join',
+        a: 'Automatically joins two tables on columns having the same name and datatype (here deptno). No ON clause needed; the common deptno column appears only once. Same 14 matching rows as inner join.',
+        code: `SELECT ename, dname
+FROM emp
+NATURAL JOIN dept;`,
+      },
+      {
+        q: '28. Self Join',
+        a: 'A table joins with itself — mainly to resolve employee–manager relationships, where e1.mgr points to e2.empno. KING (mgr = NULL) is excluded by the inner self join, so result = 13 rows.',
+        code: `-- employee name and their manager name
+SELECT e1.ename AS employee,
+       e2.ename AS manager
+FROM emp e1
+INNER JOIN emp e2
+ON e1.mgr = e2.empno;
+
+-- SMITH's manager name (self join)
+SELECT e2.ename
+FROM emp e1
+INNER JOIN emp e2
+ON e1.mgr = e2.empno
+WHERE e1.ename = 'SMITH';`,
+        tip: 'To include KING (no manager), change the inner join to a LEFT OUTER JOIN — his manager column then returns NULL.',
+      },
+      {
+        q: '29. Equi & Non-Equi Join',
+        a: 'Equi Join uses the = operator. Non-Equi Join uses <, >, <=, >=, BETWEEN instead of =.',
+        code: `-- Equi Join (old comma syntax + WHERE)
+SELECT ename, dname
+FROM emp, dept
+WHERE emp.deptno = dept.deptno;
+
+-- Non-Equi Join (e.g. salary grade lookup)
+SELECT ename, grade
+FROM emp, salgrade
+WHERE sal BETWEEN losal AND hisal;`,
+      },
+      {
+        q: '30. Joins — Quick Revision Table',
+        a: 'What each join returns at a glance.',
+        table: {
+          headers: ['Join', 'Returns'],
+          rows: [
+            ['Cross Join', 'Every record paired with every record (Cartesian product).'],
+            ['Inner Join', 'Only matching records.'],
+            ['Left Outer Join', 'All left + matching right.'],
+            ['Right Outer Join', 'All right + matching left.'],
+            ['Full Outer Join', 'All records from both tables.'],
+            ['Natural Join', 'Automatic join on common column names.'],
+            ['Self Join', 'Table joins with itself.'],
+            ['Equi Join', 'Uses the = operator.'],
+            ['Non-Equi Join', 'Uses <, >, <=, >=, BETWEEN.'],
+          ],
+        },
+      },
+    ],
+  },
+];
+
 // ─── SQL Syntax Highlighter ───────────────────────────────────────────────────
 const SQL_KW = new Set([
   'SELECT','FROM','WHERE','INSERT','INTO','VALUES','UPDATE','SET','DELETE',
@@ -1220,15 +1778,18 @@ function renderDBMSAnswer(text) {
 
 const totalDbmsQ = dbmsSections.reduce((s, sec) => s + sec.questions.length, 0);
 const totalSqlNotes = sqlSections.reduce((s, sec) => s + sec.items.length, 0);
-const totalNotes = totalDbmsQ + totalSqlNotes;
+const totalOracleNotes = oracleSections.reduce((s, sec) => s + sec.items.length, 0);
+const totalNotes = totalDbmsQ + totalSqlNotes + totalOracleNotes;
+const totalSections = dbmsSections.length + sqlSections.length + oracleSections.length;
 
 function DBMSSheet({ auth, setAuth }) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Both panels closed by default
+  // All panels closed by default
   const [dbmsOpen, setDbmsOpen] = useState(false);
   const [sqlOpen, setSqlOpen] = useState(false);
+  const [oracleOpen, setOracleOpen] = useState(false);
 
   const [openAnswers, setOpenAnswers] = useState({});
   const [collapsedDbms, setCollapsedDbms] = useState(
@@ -1236,6 +1797,9 @@ function DBMSSheet({ auth, setAuth }) {
   );
   const [collapsedSql, setCollapsedSql] = useState(
     () => sqlSections.reduce((acc, _, i) => ({ ...acc, [i]: true }), {})
+  );
+  const [collapsedOracle, setCollapsedOracle] = useState(
+    () => oracleSections.reduce((acc, _, i) => ({ ...acc, [i]: true }), {})
   );
   const questionRefs = useRef({});
 
@@ -1272,6 +1836,9 @@ function DBMSSheet({ auth, setAuth }) {
     if (panel === 'dbms') {
       setDbmsOpen(true);
       setCollapsedDbms(prev => ({ ...prev, [sectionIdx]: false }));
+    } else if (panel === 'oracle') {
+      setOracleOpen(true);
+      setCollapsedOracle(prev => ({ ...prev, [sectionIdx]: false }));
     } else {
       setSqlOpen(true);
       setCollapsedSql(prev => ({ ...prev, [sectionIdx]: false }));
@@ -1304,10 +1871,18 @@ function DBMSSheet({ auth, setAuth }) {
     ) : sec.items,
   })).filter(sec => sec.items.length > 0), [q]);
 
-  const totalVisible = filteredDbms.reduce((s, sec) => s + sec.questions.length, 0)
-    + filteredSql.reduce((s, sec) => s + sec.items.length, 0);
+  const filteredOracle = useMemo(() => oracleSections.map(sec => ({
+    ...sec,
+    items: q ? sec.items.filter(item =>
+      JSON.stringify(item).toLowerCase().includes(q)
+    ) : sec.items,
+  })).filter(sec => sec.items.length > 0), [q]);
 
-  const noResults = q && filteredDbms.length === 0 && filteredSql.length === 0;
+  const totalVisible = filteredDbms.reduce((s, sec) => s + sec.questions.length, 0)
+    + filteredSql.reduce((s, sec) => s + sec.items.length, 0)
+    + filteredOracle.reduce((s, sec) => s + sec.items.length, 0);
+
+  const noResults = q && filteredDbms.length === 0 && filteredSql.length === 0 && filteredOracle.length === 0;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -1323,7 +1898,7 @@ function DBMSSheet({ auth, setAuth }) {
               <h1 className="text-2xl font-bold leading-tight">
                 <span className="text-yellow-400">DBMS</span> – Theory & SQL Notes
               </h1>
-              <p className="text-xs text-gray-500">{totalDbmsQ} theory Q&A · {totalSqlNotes} SQL notes · {dbmsSections.length + sqlSections.length} sections</p>
+              <p className="text-xs text-gray-500">{totalDbmsQ} theory Q&A · {totalSqlNotes} SQL notes · {totalOracleNotes} Oracle revision · {totalSections} sections</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -1339,7 +1914,7 @@ function DBMSSheet({ auth, setAuth }) {
           {[
             { label: 'Total Topics', value: totalNotes, color: 'text-yellow-400' },
             { label: 'Revealed', value: revealedCount, color: 'text-emerald-400' },
-            { label: 'Sections', value: dbmsSections.length + sqlSections.length, color: 'text-sky-400' },
+            { label: 'Sections', value: totalSections, color: 'text-sky-400' },
           ].map(s => (
             <div key={s.label} className="bg-[#111] border border-[#1f1f1f] rounded-xl p-6 text-center">
               <div className={`text-4xl font-bold ${s.color}`}>{s.value}</div>
@@ -1555,6 +2130,97 @@ function DBMSSheet({ auth, setAuth }) {
                                   </svg>
                                 </a>
                                 <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${item.q} SQL explained`)}`}
+                                  target="_blank" rel="noopener noreferrer" title="Search on YouTube"
+                                  className="mr-1 flex-shrink-0 rounded p-2 text-red-500 hover:text-red-400 hover:scale-125 transition-all duration-300"
+                                  onClick={e => e.stopPropagation()}>
+                                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                  </svg>
+                                </a>
+                              </div>
+                              {isOpen && <AnswerContent item={item} />}
+                            </article>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* ── SQL Oracle Commands Quick Revision Accordion ── */}
+        <section className="overflow-hidden rounded-2xl border border-[#2a2a2a]">
+          <button
+            onClick={() => setOracleOpen(p => !p)}
+            className="group flex w-full items-center justify-between bg-[#111] px-6 py-5 transition-colors hover:bg-[#161616]"
+          >
+            <div className="flex items-center gap-4 text-left">
+              <span className="grid h-11 w-11 place-items-center rounded-xl border border-yellow-400/25 bg-yellow-400/10 text-sm font-black text-yellow-300">ORA</span>
+              <div>
+                <p className="text-xl font-bold text-yellow-400">SQL Oracle Commands Quick Revision</p>
+                <p className="mt-0.5 text-xs text-gray-500">{oracleSections.length} sections · {totalOracleNotes} notes · EMP / DEPT dataset</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-1 text-xs text-gray-500">{totalOracleNotes} topics</span>
+              <svg className={`h-5 w-5 text-yellow-400/70 transition-transform duration-300 ${oracleOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </button>
+
+          {(oracleOpen || (q && filteredOracle.length > 0)) && (
+            <div className="border-t border-[#1f1f1f] bg-[#0d0d0d] px-4 py-4 space-y-0">
+              {filteredOracle.map((section, sIdx) => {
+                const origIdx = oracleSections.findIndex(s => s.title === section.title);
+                const isCollapsed = q ? false : collapsedOracle[origIdx];
+                return (
+                  <div key={sIdx}>
+                    <button onClick={() => setCollapsedOracle(p => ({ ...p, [origIdx]: !p[origIdx] }))} className="w-full flex items-center justify-between py-4 group">
+                      <div className="flex items-center gap-3">
+                        <span className="text-yellow-400 font-bold text-lg">{section.title}</span>
+                        <span className="text-sm text-gray-500 bg-[#1a1a1a] px-2.5 py-0.5 rounded-full">{section.items.length} notes</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="h-px w-20 bg-[#1f1f1f] hidden sm:block" />
+                        <svg className={`w-4 h-4 text-yellow-400/60 transition-transform duration-200 ${isCollapsed ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </button>
+                    <div className="h-px bg-[#1f1f1f] mb-2" />
+                    {!isCollapsed && (
+                      <div>
+                        {section.items.map((item, iIdx) => {
+                          const key = `oracle-${origIdx}-${iIdx}`;
+                          const isOpen = openAnswers[key];
+                          const isLastRead = lastRead?.key === key;
+                          return (
+                            <article key={key} ref={el => questionRefs.current[key] = el}
+                              className={`border-b transition-all rounded-sm ${isOpen ? 'bg-yellow-400/[0.06] border-yellow-400/20' : isLastRead ? 'border-yellow-400/15' : 'border-[#161616]'}`}>
+                              <div className="flex items-center gap-1">
+                                <button onClick={() => toggleAnswer(key, item.q, section.title)}
+                                  className="flex flex-1 items-center justify-between rounded px-2 py-5 text-left transition-colors hover:bg-white/[0.03]">
+                                  <div className="flex min-w-0 items-center gap-2">
+                                    {isLastRead && <span className="text-yellow-400 text-xs flex-shrink-0">📌</span>}
+                                    <span className={`text-[17px] leading-snug ${isLastRead ? 'text-yellow-200' : 'text-gray-200'}`}>{item.q}</span>
+                                  </div>
+                                  <svg className={`ml-3 h-3.5 w-3.5 flex-shrink-0 text-gray-600 transition-transform duration-200 ${isOpen ? 'rotate-180 text-yellow-400' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                </button>
+                                <a href={`https://chatgpt.com/?q=${encodeURIComponent(`${item.q} in Oracle SQL, explain with the EMP / DEPT dataset`)}`}
+                                  target="_blank" rel="noopener noreferrer" title="Ask ChatGPT"
+                                  className="mr-1 flex-shrink-0 rounded p-2 text-gray-500 hover:text-gray-300 hover:scale-125 transition-all duration-300 animate-spin [animation-duration:6s]"
+                                  onClick={e => e.stopPropagation()}>
+                                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.648zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.843-3.371 2.019-1.168a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.4-.679zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.496 4.496 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.603 1.497v2.999l-2.597 1.5-2.603-1.495z"/>
+                                  </svg>
+                                </a>
+                                <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${item.q} Oracle SQL explained`)}`}
                                   target="_blank" rel="noopener noreferrer" title="Search on YouTube"
                                   className="mr-1 flex-shrink-0 rounded p-2 text-red-500 hover:text-red-400 hover:scale-125 transition-all duration-300"
                                   onClick={e => e.stopPropagation()}>
