@@ -21,6 +21,7 @@ import SystemDesignSheet from '../Core-Concept-CS/SystemDesignSheet';
 import CNSheet from '../Core-Concept-CS/CNSheet';
 import OSSheet from '../Core-Concept-CS/OSSheet';
 import DBMSSheet from '../Core-Concept-CS/DBMSSheet';
+import OracleSQLNotes from '../Core-Concept-CS/OracleSQLNotes';
 import DevOpsSheet from '../Core-Concept-CS/DevOpsSheet';
 import OOPSSheet from '../Core-Concept-CS/OOPSSheet';
 import SoftwareEngineeringSheet from '../Core-Concept-CS/SoftwareEngineeringSheet';
@@ -336,13 +337,21 @@ function SheetApp() {
           </ProtectedRoute>
         } 
       />
-      <Route 
-        path="/DBMS" 
+      <Route
+        path="/DBMS"
         element={
           <ProtectedRoute>
             <DBMSSheet auth={auth} setAuth={setAuth} />
           </ProtectedRoute>
-        } 
+        }
+      />
+      <Route
+        path="/DBMS/OracleSQLRevision"
+        element={
+          <ProtectedRoute>
+            <OracleSQLNotes />
+          </ProtectedRoute>
+        }
       />
       <Route 
         path="/DevOps" 
