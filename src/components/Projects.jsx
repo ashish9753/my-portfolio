@@ -76,8 +76,8 @@ const Projects = () => {
         { name: 'Nginx', icon: SiNginx, color: '#009639' },
         { name: 'Tailwind', icon: SiTailwindcss, color: '#06B6D4' }
       ],
-      github: 'https://github.com/ashish9753',
-      live: '#',
+      github: 'https://github.com/ashish9753/E-commerce-vps',
+      live: 'https://tradengine.com.np/',
       features: [
         'Customer, Seller & Admin role-based workflows',
         'RESTful APIs with JWT Authentication & Google OAuth',
