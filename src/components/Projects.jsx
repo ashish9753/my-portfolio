@@ -19,17 +19,28 @@ const ProjectImageSlider = ({ images, title }) => {
   if (!images || images.length === 0) return null;
 
   return (
-    <img
-      src={images[currentIndex]}
-      alt={title}
-      className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
-      onError={(e) => {
-        e.target.style.display = 'none';
-        if (e.target.parentElement) {
-          e.target.parentElement.innerHTML = '<div class="flex items-center justify-center h-full bg-gray-800 text-gray-400"><span>Image not found</span></div>';
-        }
-      }}
-    />
+    <div className="w-full h-full overflow-hidden group-hover:scale-110 transition-transform duration-500">
+      <div
+        className="flex h-full transition-transform duration-1000 ease-in-out"
+        style={{
+          width: `${images.length * 100}%`,
+          transform: `translateX(-${currentIndex * (100 / images.length)}%)`
+        }}
+      >
+        {images.map((src, index) => (
+          <img
+            key={src}
+            src={src}
+            alt={`${title} ${index + 1}`}
+            className="h-full object-cover object-center flex-shrink-0"
+            style={{ width: `${100 / images.length}%` }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        ))}
+      </div>
+    </div>
   );
 };
 
@@ -44,7 +55,18 @@ const Projects = () => {
       category: 'Full Stack',
       description: 'Production-ready MERN-based e-commerce platform supporting customer, seller, and admin workflows with Google OAuth, role-based authorization, and Docker deployment.',
       longDescription: 'Developed a production-ready MERN-based e-commerce platform supporting customer, seller, and admin workflows, improving operational efficiency by ~40%. Designed and implemented RESTful APIs, JWT authentication, Google OAuth, and role-based authorization, reducing API response time by ~25% while enhancing application security by ~35%. Built features such as product catalog management, advanced search/filtering, shopping cart, order tracking, and admin analytics dashboard. Deployed the application using Docker, Nginx, VPS, and Cloudflare, improving deployment reliability and scalability by ~45%.',
-      image: '/TradeEngine.png',
+      image: '/E-commerce/TradeEngine1.png',
+      images: [
+        '/E-commerce/TradeEngine1.png',
+        '/E-commerce/TradeEngine2.png',
+        '/E-commerce/TradeEngine3.png',
+        '/E-commerce/TradeEngine4.png',
+        '/E-commerce/TradeEngine5.png',
+        '/E-commerce/TradeEngine6.png',
+        '/E-commerce/TradeEngine7.png',
+        '/E-commerce/TradeEngine8.png',
+        '/E-commerce/TradeEngine9.png'
+      ],
       technologies: [
         { name: 'React', icon: FaReact, color: '#61DAFB' },
         { name: 'Node.js', icon: FaNodeJs, color: '#339933' },
