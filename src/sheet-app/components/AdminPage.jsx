@@ -692,26 +692,36 @@ function AdminPage({ auth }) {
                 <div className="h-40 flex items-center justify-center text-gray-600 text-sm">No traffic in this range.</div>
               ) : (
                 <>
-                  <div className="flex items-end gap-[2px] h-40">
+                  <div className="flex items-center justify-between mb-3 text-[11px]">
+                    <span className="text-gray-500">Peak <span className="text-gray-300 font-semibold">{peakBucketViews}</span> / {analytics.granularity === 'hour' ? 'hour' : 'day'}</span>
+                    <span className="text-gray-500"><span className="text-gray-300 font-semibold">{analytics.pageViews}</span> views in range</span>
+                  </div>
+                  {/* Direct value labels are only readable when bars are few; on a
+                      long day-range they'd collide, so there we rely on hover. */}
+                  <div className="flex items-end gap-[2px] h-44 border-b border-[#333]">
                     {analytics.series.map(bucket => {
                       const isHour = analytics.granularity === 'hour';
+                      const showLabel = bucket.pageViews > 0 && analytics.series.length <= 31;
                       const tip = isHour
                         ? `${bucket.label} — ${bucket.pageViews} view${bucket.pageViews === 1 ? '' : 's'}`
                         : `${fmtDayLabel(bucket.key)} — ${bucket.pageViews} view${bucket.pageViews === 1 ? '' : 's'}`;
                       return (
-                        <div key={bucket.key} className="group relative flex-1 h-full flex items-end">
+                        <div key={bucket.key} className="group relative flex-1 h-full flex flex-col justify-end items-center">
+                          {showLabel && (
+                            <span className="text-[9px] font-semibold text-blue-300 mb-0.5 leading-none">{bucket.pageViews}</span>
+                          )}
                           <div
-                            className="w-full rounded-t bg-blue-500/70 group-hover:bg-blue-400 transition-colors"
-                            style={{ height: bucket.pageViews ? `${Math.max((bucket.pageViews / peakBucketViews) * 100, 2)}%` : '0%' }}
+                            className="w-full rounded-t bg-blue-500 group-hover:bg-blue-300 transition-colors"
+                            style={{ height: bucket.pageViews ? `${Math.max((bucket.pageViews / peakBucketViews) * 100, 8)}%` : '0%' }}
                           />
-                          <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-10 whitespace-nowrap rounded-md border border-[#252525] bg-[#0a0a0a] px-2 py-1 text-[10px] text-gray-300">
+                          <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-10 whitespace-nowrap rounded-md border border-[#333] bg-[#0a0a0a] px-2 py-1 text-[10px] text-gray-100">
                             {tip}
                           </div>
                         </div>
                       );
                     })}
                   </div>
-                  <div className="flex justify-between text-[10px] text-gray-600 mt-2">
+                  <div className="flex justify-between text-[10px] text-gray-500 mt-2">
                     {analytics.granularity === 'hour'
                       ? ['00:00', '06:00', '12:00', '18:00', '23:00'].map(label => <span key={label}>{label}</span>)
                       : (() => {
