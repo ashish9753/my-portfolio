@@ -11,6 +11,7 @@ import Projects from './components/Projects.jsx';
 import Contact from './components/Contact.jsx';
 import Footer from './components/Footer.jsx';
 import SheetApp from './sheet-app/SheetApp.jsx';
+import { trackVisit } from './utils/trackVisit.js';
 
 const BASE_TITLE = 'Ashish Sharma';
 const PAGE_TITLES = {
@@ -122,6 +123,12 @@ function App() {
   useEffect(() => {
     document.title = getDocumentTitle(location);
   }, [location]);
+
+  // Count every page view, including client-side navigation between routes.
+  // Keyed on pathname alone so scrolling to a #hash isn't counted as a visit.
+  useEffect(() => {
+    trackVisit(location.pathname);
+  }, [location.pathname]);
 
   return (
     <Routes>
