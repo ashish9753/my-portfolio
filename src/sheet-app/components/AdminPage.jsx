@@ -61,8 +61,11 @@ function AdminPage({ auth }) {
   const [joinEnd, setJoinEnd] = useState('');
   const [analytics, setAnalytics] = useState(null);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
-  // Empty means "today", resolved by the server in its own timezone.
-  const [analyticsDate, setAnalyticsDate] = useState('');
+  // Selected traffic window. A named preset ('today' | '7d' | '30d' | '90d') is
+  // resolved server-side in its own timezone; 'custom' uses the two date inputs.
+  const [trafficPreset, setTrafficPreset] = useState('today');
+  const [customFrom, setCustomFrom] = useState('');
+  const [customTo, setCustomTo] = useState('');
 
   const isAdminUser = auth?.user?.isAdmin || auth?.user?.role === 'admin';
   const isMainAdmin = isAdminUser && auth?.user?.email?.toLowerCase() === MAIN_ADMIN_EMAIL;
@@ -98,6 +101,23 @@ function AdminPage({ auth }) {
   // A country code only exists when a CDN geo header reaches the API. Without
   // one the browser's timezone is the closest thing to a location we collect.
   const locationLabel = (row) => row.country || row.timezone || 'Unknown';
+
+  // "16 Jul" from a "YYYY-MM-DD" day string, without any timezone shifting.
+  const fmtDayLabel = (day) => {
+    if (!day) return '';
+    const [y, m, d] = day.split('-').map(Number);
+    return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-IN', {
+      day: '2-digit', month: 'short', timeZone: 'UTC'
+    });
+  };
+
+  // Heading that names the selected window: one day, or a "from – to" range.
+  const trafficRangeLabel = () => {
+    if (!analytics) return '';
+    return analytics.from === analytics.to
+      ? fmtDayLabel(analytics.from)
+      : `${fmtDayLabel(analytics.from)} – ${fmtDayLabel(analytics.to)}`;
+  };
 
   // Every selectable topic = real topics from the DB merged with the fallback
   // list, de-duplicated and sorted. This drives both the filter and the
@@ -143,11 +163,22 @@ function AdminPage({ auth }) {
     }
   };
 
-  const fetchAnalytics = async (date = analyticsDate) => {
+  // Turn the current selection into the query string the API expects: a named
+  // preset, or an explicit from/to range for a custom window.
+  const trafficQuery = () => {
+    if (trafficPreset !== 'custom') return `?period=${trafficPreset}`;
+    const params = new URLSearchParams();
+    if (customFrom) params.set('from', customFrom);
+    if (customTo) params.set('to', customTo);
+    const qs = params.toString();
+    return qs ? `?${qs}` : '';
+  };
+
+  const fetchAnalytics = async () => {
     try {
       setAnalyticsLoading(true);
       setError('');
-      const res = await axios.get(`${ADMIN_API}/analytics${date ? `?date=${date}` : ''}`, { headers });
+      const res = await axios.get(`${ADMIN_API}/analytics${trafficQuery()}`, { headers });
       setAnalytics(res.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load traffic.');
@@ -167,9 +198,12 @@ function AdminPage({ auth }) {
 
   useEffect(() => {
     if (!isAdminUser || activeView !== 'traffic') return;
+    // For a custom window, wait until at least one bound is set before hitting
+    // the API (avoids a redundant "today" fetch the instant Custom is picked).
+    if (trafficPreset === 'custom' && !customFrom && !customTo) return;
 
-    fetchAnalytics(analyticsDate);
-  }, [isAdminUser, activeView, analyticsDate]);
+    fetchAnalytics();
+  }, [isAdminUser, activeView, trafficPreset, customFrom, customTo]);
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -207,11 +241,11 @@ function AdminPage({ auth }) {
     admins: users.filter(u => u.isAdmin || u.role === 'admin').length,
   }), [users]);
 
-  const trafficStats = useMemo(() => ({
-    weekPageViews: (analytics?.trend || []).reduce((sum, day) => sum + day.pageViews, 0),
-    // Seeds with 1 so an empty day can't divide by zero when sizing the bars.
-    peakHourViews: Math.max(1, ...(analytics?.byHour || []).map(bucket => bucket.pageViews))
-  }), [analytics]);
+  // Seeds with 1 so an empty window can't divide by zero when sizing the bars.
+  const peakBucketViews = useMemo(
+    () => Math.max(1, ...(analytics?.series || []).map(bucket => bucket.pageViews)),
+    [analytics]
+  );
 
   const questionStats = useMemo(() => ({
     total: questions.length,
@@ -402,7 +436,7 @@ function AdminPage({ auth }) {
             <button
               onClick={() => {
                 if (activeView === 'users') return fetchUsers();
-                if (activeView === 'traffic') return fetchAnalytics(analyticsDate);
+                if (activeView === 'traffic') return fetchAnalytics();
                 return fetchQuestions({ search: questionSearch, topic: questionTopic });
               }}
               className="px-4 py-2 rounded-lg bg-[#161616] hover:bg-[#1e1e1e] border border-[#252525] text-sm font-medium"
@@ -606,9 +640,9 @@ function AdminPage({ auth }) {
           <>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
               {[
-                { label: 'Page Views', value: analytics?.pageViews ?? 0, color: 'text-white' },
+                { label: analytics?.granularity === 'hour' ? 'Page Views' : 'Page Views (range)', value: analytics?.pageViews ?? 0, color: 'text-white' },
                 { label: 'Unique Visitors', value: analytics?.uniqueVisitors ?? 0, color: 'text-green-400' },
-                { label: 'Last 7 Days', value: trafficStats.weekPageViews, color: 'text-blue-400' },
+                { label: 'Last 7 Days', value: analytics?.last7Days ?? 0, color: 'text-blue-400' },
                 { label: `Last ${analytics?.retentionDays ?? 90} Days`, value: analytics?.totalPageViews ?? 0, color: 'text-gray-300' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl px-4 py-4">
@@ -618,36 +652,73 @@ function AdminPage({ auth }) {
               ))}
             </div>
 
-            <div className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl p-3 mb-4 flex flex-col sm:flex-row sm:items-center gap-3">
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <span>Day:</span>
-                <input type="date" value={analyticsDate || analytics?.day || ''} onChange={e => setAnalyticsDate(e.target.value)} className="rounded-lg border border-[#252525] bg-[#0a0a0a] px-2 py-2 text-xs text-white focus:outline-none" />
+            <div className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl p-3 mb-4 flex flex-col gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex rounded-lg border border-[#252525] bg-[#0a0a0a] p-1">
+                  {[
+                    { key: 'today', label: 'Today' },
+                    { key: '7d', label: '7 Days' },
+                    { key: '30d', label: '30 Days' },
+                    { key: '90d', label: '3 Months' },
+                    { key: 'custom', label: 'Custom' },
+                  ].map(opt => (
+                    <button
+                      key={opt.key}
+                      onClick={() => setTrafficPreset(opt.key)}
+                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${trafficPreset === opt.key ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+                    >{opt.label}</button>
+                  ))}
+                </div>
+                {analytics && <span className="text-xs text-gray-500">Showing {trafficRangeLabel()}</span>}
+                <span className="text-xs text-gray-600 ml-auto">All times in {analytics?.timeZone || 'Asia/Kolkata'}</span>
               </div>
-              <button onClick={() => setAnalyticsDate('')} className="px-4 py-2 rounded-lg border border-[#252525] bg-[#161616] hover:bg-[#1e1e1e] text-xs font-medium">Today</button>
-              <span className="text-xs text-gray-600 sm:ml-auto">All times in {analytics?.timeZone || 'Asia/Kolkata'}</span>
+
+              {trafficPreset === 'custom' && (
+                <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 border-t border-[#1a1a1a] pt-3">
+                  <span>From:</span>
+                  <input type="date" value={customFrom} max={customTo || undefined} onChange={e => setCustomFrom(e.target.value)} className="rounded-lg border border-[#252525] bg-[#0a0a0a] px-2 py-2 text-xs text-white focus:outline-none" />
+                  <span>To:</span>
+                  <input type="date" value={customTo} min={customFrom || undefined} onChange={e => setCustomTo(e.target.value)} className="rounded-lg border border-[#252525] bg-[#0a0a0a] px-2 py-2 text-xs text-white focus:outline-none" />
+                  <span className="text-gray-600">Up to {analytics?.retentionDays ?? 90} days of history are kept.</span>
+                </div>
+              )}
             </div>
 
             <div className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl p-4 mb-4">
-              <h2 className="text-sm font-semibold mb-4">Page views by hour</h2>
+              <h2 className="text-sm font-semibold mb-4">{analytics?.granularity === 'day' ? 'Page views by day' : 'Page views by hour'}</h2>
               {analyticsLoading ? (
                 <div className="h-40 flex items-center justify-center text-gray-600 text-sm">Loading traffic...</div>
+              ) : (analytics?.series || []).length === 0 ? (
+                <div className="h-40 flex items-center justify-center text-gray-600 text-sm">No traffic in this range.</div>
               ) : (
                 <>
                   <div className="flex items-end gap-[2px] h-40">
-                    {(analytics?.byHour || []).map(bucket => (
-                      <div key={bucket.hour} className="group relative flex-1 h-full flex items-end">
-                        <div
-                          className="w-full rounded-t bg-blue-500/70 group-hover:bg-blue-400 transition-colors"
-                          style={{ height: bucket.pageViews ? `${Math.max((bucket.pageViews / trafficStats.peakHourViews) * 100, 2)}%` : '0%' }}
-                        />
-                        <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-10 whitespace-nowrap rounded-md border border-[#252525] bg-[#0a0a0a] px-2 py-1 text-[10px] text-gray-300">
-                          {String(bucket.hour).padStart(2, '0')}:00 — {bucket.pageViews} view{bucket.pageViews === 1 ? '' : 's'}
+                    {analytics.series.map(bucket => {
+                      const isHour = analytics.granularity === 'hour';
+                      const tip = isHour
+                        ? `${bucket.label} — ${bucket.pageViews} view${bucket.pageViews === 1 ? '' : 's'}`
+                        : `${fmtDayLabel(bucket.key)} — ${bucket.pageViews} view${bucket.pageViews === 1 ? '' : 's'}`;
+                      return (
+                        <div key={bucket.key} className="group relative flex-1 h-full flex items-end">
+                          <div
+                            className="w-full rounded-t bg-blue-500/70 group-hover:bg-blue-400 transition-colors"
+                            style={{ height: bucket.pageViews ? `${Math.max((bucket.pageViews / peakBucketViews) * 100, 2)}%` : '0%' }}
+                          />
+                          <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-10 whitespace-nowrap rounded-md border border-[#252525] bg-[#0a0a0a] px-2 py-1 text-[10px] text-gray-300">
+                            {tip}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   <div className="flex justify-between text-[10px] text-gray-600 mt-2">
-                    {['00:00', '06:00', '12:00', '18:00', '23:00'].map(label => <span key={label}>{label}</span>)}
+                    {analytics.granularity === 'hour'
+                      ? ['00:00', '06:00', '12:00', '18:00', '23:00'].map(label => <span key={label}>{label}</span>)
+                      : (() => {
+                          const s = analytics.series;
+                          const picks = [s[0], s[Math.floor(s.length / 2)], s[s.length - 1]].filter(Boolean);
+                          return picks.map((b, i) => <span key={`${b.key}-${i}`}>{fmtDayLabel(b.key)}</span>);
+                        })()}
                   </div>
                 </>
               )}
