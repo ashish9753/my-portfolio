@@ -59,6 +59,10 @@ function AdminPage({ auth }) {
   const [onlineFilter, setOnlineFilter] = useState('all');
   const [joinStart, setJoinStart] = useState('');
   const [joinEnd, setJoinEnd] = useState('');
+  const [analytics, setAnalytics] = useState(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  // Empty means "today", resolved by the server in its own timezone.
+  const [analyticsDate, setAnalyticsDate] = useState('');
 
   const isAdminUser = auth?.user?.isAdmin || auth?.user?.role === 'admin';
   const isMainAdmin = isAdminUser && auth?.user?.email?.toLowerCase() === MAIN_ADMIN_EMAIL;
@@ -81,6 +85,19 @@ function AdminPage({ auth }) {
   const fmt = (date) => date
     ? new Date(date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' })
     : null;
+
+  // Visit times are read against the same timezone the server grouped them by,
+  // so a visit never appears under the wrong day in the console.
+  const fmtVisitTime = (date) => new Date(date).toLocaleTimeString('en-IN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: analytics?.timeZone || 'Asia/Kolkata'
+  });
+
+  // A country code only exists when a CDN geo header reaches the API. Without
+  // one the browser's timezone is the closest thing to a location we collect.
+  const locationLabel = (row) => row.country || row.timezone || 'Unknown';
 
   // Every selectable topic = real topics from the DB merged with the fallback
   // list, de-duplicated and sorted. This drives both the filter and the
@@ -126,6 +143,19 @@ function AdminPage({ auth }) {
     }
   };
 
+  const fetchAnalytics = async (date = analyticsDate) => {
+    try {
+      setAnalyticsLoading(true);
+      setError('');
+      const res = await axios.get(`${ADMIN_API}/analytics${date ? `?date=${date}` : ''}`, { headers });
+      setAnalytics(res.data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load traffic.');
+    } finally {
+      setAnalyticsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!isAdminUser) {
       setLoading(false);
@@ -134,6 +164,12 @@ function AdminPage({ auth }) {
 
     fetchUsers();
   }, [isAdminUser]);
+
+  useEffect(() => {
+    if (!isAdminUser || activeView !== 'traffic') return;
+
+    fetchAnalytics(analyticsDate);
+  }, [isAdminUser, activeView, analyticsDate]);
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -170,6 +206,12 @@ function AdminPage({ auth }) {
     blocked: users.filter(u => u.isBlocked).length,
     admins: users.filter(u => u.isAdmin || u.role === 'admin').length,
   }), [users]);
+
+  const trafficStats = useMemo(() => ({
+    weekPageViews: (analytics?.trend || []).reduce((sum, day) => sum + day.pageViews, 0),
+    // Seeds with 1 so an empty day can't divide by zero when sizing the bars.
+    peakHourViews: Math.max(1, ...(analytics?.byHour || []).map(bucket => bucket.pageViews))
+  }), [analytics]);
 
   const questionStats = useMemo(() => ({
     total: questions.length,
@@ -355,15 +397,23 @@ function AdminPage({ auth }) {
             <div className="flex rounded-lg border border-[#252525] bg-[#101010] p-1">
               <button onClick={() => setActiveView('users')} className={`px-4 py-2 rounded-md text-sm font-medium ${activeView === 'users' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}>Users</button>
               <button onClick={() => setActiveView('questions')} className={`px-4 py-2 rounded-md text-sm font-medium ${activeView === 'questions' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}>Questions</button>
+              <button onClick={() => setActiveView('traffic')} className={`px-4 py-2 rounded-md text-sm font-medium ${activeView === 'traffic' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}>Traffic</button>
             </div>
-            <button onClick={activeView === 'users' ? fetchUsers : () => fetchQuestions({ search: questionSearch, topic: questionTopic })} className="px-4 py-2 rounded-lg bg-[#161616] hover:bg-[#1e1e1e] border border-[#252525] text-sm font-medium">Refresh</button>
+            <button
+              onClick={() => {
+                if (activeView === 'users') return fetchUsers();
+                if (activeView === 'traffic') return fetchAnalytics(analyticsDate);
+                return fetchQuestions({ search: questionSearch, topic: questionTopic });
+              }}
+              className="px-4 py-2 rounded-lg bg-[#161616] hover:bg-[#1e1e1e] border border-[#252525] text-sm font-medium"
+            >Refresh</button>
             <Link to="/sheet" className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-sm font-medium">Dashboard</Link>
           </div>
         </div>
 
         {error && <div className="mb-4 rounded-lg border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">{error}</div>}
 
-        {activeView === 'users' ? (
+        {activeView === 'users' && (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
               {[
@@ -481,7 +531,9 @@ function AdminPage({ auth }) {
               })}
             </div>
           </>
-        ) : (
+        )}
+
+        {activeView === 'questions' && (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
               {[
@@ -541,6 +593,141 @@ function AdminPage({ auth }) {
                             <button onClick={() => handleDeleteQuestion(question)} disabled={actionQuestionId === question._id} className="px-2.5 py-1 rounded text-[11px] font-medium border border-rose-600/40 text-rose-400 hover:bg-rose-500/10 disabled:opacity-40">Delete</button>
                           </div>
                         </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
+
+        {activeView === 'traffic' && (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+              {[
+                { label: 'Page Views', value: analytics?.pageViews ?? 0, color: 'text-white' },
+                { label: 'Unique Visitors', value: analytics?.uniqueVisitors ?? 0, color: 'text-green-400' },
+                { label: 'Last 7 Days', value: trafficStats.weekPageViews, color: 'text-blue-400' },
+                { label: `Last ${analytics?.retentionDays ?? 90} Days`, value: analytics?.totalPageViews ?? 0, color: 'text-gray-300' },
+              ].map(s => (
+                <div key={s.label} className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl px-4 py-4">
+                  <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
+                  <div className="text-gray-600 text-xs mt-0.5">{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl p-3 mb-4 flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <span>Day:</span>
+                <input type="date" value={analyticsDate || analytics?.day || ''} onChange={e => setAnalyticsDate(e.target.value)} className="rounded-lg border border-[#252525] bg-[#0a0a0a] px-2 py-2 text-xs text-white focus:outline-none" />
+              </div>
+              <button onClick={() => setAnalyticsDate('')} className="px-4 py-2 rounded-lg border border-[#252525] bg-[#161616] hover:bg-[#1e1e1e] text-xs font-medium">Today</button>
+              <span className="text-xs text-gray-600 sm:ml-auto">All times in {analytics?.timeZone || 'Asia/Kolkata'}</span>
+            </div>
+
+            <div className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl p-4 mb-4">
+              <h2 className="text-sm font-semibold mb-4">Page views by hour</h2>
+              {analyticsLoading ? (
+                <div className="h-40 flex items-center justify-center text-gray-600 text-sm">Loading traffic...</div>
+              ) : (
+                <>
+                  <div className="flex items-end gap-[2px] h-40">
+                    {(analytics?.byHour || []).map(bucket => (
+                      <div key={bucket.hour} className="group relative flex-1 h-full flex items-end">
+                        <div
+                          className="w-full rounded-t bg-blue-500/70 group-hover:bg-blue-400 transition-colors"
+                          style={{ height: bucket.pageViews ? `${Math.max((bucket.pageViews / trafficStats.peakHourViews) * 100, 2)}%` : '0%' }}
+                        />
+                        <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-10 whitespace-nowrap rounded-md border border-[#252525] bg-[#0a0a0a] px-2 py-1 text-[10px] text-gray-300">
+                          {String(bucket.hour).padStart(2, '0')}:00 — {bucket.pageViews} view{bucket.pageViews === 1 ? '' : 's'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-between text-[10px] text-gray-600 mt-2">
+                    {['00:00', '06:00', '12:00', '18:00', '23:00'].map(label => <span key={label}>{label}</span>)}
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+              <div className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-[#1e1e1e]">
+                  <h2 className="text-sm font-semibold">Where visitors are</h2>
+                </div>
+                <table className="w-full" style={{ fontSize: '12px' }}>
+                  <thead>
+                    <tr className="bg-[#0a0a0a] border-b border-[#1e1e1e] text-gray-500 text-[11px] uppercase tracking-wider">
+                      <th className="px-4 py-2.5 text-left font-semibold">Location</th>
+                      <th className="px-4 py-2.5 text-center font-semibold">Visitors</th>
+                      <th className="px-4 py-2.5 text-center font-semibold">Views</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#131313]">
+                    {(analytics?.locations || []).length === 0 ? (
+                      <tr><td colSpan={3} className="py-10 text-center text-gray-600">No visits yet.</td></tr>
+                    ) : analytics.locations.map(row => (
+                      <tr key={`${row.country}-${row.timezone}`} className="hover:bg-[#111] transition-colors">
+                        <td className="px-4 py-2.5 text-gray-300">{locationLabel(row)}</td>
+                        <td className="px-4 py-2.5 text-center text-gray-400">{row.uniqueVisitors}</td>
+                        <td className="px-4 py-2.5 text-center text-gray-400">{row.pageViews}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-[#1e1e1e]">
+                  <h2 className="text-sm font-semibold">Most visited pages</h2>
+                </div>
+                <table className="w-full" style={{ fontSize: '12px' }}>
+                  <thead>
+                    <tr className="bg-[#0a0a0a] border-b border-[#1e1e1e] text-gray-500 text-[11px] uppercase tracking-wider">
+                      <th className="px-4 py-2.5 text-left font-semibold">Page</th>
+                      <th className="px-4 py-2.5 text-center font-semibold">Views</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#131313]">
+                    {(analytics?.pages || []).length === 0 ? (
+                      <tr><td colSpan={2} className="py-10 text-center text-gray-600">No visits yet.</td></tr>
+                    ) : analytics.pages.map(row => (
+                      <tr key={row.path} className="hover:bg-[#111] transition-colors">
+                        <td className="px-4 py-2.5 text-gray-400 font-mono text-[11px]">{row.path}</td>
+                        <td className="px-4 py-2.5 text-center text-gray-400">{row.pageViews}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl overflow-hidden">
+              <div className="px-4 py-3 border-b border-[#1e1e1e] flex items-center justify-between">
+                <h2 className="text-sm font-semibold">Recent visits</h2>
+                <span className="text-[10px] text-gray-600">{(analytics?.recent || []).length} shown</span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full" style={{ fontSize: '12px' }}>
+                  <thead>
+                    <tr className="bg-[#0a0a0a] border-b border-[#1e1e1e] text-gray-500 text-[11px] uppercase tracking-wider">
+                      {['Time', 'Page', 'Location', 'Came From'].map(h => (
+                        <th key={h} className="px-4 py-2.5 text-left font-semibold">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#131313]">
+                    {(analytics?.recent || []).length === 0 ? (
+                      <tr><td colSpan={4} className="py-12 text-center text-gray-600">No visits on this day.</td></tr>
+                    ) : analytics.recent.map((visit, index) => (
+                      <tr key={`${visit.createdAt}-${index}`} className="hover:bg-[#111] transition-colors">
+                        <td className="px-4 py-2.5 text-gray-300 whitespace-nowrap">{fmtVisitTime(visit.createdAt)}</td>
+                        <td className="px-4 py-2.5 text-gray-400 font-mono text-[11px]">{visit.path}</td>
+                        <td className="px-4 py-2.5 text-gray-400">{locationLabel(visit)}</td>
+                        <td className="px-4 py-2.5 text-gray-500">{visit.referrer || 'Direct'}</td>
                       </tr>
                     ))}
                   </tbody>
