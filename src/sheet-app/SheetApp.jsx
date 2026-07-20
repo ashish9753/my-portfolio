@@ -38,6 +38,7 @@ import Signup from './components/Signup';
 import SupportModal from './components/SupportModal';
 import './App.css';
 import './index.css';
+import './utils/theme';
 
 function SheetApp() {
   const [auth, setAuth] = useState({

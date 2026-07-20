@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../sheet-app/components/Footer';
+import ThemeToggle from '../sheet-app/components/ThemeToggle';
 
 const osSections = [
   {
@@ -994,6 +995,7 @@ function OSSheet({ auth, setAuth }) {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <span className="text-gray-400 text-sm hidden sm:block">{auth.user?.username}</span>
             <button onClick={handleLogout} className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-sm rounded-lg transition-colors">Logout</button>
           </div>

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from './Footer';
+import ThemeToggle from './ThemeToggle';
 import LoadingScreen from '../../components/LoadingScreen.jsx';
 import Leaderboard from './Leaderboard';
 import WebsiteReviews from './WebsiteReviews';
@@ -934,6 +935,9 @@ function HomePage({ auth, setAuth }) {
             </p>
           </div>
           <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-3">
+            <div className="flex items-center justify-end">
+              <ThemeToggle />
+            </div>
             {auth?.isAuthenticated && (auth.user?.isAdmin || auth.user?.role === 'admin') && (
               <Link
                 to="/sheet/admin"

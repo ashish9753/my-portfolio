@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../components/Footer';
+import ThemeToggle from '../components/ThemeToggle';
 import LoadingScreen from '../../components/LoadingScreen.jsx';
 import { notifyActivityUpdated } from '../utils/activitySync';
 
@@ -154,6 +155,7 @@ function GraphsSheet({ auth, setAuth }) {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <span className="text-gray-400">{auth.user?.username}</span>
               <button
                 onClick={handleLogout}

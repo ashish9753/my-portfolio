@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../sheet-app/components/Footer';
+import ThemeToggle from '../sheet-app/components/ThemeToggle';
 
 // ─── ER Symbol Card ──────────────────────────────────────────────────────────
 function ERSymCard({ svg, label, sub, color = 'text-teal-300' }) {
@@ -1887,6 +1888,7 @@ function DBMSSheet({ auth, setAuth }) {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <span className="hidden text-sm text-gray-400 sm:block">{auth.user?.username}</span>
             <button onClick={handleLogout} className="rounded-lg bg-red-600 px-3 py-1.5 text-sm transition-colors hover:bg-red-700">Logout</button>
           </div>

@@ -399,3 +399,117 @@ body {
 	display: inline-block;
 	animation: usernameGlowPulse 2.4s ease-in-out infinite;
 }
+
+/* ==========================================================================
+   LIGHT THEME ("Codolio"-style) for the DSA sheet app.
+
+   Dark mode is the default and stays completely untouched. When <html> gets
+   the `sheet-light` class (added by src/sheet-app/utils/theme.js), the app's
+   hardcoded dark color tokens are remapped to a clean light palette. Because
+   the whole sheet app reuses a small set of surface/border/text tokens, this
+   single layer themes every page (DSA, Core-CS, MERN) with no JSX changes.
+
+   Palette:
+     page bg      #f4f5f7      card bg      #ffffff
+     hover/raised #eef0f3      border       #e5e7eb
+     text         #111827      muted text   #5b6470
+     green accent #16a34a
+   ========================================================================== */
+
+html.sheet-light { color-scheme: light; }
+html.sheet-light body,
+html.sheet-light .auth-bg { background-color: #f4f5f7 !important; }
+
+/* ---- Page / darkest surfaces -> soft light gray ---- */
+html.sheet-light .bg-\[\#0a0a0a\],
+html.sheet-light .bg-\[\#0d0d0d\],
+html.sheet-light .bg-\[\#0f0f0f\],
+html.sheet-light .bg-black,
+html.sheet-light .bg-black\/50,
+html.sheet-light .bg-black\/40,
+html.sheet-light .bg-black\/30,
+html.sheet-light .bg-black\/60,
+html.sheet-light .bg-black\/70,
+html.sheet-light .bg-black\/80 { background-color: #f4f5f7 !important; }
+
+/* ---- Card / panel surfaces -> white ---- */
+html.sheet-light .bg-\[\#111\],
+html.sheet-light .bg-\[\#111111\],
+html.sheet-light .bg-\[\#141414\],
+html.sheet-light .bg-\[\#161616\],
+html.sheet-light .bg-\[\#171717\],
+html.sheet-light .bg-\[\#181818\],
+html.sheet-light .bg-\[\#1a1a1a\],
+html.sheet-light .bg-\[\#1e1e1e\],
+html.sheet-light .bg-\[\#1f1f1f\],
+html.sheet-light .auth-card { background-color: #ffffff !important; }
+
+/* ---- Raised / hover / input surfaces -> light gray ---- */
+html.sheet-light .bg-\[\#222\],
+html.sheet-light .bg-\[\#252525\],
+html.sheet-light .bg-\[\#252526\],
+html.sheet-light .bg-\[\#2a2a2a\],
+html.sheet-light .bg-\[\#333\] { background-color: #eef0f3 !important; }
+
+html.sheet-light .hover\:bg-\[\#252525\]:hover,
+html.sheet-light .hover\:bg-\[\#1f1f1f\]:hover,
+html.sheet-light .hover\:bg-\[\#222\]:hover,
+html.sheet-light .hover\:bg-\[\#2a2a2a\]:hover { background-color: #e7eaee !important; }
+
+/* ---- Borders ---- */
+html.sheet-light .border-\[\#2a2a2a\],
+html.sheet-light .border-\[\#1f1f1f\],
+html.sheet-light .border-\[\#252525\],
+html.sheet-light .border-\[\#1e1e1e\],
+html.sheet-light .border-\[\#161616\],
+html.sheet-light .border-\[\#333\],
+html.sheet-light .border-gray-800,
+html.sheet-light .border-gray-700 { border-color: #e5e7eb !important; }
+
+/* Subtle elevation so white cards read as cards on the light gray page */
+html.sheet-light .auth-card,
+html.sheet-light .bg-\[\#1a1a1a\],
+html.sheet-light .bg-\[\#1f1f1f\],
+html.sheet-light .bg-\[\#161616\],
+html.sheet-light .bg-\[\#141414\] { box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06); }
+
+/* ---- Text ---- */
+html.sheet-light .text-white { color: #111827 !important; }
+html.sheet-light .text-gray-300 { color: #374151 !important; }
+html.sheet-light .text-gray-400,
+html.sheet-light .text-gray-500 { color: #5b6470 !important; }
+html.sheet-light .placeholder-gray-500::placeholder { color: #9ca3af !important; }
+
+/* ---- Neon green accent -> readable green on white ---- */
+html.sheet-light .text-\[\#00ff00\] { color: #16a34a !important; }
+html.sheet-light .bg-\[\#00ff00\] { background-color: #16a34a !important; }
+html.sheet-light .border-\[\#00ff00\] { border-color: #16a34a !important; }
+html.sheet-light .focus\:border-\[\#00ff00\]:focus { border-color: #16a34a !important; }
+
+/* ---- Keep white text on saturated/gradient/dark surfaces we did NOT
+        lighten. These backgrounds stay colored (or dark) in light mode, so
+        their text must remain white. Exact class names are used on purpose so
+        translucent variants (e.g. bg-red-500/20 on a pale badge) are NOT
+        matched. Placed AFTER the text-white override so these win. ---- */
+html.sheet-light .bg-red-500,    html.sheet-light .bg-red-600,    html.sheet-light .bg-red-700,
+html.sheet-light .bg-rose-500,   html.sheet-light .bg-rose-600,   html.sheet-light .bg-rose-700,
+html.sheet-light .bg-blue-500,   html.sheet-light .bg-blue-600,   html.sheet-light .bg-blue-700,
+html.sheet-light .bg-sky-500,    html.sheet-light .bg-sky-600,
+html.sheet-light .bg-indigo-500, html.sheet-light .bg-indigo-600, html.sheet-light .bg-indigo-700,
+html.sheet-light .bg-violet-500, html.sheet-light .bg-violet-600,
+html.sheet-light .bg-purple-500, html.sheet-light .bg-purple-600, html.sheet-light .bg-purple-700,
+html.sheet-light .bg-green-500,  html.sheet-light .bg-green-600,  html.sheet-light .bg-green-700,
+html.sheet-light .bg-emerald-500,html.sheet-light .bg-emerald-600,
+html.sheet-light .bg-teal-500,   html.sheet-light .bg-teal-600,
+html.sheet-light .bg-cyan-500,   html.sheet-light .bg-cyan-600,
+html.sheet-light .bg-pink-500,   html.sheet-light .bg-pink-600,
+html.sheet-light .bg-orange-500, html.sheet-light .bg-orange-600,
+html.sheet-light .bg-gradient-to-r,
+html.sheet-light .bg-gradient-to-l,
+html.sheet-light .bg-gradient-to-br,
+html.sheet-light .bg-gradient-to-bl,
+html.sheet-light .bg-gradient-to-tr,
+html.sheet-light .bg-\[\#9333ea\],
+html.sheet-light .bg-\[\#4f46e5\],
+html.sheet-light .bg-\[\#3730a3\],
+html.sheet-light .bg-\[\#00ff00\] { color: #ffffff !important; }

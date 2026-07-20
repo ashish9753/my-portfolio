@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Footer from '../sheet-app/components/Footer';
+import ThemeToggle from '../sheet-app/components/ThemeToggle';
 import LoadingScreen from '../components/LoadingScreen.jsx';
 
 function MongoDBSheet({ auth, setAuth }) {
@@ -61,7 +62,7 @@ function MongoDBSheet({ auth, setAuth }) {
               <Link to="/sheet" className="text-green-400 hover:text-green-300 transition-colors"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg></Link>
               <h1 className="text-2xl font-bold"><span className="text-green-400">MongoDB</span> Interview Prep</h1>
             </div>
-            <div className="flex items-center space-x-4"><span className="text-gray-400">{auth.user?.username}</span><button onClick={handleLogout} className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors">Logout</button></div>
+            <div className="flex items-center space-x-4"><ThemeToggle /><span className="text-gray-400">{auth.user?.username}</span><button onClick={handleLogout} className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors">Logout</button></div>
           </div>
         </div>
       </header>
