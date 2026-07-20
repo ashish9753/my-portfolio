@@ -132,7 +132,8 @@ const ContributionHeatmap = ({ activity, currentBadge, username }) => {
 
   // Get color based on level
   const getColor = (level) => {
-    const colors = ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'];
+    // CSS vars so the heatmap follows light/dark mode (see index.css --heat-*).
+    const colors = ['var(--heat-0)', 'var(--heat-1)', 'var(--heat-2)', 'var(--heat-3)', 'var(--heat-4)'];
     return colors[level];
   };
 
@@ -789,12 +790,6 @@ function HomePage({ auth, setAuth }) {
       accent: 'green'
     },
     {
-      title: 'MySQL',
-      description: 'Most Asked MySQL Interview Questions',
-      cta: 'Coming Soon',
-      available: false
-    },
-    {
       title: 'PostgreSQL',
       description: 'Most Asked PostgreSQL Interview Questions',
       cta: 'Coming Soon',
@@ -1289,11 +1284,11 @@ function HomePage({ auth, setAuth }) {
                   <div className="flex items-center gap-1 md:gap-2 text-xs md:text-sm text-gray-400 whitespace-nowrap">
                     <span>Less</span>
                     <div className="flex gap-1">
-                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm bg-[#161b22]"></div>
-                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm bg-[#0e4429]"></div>
-                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm bg-[#006d32]"></div>
-                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm bg-[#26a641]"></div>
-                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm bg-[#39d353]"></div>
+                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: 'var(--heat-0)' }}></div>
+                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: 'var(--heat-1)' }}></div>
+                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: 'var(--heat-2)' }}></div>
+                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: 'var(--heat-3)' }}></div>
+                      <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-sm" style={{ backgroundColor: 'var(--heat-4)' }}></div>
                     </div>
                     <span>More</span>
                   </div>

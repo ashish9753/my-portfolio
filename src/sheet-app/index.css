@@ -442,6 +442,7 @@ html.sheet-light .bg-\[\#181818\],
 html.sheet-light .bg-\[\#1a1a1a\],
 html.sheet-light .bg-\[\#1e1e1e\],
 html.sheet-light .bg-\[\#1f1f1f\],
+html.sheet-light .bg-\[\#111318\],
 html.sheet-light .auth-card { background-color: #ffffff !important; }
 
 /* ---- Raised / hover / input surfaces -> light gray ---- */
@@ -449,6 +450,7 @@ html.sheet-light .bg-\[\#222\],
 html.sheet-light .bg-\[\#252525\],
 html.sheet-light .bg-\[\#252526\],
 html.sheet-light .bg-\[\#2a2a2a\],
+html.sheet-light .bg-\[\#364152\],
 html.sheet-light .bg-\[\#333\] { background-color: #eef0f3 !important; }
 
 html.sheet-light .hover\:bg-\[\#252525\]:hover,
@@ -463,6 +465,8 @@ html.sheet-light .border-\[\#252525\],
 html.sheet-light .border-\[\#1e1e1e\],
 html.sheet-light .border-\[\#161616\],
 html.sheet-light .border-\[\#333\],
+html.sheet-light .border-\[\#334155\],
+html.sheet-light .border-\[\#475569\],
 html.sheet-light .border-gray-800,
 html.sheet-light .border-gray-700 { border-color: #e5e7eb !important; }
 
@@ -475,6 +479,10 @@ html.sheet-light .bg-\[\#141414\] { box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04)
 
 /* ---- Text ---- */
 html.sheet-light .text-white { color: #111827 !important; }
+html.sheet-light .text-gray-100,
+html.sheet-light .text-gray-200,
+html.sheet-light .text-slate-100,
+html.sheet-light .text-slate-200 { color: #1f2937 !important; }
 html.sheet-light .text-gray-300 { color: #374151 !important; }
 html.sheet-light .text-gray-400,
 html.sheet-light .text-gray-500 { color: #5b6470 !important; }
@@ -512,4 +520,28 @@ html.sheet-light .bg-gradient-to-tr,
 html.sheet-light .bg-\[\#9333ea\],
 html.sheet-light .bg-\[\#4f46e5\],
 html.sheet-light .bg-\[\#3730a3\],
+html.sheet-light .bg-\[\#1f2937\],
+html.sheet-light .hover\:bg-\[\#273449\],
 html.sheet-light .bg-\[\#00ff00\] { color: #ffffff !important; }
+
+/* The dark "Admin Console" pill stays dark navy in light mode — keep it that
+   way (do NOT lighten its background) so its white label reads clearly. */
+html.sheet-light .bg-\[\#1f2937\] { background-color: #1f2937 !important; }
+
+/* ---- Activity heatmap ramp (themeable via CSS vars so inline-styled cells
+        follow the theme). Dark = GitHub-dark greens; light = GitHub-light
+        greens with a soft-gray "empty" cell instead of a dark block. ---- */
+:root {
+  --heat-0: #161b22;
+  --heat-1: #0e4429;
+  --heat-2: #006d32;
+  --heat-3: #26a641;
+  --heat-4: #39d353;
+}
+html.sheet-light {
+  --heat-0: #ebedf0;
+  --heat-1: #9be9a8;
+  --heat-2: #40c463;
+  --heat-3: #30a14e;
+  --heat-4: #216e39;
+}
