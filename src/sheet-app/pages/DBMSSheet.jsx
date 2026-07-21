@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Footer from '../sheet-app/components/Footer';
-import ThemeToggle from '../sheet-app/components/ThemeToggle';
+import Footer from '../components/Footer';
+import ThemeToggle from '../components/ThemeToggle';
 
 // ─── ER Symbol Card ──────────────────────────────────────────────────────────
 function ERSymCard({ svg, label, sub, color = 'text-teal-300' }) {

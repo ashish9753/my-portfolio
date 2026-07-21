@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Footer from '../sheet-app/components/Footer';
-import ThemeToggle from '../sheet-app/components/ThemeToggle';
-import LoadingScreen from '../components/LoadingScreen.jsx';
+import Footer from '../components/Footer';
+import ThemeToggle from '../components/ThemeToggle';
+import LoadingScreen from '../../components/LoadingScreen.jsx';
 
 function MySQLSheet({ auth, setAuth }) {
   const topic = 'MySQL';

@@ -1,7 +1,7 @@
 ﻿import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Footer from '../sheet-app/components/Footer';
-import ThemeToggle from '../sheet-app/components/ThemeToggle';
+import Footer from '../components/Footer';
+import ThemeToggle from '../components/ThemeToggle';
 
 const osSections = [
 	{
