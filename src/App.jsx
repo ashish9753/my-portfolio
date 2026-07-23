@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navbar from './components/Navbar.jsx';
@@ -12,6 +12,7 @@ import Contact from './components/Contact.jsx';
 import Footer from './components/Footer.jsx';
 import SheetApp from './sheet-app/SheetApp.jsx';
 import { trackVisit } from './utils/trackVisit.js';
+import { getStoredPortfolioTheme, storePortfolioTheme } from './utils/portfolioTheme.js';
 
 const BASE_TITLE = 'Ashish Sharma';
 const PAGE_TITLES = {
@@ -82,6 +83,19 @@ function getDocumentTitle(location) {
 // Portfolio Homepage Component
 function Portfolio() {
   const location = useLocation();
+  const [theme, setTheme] = useState(() => getStoredPortfolioTheme());
+
+  // Apply light mode by toggling `portfolio-light` on <html>. The cleanup
+  // removes it on unmount so navigating to the DSA sheet app (a different
+  // route) never inherits the portfolio's light override layer.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle('portfolio-light', theme === 'light');
+    storePortfolioTheme(theme);
+    return () => root.classList.remove('portfolio-light');
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
 
   useEffect(() => {
     if (location.hash) {
@@ -104,7 +118,7 @@ function Portfolio() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
     >
-      <Navbar />
+      <Navbar theme={theme} onToggleTheme={toggleTheme} />
       <Hero />
       <About />
       <Education />

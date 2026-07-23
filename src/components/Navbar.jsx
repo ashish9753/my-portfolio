@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiX, FiHome, FiUser, FiCode, FiBriefcase, FiMail, FiBook, FiAward } from 'react-icons/fi';
+import ThemeToggle from './ThemeToggle.jsx';
 
-const Navbar = () => {
+const Navbar = ({ theme, onToggleTheme }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -150,6 +151,15 @@ const Navbar = () => {
                 );
               })}
               
+              {/* Theme Toggle */}
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.55 }}
+              >
+                <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+              </motion.div>
+
               {/* DSA Sheet Link - Highlighted */}
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
@@ -184,8 +194,9 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden z-50">
+          {/* Mobile controls */}
+          <div className="md:hidden flex items-center space-x-2 z-50">
+            <ThemeToggle theme={theme} onToggle={onToggleTheme} className="w-9 h-9" />
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsOpen(!isOpen)}

@@ -73,6 +73,105 @@ html {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* ============================================================
+   Portfolio light theme
+   The portfolio is dark-first; every component hardcodes dark
+   Tailwind utilities. Instead of rewriting each component, we
+   remap those utilities to a light palette while <html> carries
+   the `portfolio-light` class (added by App.jsx only on the
+   portfolio route, so the DSA sheet app is never affected).
+   ============================================================ */
+html.portfolio-light body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* Page + section backgrounds */
+html.portfolio-light .bg-black,
+html.portfolio-light .bg-\[\#0a0a0a\],
+html.portfolio-light .bg-\[\#0b0f19\],
+html.portfolio-light .bg-\[\#020617\] { background-color: #f8fafc !important; }
+html.portfolio-light .bg-\[\#101010\] { background-color: #eef2f7 !important; }
+
+/* Card / surface backgrounds (solid grays + translucent darks) */
+html.portfolio-light .bg-gray-900,
+html.portfolio-light .bg-gray-800,
+html.portfolio-light .bg-gray-700,
+html.portfolio-light .bg-gray-600,
+html.portfolio-light .bg-gray-500,
+html.portfolio-light .bg-gray-900\/50,
+html.portfolio-light .bg-gray-800\/50,
+html.portfolio-light .bg-black\/30,
+html.portfolio-light .bg-black\/50,
+html.portfolio-light .bg-black\/70,
+html.portfolio-light .bg-black\/80 {
+  background-color: #ffffff !important;
+}
+
+/* Frosted navbar / mobile menu */
+html.portfolio-light .bg-black\/90,
+html.portfolio-light .bg-black\/95 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Decorative light overlays flip to subtle darks so they stay visible */
+html.portfolio-light .bg-white\/5 { background-color: rgba(15, 23, 42, 0.04) !important; }
+html.portfolio-light .bg-white\/20 { background-color: rgba(15, 23, 42, 0.18) !important; }
+html.portfolio-light .bg-white\/30 { background-color: rgba(15, 23, 42, 0.25) !important; }
+
+/* Text */
+html.portfolio-light .text-white { color: #0f172a !important; }
+html.portfolio-light .text-gray-300 { color: #334155 !important; }
+html.portfolio-light .text-gray-400 { color: #475569 !important; }
+html.portfolio-light .text-gray-500 { color: #64748b !important; }
+
+/* Keep white text on vivid gradient buttons/badges (higher specificity wins) */
+html.portfolio-light .bg-gradient-to-r.text-white,
+html.portfolio-light .bg-gradient-to-l.text-white,
+html.portfolio-light .bg-gradient-to-t.text-white,
+html.portfolio-light .bg-gradient-to-b.text-white,
+html.portfolio-light .bg-gradient-to-br.text-white,
+html.portfolio-light .bg-gradient-to-bl.text-white { color: #ffffff !important; }
+
+/* Hover text that went white must go dark on a light background */
+html.portfolio-light .hover\:text-white:hover { color: #0f172a !important; }
+
+/* Borders */
+html.portfolio-light .border-gray-400,
+html.portfolio-light .border-gray-500,
+html.portfolio-light .border-gray-600,
+html.portfolio-light .border-gray-700,
+html.portfolio-light .border-gray-800,
+html.portfolio-light .border-white\/5 { border-color: #e2e8f0 !important; }
+html.portfolio-light .border-white { border-color: #94a3b8 !important; }
+html.portfolio-light .hover\:border-white:hover,
+html.portfolio-light .hover\:border-gray-400:hover,
+html.portfolio-light .hover\:border-gray-500:hover,
+html.portfolio-light .hover\:border-gray-600:hover { border-color: #64748b !important; }
+
+/* Dark hover backgrounds become a subtle darkening on light surfaces */
+html.portfolio-light .hover\:bg-gray-700:hover,
+html.portfolio-light .hover\:bg-gray-800\/50:hover,
+html.portfolio-light .hover\:bg-black\/70:hover { background-color: rgba(15, 23, 42, 0.06) !important; }
+html.portfolio-light .hover\:bg-white\/30:hover { background-color: rgba(15, 23, 42, 0.28) !important; }
+
+/* Custom utilities */
+html.portfolio-light .glass {
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+html.portfolio-light .bg-gradient-dark {
+  background: linear-gradient(135deg, #eef2f7 0%, #e2e8f0 100%);
+}
+
+/* Give cards definition on light surfaces */
+html.portfolio-light .shadow-lg {
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Scrollbar track */
+html.portfolio-light ::-webkit-scrollbar-track { background: #e2e8f0; }
+
 /* Animation delays for staggered effects */
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
