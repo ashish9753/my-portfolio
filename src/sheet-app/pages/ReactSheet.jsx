@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import ThemeToggle from '../components/ThemeToggle';
@@ -7,45 +7,45 @@ const revisionSections = [
   {
     title: '1. React Basics (1-20)',
     questions: [
-      { q: 'What is React?', a: 'JavaScript library for UI.' },
-      { q: 'Who developed React?', a: 'Facebook (Meta).' },
-      { q: 'SPA?', a: 'Single Page Application.' },
-      { q: 'Component?', a: 'Reusable UI block.' },
-      { q: 'Types of components?', a: 'Functional, Class.' },
-      { q: 'Functional component?', a: 'JS function returning JSX.' },
-      { q: 'JSX?', a: 'HTML-like syntax in JS.' },
-      { q: 'Why JSX?', a: 'Easier UI writing.' },
-      { q: 'Props?', a: 'Data passed to component.' },
-      { q: 'State?', a: 'Component data.' },
-      { q: 'Props vs State?', a: 'Props = read-only, State = mutable.' },
-      { q: 'Virtual DOM?', a: 'In-memory DOM.' },
-      { q: 'Why Virtual DOM?', a: 'Faster updates.' },
-      { q: 'Key in React?', a: 'Unique identifier in list.' },
-      { q: 'React Fragment?', a: 'Group elements without div.' },
-      { q: 'Event handling?', a: 'onClick, onChange.' },
-      { q: 'Conditional rendering?', a: 'Show UI based on condition.' },
-      { q: 'Lists in React?', a: 'Use map().' },
-      { q: 'Controlled component?', a: 'Form controlled by state.' },
-      { q: 'Uncontrolled component?', a: 'Form uses DOM.' },
+      { q: 'What is React?', a: 'React is a JavaScript library used to build interactive user interfaces, such as pages, forms, and dashboards.' },
+      { q: 'Who developed React?', a: 'React was created by Facebook, now called Meta.' },
+      { q: 'SPA?', a: 'SPA means Single Page Application. It changes the content on the page without fully reloading the browser.' },
+      { q: 'Component?', a: 'A component is a small, reusable piece of the UI. For example: a Navbar, Button, or Product Card.' },
+      { q: 'Types of components?', a: 'React has functional components and class components. Modern React mainly uses functional components.' },
+      { q: 'Functional component?', a: 'It is a JavaScript function that returns JSX, which React displays on the screen.' },
+      { q: 'JSX?', a: 'JSX lets you write HTML-like code inside JavaScript. It makes React UI code easier to read.' },
+      { q: 'Why JSX?', a: 'JSX keeps the UI and its JavaScript logic together, making components easier to write and understand.' },
+      { q: 'Props?', a: 'Props are values passed from a parent component to a child component. A child should not change them.' },
+      { q: 'State?', a: 'State is data a component remembers and can update, such as a counter value or form input.' },
+      { q: 'Props vs State?', a: 'Props come from the parent and are read-only. State belongs to the component and can change over time.' },
+      { q: 'Virtual DOM?', a: 'The Virtual DOM is React’s lightweight copy of the page structure. React compares changes here before updating the real page.' },
+      { q: 'Why Virtual DOM?', a: 'It helps React update only the parts of the page that changed, instead of rebuilding the whole page.' },
+      { q: 'Key in React?', a: 'A key is a unique value for each item in a list. It helps React identify which item changed, was added, or was removed.' },
+      { q: 'React Fragment?', a: 'A Fragment groups multiple elements without adding an extra div to the page. You can write it as <>...</>.' },
+      { q: 'Event handling?', a: 'React handles user actions with props such as onClick and onChange.' },
+      { q: 'Conditional rendering?', a: 'It means showing different UI based on a condition, for example showing “Login” only when a user is logged out.' },
+      { q: 'Lists in React?', a: 'Use JavaScript map() to turn an array of data into a list of React elements.' },
+      { q: 'Controlled component?', a: 'A controlled form input gets its value from React state, so React is in charge of the input value.' },
+      { q: 'Uncontrolled component?', a: 'An uncontrolled input keeps its value in the DOM itself. You usually read it with a ref when needed.' },
     ]
   },
   {
     title: '2. Hooks (21-45)',
     questions: [
-      { q: 'Hook?', a: 'Function for state/logic.' },
-      { q: 'useState?', a: 'Manage state.' },
-      { q: 'Syntax?', a: '[state, setState].' },
-      { q: 'useEffect?', a: 'Side effects.' },
-      { q: 'When useEffect runs?', a: 'After render.' },
-      { q: 'Dependency array?', a: 'Controls execution.' },
-      { q: 'Empty array?', a: 'Runs once.' },
-      { q: 'Cleanup function?', a: 'Runs before unmount.' },
-      { q: 'useContext?', a: 'Share data globally.' },
-      { q: 'useRef?', a: 'Access DOM/store value.' },
-      { q: 'useMemo?', a: 'Optimize calculations.' },
-      { q: 'useCallback?', a: 'Optimize functions.' },
-      { q: 'Custom hook?', a: 'Reusable logic.' },
-      { q: 'Rules of hooks?', a: 'Top-level only.' },
+      { q: 'Hook?', a: 'A Hook is a special React function that lets functional components use features like state, effects, and shared data.' },
+      { q: 'useState?', a: 'useState lets a component remember a value and update the screen when that value changes.' },
+      { q: 'Syntax?', a: 'useState returns two values: [state, setState]. The first is the current value; the second updates it.' },
+      { q: 'useEffect?', a: 'useEffect runs code after React updates the screen. Use it for work like API calls, timers, or event listeners.' },
+      { q: 'When useEffect runs?', a: 'It runs after the component renders. Its dependency array decides when it runs again.' },
+      { q: 'Dependency array?', a: 'The dependency array is the second value in useEffect. It tells React which values should trigger the effect again.' },
+      { q: 'Empty array?', a: 'An empty array [] means the effect runs once when the component first appears.' },
+      { q: 'Cleanup function?', a: 'A cleanup function removes work created by an effect, such as a timer or event listener, when the component leaves the page.' },
+      { q: 'useContext?', a: 'useContext lets components share data, such as theme or logged-in user details, without passing props through every level.' },
+      { q: 'useRef?', a: 'useRef keeps a value between renders without causing a re-render. It is often used to access an input or another DOM element.' },
+      { q: 'useMemo?', a: 'useMemo saves the result of an expensive calculation and recalculates it only when its dependencies change.' },
+      { q: 'useCallback?', a: 'useCallback saves a function reference so it is not recreated on every render unless its dependencies change.' },
+      { q: 'Custom hook?', a: 'A custom hook is your own reusable function that combines React hooks, such as useFetch or useWindowSize.' },
+      { q: 'Rules of hooks?', a: 'Call hooks only at the top level of a React component or custom hook, never inside loops, conditions, or regular functions.' },
       { q: 'Why hooks?', a: 'Avoid class components.' },
       { q: 'State update async?', a: 'Yes.' },
       { q: 'Batching?', a: 'Combine updates.' },
@@ -133,9 +133,27 @@ const revisionSections = [
 
 const totalQuestions = revisionSections.reduce((s, sec) => s + sec.questions.length, 0);
 
+const screenSizeExample = `import { useEffect, useState } from "react";
+
+function ScreenSize() {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const updateWidth = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", updateWidth);
+
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
+
+  return <h2>Your browser width is: {width}px</h2>;
+}
+
+export default ScreenSize;`;
+
 function ReactSheet({ auth, setAuth }) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
   const [openAnswers, setOpenAnswers] = useState({});
   const [collapsedSections, setCollapsedSections] = useState(
     () => revisionSections.reduce((acc, _, i) => ({ ...acc, [i]: true }), {})
@@ -148,6 +166,12 @@ function ReactSheet({ auth, setAuth }) {
   });
 
   const revealedCount = Object.values(openAnswers).filter(Boolean).length;
+
+  useEffect(() => {
+    const updateViewportWidth = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', updateViewportWidth);
+    return () => window.removeEventListener('resize', updateViewportWidth);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -254,6 +278,45 @@ function ReactSheet({ auth, setAuth }) {
             </div>
           ))}
         </div>
+
+        {!q && (
+          <section className="rounded-2xl border border-amber-400/25 bg-amber-400/[0.045] overflow-hidden">
+            <div className="px-5 sm:px-7 pt-5 pb-4">
+              <p className="text-amber-300 text-lg font-semibold">• Screen → browser width</p>
+              <p className="text-gray-400 text-sm mt-1 leading-relaxed">
+                This React example shows the current browser width and updates automatically when you resize the window.
+              </p>
+            </div>
+
+            <div className="mx-4 sm:mx-6 mb-4 rounded-xl overflow-hidden border border-[#353535] bg-[#181818] shadow-2xl">
+              <div className="flex items-center justify-between px-5 py-3 bg-[#242424] border-b border-[#303030]">
+                <div className="flex gap-2">
+                  <span className="w-3 h-3 rounded-full bg-red-400" />
+                  <span className="w-3 h-3 rounded-full bg-amber-400" />
+                  <span className="w-3 h-3 rounded-full bg-green-500" />
+                </div>
+                <span className="text-[11px] tracking-[0.15em] text-gray-500 font-semibold">REACT EXAMPLE</span>
+              </div>
+              <pre className="overflow-x-auto p-5 sm:p-7 text-[13px] sm:text-[15px] leading-7 text-cyan-200 font-mono"><code>{screenSizeExample}</code></pre>
+            </div>
+
+            <div className="mx-4 sm:mx-6 mb-4 grid sm:grid-cols-2 gap-3">
+              <div className="rounded-xl bg-black/25 border border-white/5 p-4">
+                <p className="text-xs uppercase tracking-wider text-amber-300/80">Live result</p>
+                <p className="text-2xl font-bold text-white mt-1">{viewportWidth}px</p>
+                <p className="text-xs text-gray-500 mt-1">Resize this browser to test it.</p>
+              </div>
+              <div className="rounded-xl bg-black/25 border border-white/5 p-4 text-sm leading-relaxed text-gray-300">
+                <span className="text-amber-300 font-semibold">Easy explanation: </span>
+                <code className="text-cyan-300">useState</code> stores the width. <code className="text-cyan-300">useEffect</code> listens for resize events and updates it. Cleanup removes the listener when the component is no longer needed.
+              </div>
+            </div>
+
+            <p className="px-5 sm:px-7 pb-5 text-xs text-amber-100/60 leading-relaxed">
+              Note: <code>window.innerWidth</code> is the browser viewport width. Use <code>window.screen.width</code> when you specifically need the device screen width.
+            </p>
+          </section>
+        )}
 
         {lastRead && (
           <div className="flex items-center justify-between bg-cyan-400/8 border border-cyan-400/30 rounded-xl px-4 py-3 gap-3">
