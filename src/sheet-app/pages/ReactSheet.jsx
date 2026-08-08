@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import ThemeToggle from '../components/ThemeToggle';
@@ -46,114 +46,96 @@ const revisionSections = [
       { q: 'useCallback?', a: 'useCallback saves a function reference so it is not recreated on every render unless its dependencies change.' },
       { q: 'Custom hook?', a: 'A custom hook is your own reusable function that combines React hooks, such as useFetch or useWindowSize.' },
       { q: 'Rules of hooks?', a: 'Call hooks only at the top level of a React component or custom hook, never inside loops, conditions, or regular functions.' },
-      { q: 'Why hooks?', a: 'Avoid class components.' },
-      { q: 'State update async?', a: 'Yes.' },
-      { q: 'Batching?', a: 'Combine updates.' },
-      { q: 'Re-render?', a: 'State/props change.' },
-      { q: 'Infinite loop in useEffect?', a: 'Missing dependency.' },
-      { q: 'Multiple useEffect?', a: 'Yes.' },
-      { q: 'useLayoutEffect?', a: 'Runs before paint.' },
-      { q: 'Difference useEffect vs useLayoutEffect?', a: 'Async vs sync.' },
-      { q: 'useReducer?', a: 'Complex state.' },
-      { q: 'Dispatch?', a: 'Send action.' },
-      { q: 'Initial state?', a: 'Starting value.' },
+      { q: 'Why hooks?', a: 'Hooks let functional components use state, effects, context, and reusable logic without writing class components.' },
+      { q: 'Are state updates asynchronous?', a: 'React schedules state updates, so the new value may not be available immediately in the same function. Use a functional update when the next state depends on the previous state.' },
+      { q: 'What is batching?', a: 'Batching groups multiple state updates into one render to improve performance.' },
+      { q: 'What causes a re-render?', a: 'A component re-renders when its state changes, its parent renders, or its consumed context changes. New props usually arrive when the parent renders.' },
+      { q: 'What causes an infinite loop in useEffect?', a: 'It usually happens when an effect updates state and that update changes one of the effect’s dependencies on every render.' },
+      { q: 'Can we use multiple useEffect hooks?', a: 'Yes. Use separate effects for unrelated tasks so each effect stays easy to understand and clean up.' },
+      { q: 'What is useLayoutEffect?', a: 'useLayoutEffect runs after DOM changes but before the browser paints. It is useful for measuring or adjusting layout without visible flicker.' },
+      { q: 'useEffect vs useLayoutEffect?', a: 'useEffect runs after the browser paints; useLayoutEffect runs before paint and can block it. Prefer useEffect unless layout measurement is required.' },
+      { q: 'What is useReducer?', a: 'useReducer manages state with a reducer function and actions. It is useful when state has several related values or complex update rules.' },
+      { q: 'What is dispatch?', a: 'dispatch sends an action to a reducer. The reducer uses that action to calculate and return the next state.' },
+      { q: 'What is initial state?', a: 'Initial state is the value a state hook uses on the component’s first render.' },
     ]
   },
   {
     title: '3. React Routing and Forms (46-65)',
     questions: [
-      { q: 'React Router?', a: 'Page navigation.' },
-      { q: 'BrowserRouter?', a: 'Wrap app.' },
-      { q: 'Route?', a: 'Define path.' },
-      { q: 'Link?', a: 'Navigate without reload.' },
-      { q: 'useNavigate?', a: 'Program navigation.' },
-      { q: 'Dynamic routing?', a: '/user/:id.' },
-      { q: 'Form handling?', a: 'Controlled inputs.' },
-      { q: 'onChange?', a: 'Update state.' },
-      { q: 'onSubmit?', a: 'Handle form submit.' },
-      { q: 'Prevent default?', a: 'e.preventDefault().' },
-      { q: 'Validation?', a: 'Check inputs.' },
-      { q: 'Formik?', a: 'Form library.' },
-      { q: 'React Hook Form?', a: 'Lightweight form lib.' },
-      { q: 'Error handling?', a: 'Show messages.' },
-      { q: 'Lifting state up?', a: 'Share state.' },
-      { q: 'Props drilling?', a: 'Pass props deeply.' },
-      { q: 'Solution?', a: 'Context API.' },
-      { q: 'Nested routes?', a: 'Routes inside routes.' },
-      { q: 'Redirect?', a: 'Navigate programmatically.' },
-      { q: 'Lazy loading?', a: 'Load on demand.' },
+      { q: 'What is React Router?', a: 'React Router is a library for showing different components based on the URL in a React application.' },
+      { q: 'What is BrowserRouter?', a: 'BrowserRouter wraps the app and uses the browser History API to keep the UI and URL in sync.' },
+      { q: 'What is a Route?', a: 'A Route connects a URL path to the React element that should be displayed.' },
+      { q: 'What is Link?', a: 'Link changes routes without a full page reload, so client-side navigation stays fast.' },
+      { q: 'What is useNavigate?', a: 'useNavigate returns a function for navigation from code, such as after login or form submission.' },
+      { q: 'What is dynamic routing?', a: 'Dynamic routing uses URL parameters such as /users/:id. Read the value with useParams().' },
+      { q: 'How are forms handled in React?', a: 'Forms are commonly handled with controlled inputs: store each value in state and update it with onChange.' },
+      { q: 'What does onChange do?', a: 'onChange runs when an input value changes. It is commonly used to copy the new value into state.' },
+      { q: 'What does onSubmit do?', a: 'onSubmit runs when a form is submitted, including by clicking its submit button or pressing Enter.' },
+      { q: 'Why use preventDefault?', a: 'event.preventDefault() stops the browser’s normal form submission and page reload so React can handle it.' },
+      { q: 'What is form validation?', a: 'Validation checks that input values meet requirements before submitting and shows useful error messages when they do not.' },
+      { q: 'What is Formik?', a: 'Formik is a form library that helps manage values, validation, errors, and submission.' },
+      { q: 'What is React Hook Form?', a: 'React Hook Form is a form library that uses refs and hooks to manage forms with fewer re-renders.' },
+      { q: 'How do you handle form errors?', a: 'Store or receive validation errors and display a clear message near the related field.' },
+      { q: 'What is lifting state up?', a: 'Move shared state to the nearest common parent, then pass the value and update function to its children.' },
+      { q: 'What is prop drilling?', a: 'Prop drilling means passing props through several components that do not use them just to reach a deeply nested child.' },
+      { q: 'How can prop drilling be avoided?', a: 'Use component composition first; for widely shared data, use Context or a state-management library.' },
+      { q: 'What are nested routes?', a: 'Nested routes display child routes inside a parent route, usually through React Router’s Outlet component.' },
+      { q: 'How do you redirect in React Router?', a: 'Render Navigate for a declarative redirect, or call the function returned by useNavigate for a programmatic redirect.' },
+      { q: 'What is lazy loading?', a: 'Lazy loading downloads a component only when it is needed, reducing the initial JavaScript bundle.' },
     ]
   },
   {
     title: '4. Advanced React (66-85)',
     questions: [
-      { q: 'Redux?', a: 'State management.' },
-      { q: 'Store?', a: 'Global state.' },
-      { q: 'Action?', a: 'Event object.' },
-      { q: 'Reducer?', a: 'Update state.' },
-      { q: 'Dispatch?', a: 'Trigger action.' },
-      { q: 'Middleware?', a: 'Extra logic.' },
-      { q: 'Context vs Redux?', a: 'Small vs large apps.' },
-      { q: 'Memoization?', a: 'Cache results.' },
-      { q: 'React.memo?', a: 'Prevent re-render.' },
-      { q: 'Code splitting?', a: 'Split bundles.' },
-      { q: 'Suspense?', a: 'Loading UI.' },
-      { q: 'Error boundary?', a: 'Catch errors.' },
-      { q: 'StrictMode?', a: 'Highlight issues.' },
-      { q: 'Portals?', a: 'Render outside DOM.' },
-      { q: 'Refs?', a: 'Access DOM.' },
-      { q: 'ForwardRef?', a: 'Pass ref.' },
-      { q: 'Higher Order Component?', a: 'Wrap component.' },
-      { q: 'Render props?', a: 'Share logic.' },
-      { q: 'Debouncing?', a: 'Delay function.' },
-      { q: 'Throttling?', a: 'Limit calls.' },
+      { q: 'What is Redux?', a: 'Redux is a predictable state-management library that keeps shared state in one store and updates it through actions and reducers.' },
+      { q: 'What is a Redux store?', a: 'The store holds the application state and provides methods to read state, dispatch actions, and subscribe to updates.' },
+      { q: 'What is an action?', a: 'An action is a plain object that describes what happened. It must have a type and may include extra data in a payload.' },
+      { q: 'What is a reducer?', a: 'A reducer is a pure function that receives the current state and an action, then returns the next state without mutating the old state.' },
+      { q: 'What does dispatch do in Redux?', a: 'dispatch sends an action to the store, which runs the reducer and notifies subscribed UI when state changes.' },
+      { q: 'What is Redux middleware?', a: 'Middleware runs between dispatch and the reducer. It is used for logging, async work, and other side effects.' },
+      { q: 'Context vs Redux?', a: 'Context is good for simple, infrequently changing shared values. Redux offers stronger tools for large or complex state and predictable updates.' },
+      { q: 'What is memoization?', a: 'Memoization reuses a previous result when its inputs have not changed, avoiding unnecessary work.' },
+      { q: 'What is React.memo?', a: 'React.memo can skip re-rendering a component when its props are unchanged. It is a performance optimization, not a guarantee.' },
+      { q: 'What is code splitting?', a: 'Code splitting divides the JavaScript bundle into smaller files that can be loaded only when needed.' },
+      { q: 'What is Suspense?', a: 'Suspense displays fallback UI while a supported child is waiting, commonly with lazy-loaded components or Suspense-enabled data sources.' },
+      { q: 'What is an error boundary?', a: 'An error boundary catches rendering errors in its child tree and shows fallback UI. It does not catch event-handler or most async errors.' },
+      { q: 'What is StrictMode?', a: 'StrictMode adds development-only checks and may run logic extra times to reveal unsafe side effects. It does not affect production output.' },
+      { q: 'What are portals?', a: 'Portals render React children into a different DOM node while keeping them in the same React tree. They are useful for modals and tooltips.' },
+      { q: 'What are refs?', a: 'Refs hold a mutable value without causing a render and can point to DOM elements for focus, measurement, or scrolling.' },
+      { q: 'What is forwardRef?', a: 'forwardRef lets a component receive a ref from its parent and pass it to a child DOM node. In React 19, ref can also be passed as a prop.' },
+      { q: 'What is a Higher-Order Component?', a: 'A Higher-Order Component is a function that takes a component and returns an enhanced component. Hooks are usually preferred for sharing logic today.' },
+      { q: 'What are render props?', a: 'Render props share behavior by passing a function prop that returns UI. Custom hooks are often a simpler modern alternative.' },
+      { q: 'What is debouncing?', a: 'Debouncing waits until events stop for a set time before running a function, such as delaying search until typing pauses.' },
+      { q: 'What is throttling?', a: 'Throttling limits a function to run at most once per interval, which is useful for scroll or resize events.' },
     ]
   },
   {
     title: '5. React Interview Focus (86-100)',
     questions: [
-      { q: 'Why React?', a: 'Fast, reusable.' },
-      { q: 'Advantages?', a: 'Component-based, efficient.' },
-      { q: 'Disadvantages?', a: 'Learning curve.' },
-      { q: 'Virtual DOM vs Real DOM?', a: 'Faster vs slower.' },
-      { q: 'Key importance?', a: 'Efficient updates.' },
-      { q: 'State immutability?', a: 'Do not mutate directly.' },
-      { q: 'Best practices?', a: 'Clean, reusable code.' },
-      { q: 'Folder structure?', a: 'Organized components.' },
-      { q: 'Performance optimization?', a: 'Memo, lazy.' },
-      { q: 'API call?', a: 'useEffect + fetch/axios.' },
-      { q: 'Axios?', a: 'HTTP client.' },
-      { q: 'Environment variables?', a: '.env file.' },
-      { q: 'Build?', a: 'Optimize for production.' },
-      { q: 'Deployment?', a: 'Netlify, Vercel.' },
-      { q: 'React vs Angular?', a: 'Library vs framework.' },
+      { q: 'Why use React?', a: 'React makes complex UIs easier to build with reusable components, declarative rendering, and a large ecosystem.' },
+      { q: 'What are React’s advantages?', a: 'Its main advantages are reusable components, one-way data flow, efficient UI updates, strong tooling, and a large community.' },
+      { q: 'What are React’s disadvantages?', a: 'React covers the UI layer, so projects must choose routing and other tools. Its ecosystem and frequent changes can also increase the learning curve.' },
+      { q: 'Virtual DOM vs Real DOM?', a: 'The real DOM is the browser’s page tree. React uses an in-memory representation to calculate the smallest set of real DOM updates needed.' },
+      { q: 'Why are keys important?', a: 'Stable, unique keys help React match list items between renders so it preserves the correct state and updates efficiently. Avoid array indexes when item order can change.' },
+      { q: 'What is state immutability?', a: 'Do not directly change existing state objects or arrays. Create a new value so React can detect the update reliably.' },
+      { q: 'What are React best practices?', a: 'Keep components focused, use stable keys, avoid unnecessary state and effects, keep state close to where it is used, and reuse logic with hooks.' },
+      { q: 'How should a React project be structured?', a: 'Group related components, hooks, tests, and styles by feature. Use a consistent structure that stays easy to navigate as the app grows.' },
+      { q: 'How do you optimize React performance?', a: 'Measure first, then reduce unnecessary renders, keep state local, virtualize long lists, lazy-load code, and memoize only expensive work.' },
+      { q: 'How do you call an API in React?', a: 'Use fetch or a request library in an event handler or effect, and handle loading, success, error, and request cancellation states.' },
+      { q: 'What is Axios?', a: 'Axios is an HTTP client with convenient JSON handling, interceptors, request configuration, and error handling.' },
+      { q: 'How are environment variables used?', a: 'Store environment-specific public configuration in env files and read it through the build tool, such as import.meta.env in Vite. Never put secrets in frontend code.' },
+      { q: 'What is a production build?', a: 'A production build creates optimized static files, usually minified and split into efficient bundles, ready to deploy.' },
+      { q: 'How is a React app deployed?', a: 'Build the app, upload the output to a static host or server, and configure fallback routing so client-side URLs load correctly.' },
+      { q: 'React vs Angular?', a: 'React is mainly a UI library with flexible tool choices. Angular is a full framework with built-in routing, dependency injection, forms, and stronger conventions.' },
     ]
   },
 ];
 
 const totalQuestions = revisionSections.reduce((s, sec) => s + sec.questions.length, 0);
 
-const screenSizeExample = `import { useEffect, useState } from "react";
-
-function ScreenSize() {
-  const [width, setWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const updateWidth = () => setWidth(window.innerWidth);
-    window.addEventListener("resize", updateWidth);
-
-    return () => window.removeEventListener("resize", updateWidth);
-  }, []);
-
-  return <h2>Your browser width is: {width}px</h2>;
-}
-
-export default ScreenSize;`;
-
 function ReactSheet({ auth, setAuth }) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
   const [openAnswers, setOpenAnswers] = useState({});
   const [collapsedSections, setCollapsedSections] = useState(
     () => revisionSections.reduce((acc, _, i) => ({ ...acc, [i]: true }), {})
@@ -166,12 +148,6 @@ function ReactSheet({ auth, setAuth }) {
   });
 
   const revealedCount = Object.values(openAnswers).filter(Boolean).length;
-
-  useEffect(() => {
-    const updateViewportWidth = () => setViewportWidth(window.innerWidth);
-    window.addEventListener('resize', updateViewportWidth);
-    return () => window.removeEventListener('resize', updateViewportWidth);
-  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -279,64 +255,25 @@ function ReactSheet({ auth, setAuth }) {
           ))}
         </div>
 
-        {!q && (
-          <section className="rounded-2xl border border-amber-400/25 bg-amber-400/[0.045] overflow-hidden">
-            <div className="px-5 sm:px-7 pt-5 pb-4">
-              <p className="text-amber-300 text-lg font-semibold">• Screen → browser width</p>
-              <p className="text-gray-400 text-sm mt-1 leading-relaxed">
-                This React example shows the current browser width and updates automatically when you resize the window.
-              </p>
-            </div>
-
-            <div className="mx-4 sm:mx-6 mb-4 rounded-xl overflow-hidden border border-[#353535] bg-[#181818] shadow-2xl">
-              <div className="flex items-center justify-between px-5 py-3 bg-[#242424] border-b border-[#303030]">
-                <div className="flex gap-2">
-                  <span className="w-3 h-3 rounded-full bg-red-400" />
-                  <span className="w-3 h-3 rounded-full bg-amber-400" />
-                  <span className="w-3 h-3 rounded-full bg-green-500" />
-                </div>
-                <span className="text-[11px] tracking-[0.15em] text-gray-500 font-semibold">REACT EXAMPLE</span>
-              </div>
-              <pre className="overflow-x-auto p-5 sm:p-7 text-[13px] sm:text-[15px] leading-7 text-cyan-200 font-mono"><code>{screenSizeExample}</code></pre>
-            </div>
-
-            <div className="mx-4 sm:mx-6 mb-4 grid sm:grid-cols-2 gap-3">
-              <div className="rounded-xl bg-black/25 border border-white/5 p-4">
-                <p className="text-xs uppercase tracking-wider text-amber-300/80">Live result</p>
-                <p className="text-2xl font-bold text-white mt-1">{viewportWidth}px</p>
-                <p className="text-xs text-gray-500 mt-1">Resize this browser to test it.</p>
-              </div>
-              <div className="rounded-xl bg-black/25 border border-white/5 p-4 text-sm leading-relaxed text-gray-300">
-                <span className="text-amber-300 font-semibold">Easy explanation: </span>
-                <code className="text-cyan-300">useState</code> stores the width. <code className="text-cyan-300">useEffect</code> listens for resize events and updates it. Cleanup removes the listener when the component is no longer needed.
-              </div>
-            </div>
-
-            <p className="px-5 sm:px-7 pb-5 text-xs text-amber-100/60 leading-relaxed">
-              Note: <code>window.innerWidth</code> is the browser viewport width. Use <code>window.screen.width</code> when you specifically need the device screen width.
-            </p>
-          </section>
-        )}
-
         {lastRead && (
           <div className="flex items-center justify-between bg-cyan-400/8 border border-cyan-400/30 rounded-xl px-4 py-3 gap-3">
             <div className="flex items-center gap-2 min-w-0">
-              <span className="text-cyan-400 text-base flex-shrink-0">Pinned</span>
+              <span className="text-cyan-400 text-base flex-shrink-0">📍</span>
               <div className="min-w-0">
                 <p className="text-xs text-gray-500 mb-0.5">Last read · {lastRead.sectionTitle}</p>
                 <p className="text-sm font-medium text-white truncate">{lastRead.question}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
-              <button onClick={jumpToLastRead} className="px-3 py-1.5 bg-cyan-400 hover:bg-cyan-300 text-black text-xs font-bold rounded-lg transition-colors">Resume</button>
-              <button onClick={clearLastRead} className="text-gray-600 hover:text-gray-400 text-sm transition-colors">x</button>
+              <button onClick={jumpToLastRead} className="px-3 py-1.5 bg-cyan-400 hover:bg-cyan-300 text-black text-xs font-bold rounded-lg transition-colors">Resume →</button>
+              <button onClick={clearLastRead} className="text-gray-600 hover:text-gray-400 text-sm transition-colors">✕</button>
             </div>
           </div>
         )}
 
         {q && filteredSections.length === 0 && (
           <div className="text-center py-16 text-gray-600">
-            <div className="text-4xl mb-3">No Match</div>
+            <div className="text-4xl mb-3">🔍</div>
             <p className="text-sm">No questions match <span className="text-gray-400">"{searchQuery}"</span></p>
             <button onClick={() => setSearchQuery('')} className="mt-3 text-cyan-400 text-xs hover:underline">Clear search</button>
           </div>
@@ -388,7 +325,7 @@ function ReactSheet({ auth, setAuth }) {
                             className="flex-1 flex items-center justify-between px-2 py-5 text-left hover:bg-white/[0.03] transition-colors rounded"
                           >
                             <div className="flex items-center gap-2 min-w-0">
-                              {isLastRead && <span className="text-cyan-400 text-xs flex-shrink-0">Pin</span>}
+                              {isLastRead && <span className="text-cyan-400 text-xs flex-shrink-0">📌</span>}
                               <span className={`text-[17px] leading-snug ${isLastRead ? 'text-cyan-200' : 'text-gray-200'}`}>{item.q}</span>
                             </div>
                             <svg className={`w-3.5 h-3.5 text-gray-600 flex-shrink-0 ml-3 transition-transform duration-200 ${isOpen ? 'rotate-180 text-cyan-400' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
