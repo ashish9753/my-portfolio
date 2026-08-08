@@ -133,6 +133,176 @@ const revisionSections = [
 
 const totalQuestions = revisionSections.reduce((s, sec) => s + sec.questions.length, 0);
 
+// Practical examples for concepts that are easiest to understand through code.
+const reactExamples = {
+  'Component?': `function Welcome() {
+  return <h1>Hello!</h1>;
+}`,
+  'Functional component?': `const Button = () => <button>Click me</button>;`,
+  'JSX?': `const name = "Ashish";
+const heading = <h1>Hello, {name}</h1>;`,
+  'Props?': `function Welcome({ name }) {
+  return <h1>Hello, {name}</h1>;
+}
+
+<Welcome name="Ashish" />`,
+  'State?': `const [count, setCount] = useState(0);
+
+<button onClick={() => setCount(count + 1)}>
+  Count: {count}
+</button>`,
+  'Key in React?': `users.map(user => (
+  <UserCard key={user.id} user={user} />
+))`,
+  'React Fragment?': `return (
+  <>
+    <h1>Title</h1>
+    <p>Description</p>
+  </>
+);`,
+  'Event handling?': `const handleClick = () => alert("Saved!");
+
+return <button onClick={handleClick}>Save</button>;`,
+  'Conditional rendering?': `{isLoggedIn ? <Dashboard /> : <Login />}`,
+  'Lists in React?': `const fruits = ["Apple", "Mango"];
+
+return fruits.map(fruit => <li key={fruit}>{fruit}</li>);`,
+  'Controlled component?': `const [name, setName] = useState("");
+
+<input value={name} onChange={e => setName(e.target.value)} />`,
+  'Uncontrolled component?': `const inputRef = useRef(null);
+
+<input ref={inputRef} />
+<button onClick={() => console.log(inputRef.current.value)}>
+  Read value
+</button>`,
+  'useState?': `const [name, setName] = useState("Ashish");
+setName("Rahul");`,
+  'Syntax?': `const [state, setState] = useState(initialValue);`,
+  'useEffect?': `useEffect(() => {
+  document.title = "Count: " + count;
+}, [count]);`,
+  'Empty array?': `useEffect(() => {
+  console.log("Component mounted");
+}, []);`,
+  'Cleanup function?': `useEffect(() => {
+  const id = setInterval(loadData, 1000);
+  return () => clearInterval(id);
+}, []);`,
+  'useContext?': `const theme = useContext(ThemeContext);
+return <div className={theme}>Hello</div>;`,
+  'useRef?': `const inputRef = useRef(null);
+
+<input ref={inputRef} />
+<button onClick={() => inputRef.current.focus()}>Focus</button>`,
+  'useMemo?': `const total = useMemo(
+  () => calculateTotal(items),
+  [items]
+);`,
+  'useCallback?': `const handleSave = useCallback(() => {
+  saveUser(userId);
+}, [userId]);`,
+  'Custom hook?': `function useDocumentTitle(title) {
+  useEffect(() => {
+    document.title = title;
+  }, [title]);
+}`,
+  'Are state updates asynchronous?': `setCount(current => current + 1);
+setCount(current => current + 1);
+// Correctly increases count by 2`,
+  'What is useReducer?': `const [state, dispatch] = useReducer(reducer, { count: 0 });
+
+dispatch({ type: "increment" });`,
+  'What is React Router?': `<BrowserRouter>
+  <Routes>
+    <Route path="/about" element={<About />} />
+  </Routes>
+</BrowserRouter>`,
+  'What is Link?': `<Link to="/about">About</Link>`,
+  'What is useNavigate?': `const navigate = useNavigate();
+navigate("/dashboard");`,
+  'What is dynamic routing?': `<Route path="/users/:id" element={<User />} />
+
+const { id } = useParams();`,
+  'What does onSubmit do?': `function handleSubmit(event) {
+  event.preventDefault();
+  console.log("Submitted");
+}
+
+<form onSubmit={handleSubmit}>...</form>`,
+  'What is lifting state up?': `function Parent() {
+  const [name, setName] = useState("");
+  return <Child name={name} setName={setName} />;
+}`,
+  'How can prop drilling be avoided?': `const user = useContext(UserContext);
+return <p>{user.name}</p>;`,
+  'What are nested routes?': `<Route path="dashboard" element={<Dashboard />}>
+  <Route path="profile" element={<Profile />} />
+</Route>
+
+// Dashboard renders <Outlet />`,
+  'How do you redirect in React Router?': `navigate("/login");
+
+// Or during rendering:
+return <Navigate to="/login" replace />;`,
+  'What is lazy loading?': `const Settings = lazy(() => import("./Settings"));
+
+<Suspense fallback={<p>Loading...</p>}>
+  <Settings />
+</Suspense>`,
+  'What is an action?': `const action = {
+  type: "cart/itemAdded",
+  payload: { id: 1, name: "Book" }
+};`,
+  'What is a reducer?': `function reducer(state, action) {
+  if (action.type === "increment") {
+    return { count: state.count + 1 };
+  }
+  return state;
+}`,
+  'What is React.memo?': `const UserCard = React.memo(function UserCard({ user }) {
+  return <p>{user.name}</p>;
+});`,
+  'What are portals?': `return createPortal(
+  <Modal />,
+  document.getElementById("modal-root")
+);`,
+  'What is debouncing?': `clearTimeout(timer);
+timer = setTimeout(() => search(query), 400);`,
+  'What is throttling?': `// Run at most once every 200ms
+const onScroll = throttle(handleScroll, 200);`,
+  'What is state immutability?': `// Wrong: user.name = "Rahul";
+// Correct: create a new object
+setUser(current => ({ ...current, name: "Rahul" }));`,
+  'How do you call an API in React?': `useEffect(() => {
+  fetch("/api/users")
+    .then(response => response.json())
+    .then(setUsers)
+    .catch(setError);
+}, []);`,
+  'What is Axios?': `const { data } = await axios.get("/api/users");
+setUsers(data);`,
+  'How are environment variables used?': `const apiUrl = import.meta.env.VITE_API_URL;`,
+};
+
+function ReactExample({ code }) {
+  return (
+    <div className="my-3 rounded-lg overflow-hidden border border-[#333] shadow-lg">
+      <div className="bg-[#252526] px-3 py-1.5 flex items-center justify-between">
+        <div className="flex gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+          <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+        </div>
+        <span className="text-[10px] text-gray-500 font-mono tracking-widest">EXAMPLE</span>
+      </div>
+      <pre className="bg-[#1e1e1e] px-5 py-3 overflow-x-auto font-mono text-[13px] leading-6 m-0 whitespace-pre text-cyan-200">
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
+
 function ReactSheet({ auth, setAuth }) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -346,10 +516,11 @@ function ReactSheet({ auth, setAuth }) {
                           </a>
                         </div>
                         {isOpen && (
-                          <div className="px-1 pb-5 pt-2">
+                          <div className="px-3 pb-5 pt-2">
                             <p className="text-[16px] text-cyan-300/80 px-2 pb-1 leading-relaxed">
                               <span className="text-cyan-500 mr-1">Answer:</span>{item.a}
                             </p>
+                            {reactExamples[item.q] && <ReactExample code={reactExamples[item.q]} />}
                           </div>
                         )}
                       </div>
