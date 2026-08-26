@@ -166,8 +166,107 @@ const osSections = [
 	}
 ];
 
+const jenkinsInstallSteps = [
+	{ command: 'sudo apt update', meaning: 'Refresh the Ubuntu/Debian package list.' },
+	{ command: 'sudo apt install fontconfig openjdk-21-jre -y', meaning: 'Install Java 21, which Jenkins needs to run.' },
+	{ command: 'java -version', meaning: 'Confirm that Java is installed.' },
+	{ command: 'sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key', meaning: 'Download the official Jenkins repository signing key.' },
+	{ command: "echo 'deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/' | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null", meaning: 'Add the official stable Jenkins package repository.' },
+	{ command: 'sudo apt update', meaning: 'Load the Jenkins packages from the new repository.' },
+	{ command: 'sudo apt install jenkins -y', meaning: 'Install the Jenkins service.' },
+	{ command: 'sudo systemctl enable --now jenkins', meaning: 'Start Jenkins now and automatically after reboot.' },
+	{ command: 'sudo systemctl status jenkins', meaning: 'Check whether the Jenkins service is running.' },
+	{ command: 'sudo ufw allow 8080/tcp', meaning: 'Allow Jenkins port 8080 through UFW, when UFW is enabled.' },
+	{ command: 'sudo cat /var/lib/jenkins/secrets/initialAdminPassword', meaning: 'Show the one-time password for the first login.' },
+	{ command: 'http://SERVER_IP:8080', meaning: 'Open this address in a browser, install suggested plugins, and create the admin user.' },
+];
+
+const jenkinsSections = [
+	{
+		title: '1. Jenkins & CI/CD Basics',
+		questions: [
+			{ q: '1. What is Jenkins?', a: 'Jenkins is an open-source automation server used to build, test, and deploy applications. In short: Jenkins automates CI/CD.' },
+			{ q: '2. What is CI/CD?', a: 'CI (Continuous Integration) automatically builds and tests every code change. CD (Continuous Delivery/Deployment) prepares or releases tested code.\n\nDeveloper → Git → Jenkins → Build → Test → Deploy' },
+			{ q: '3. Why is Jenkins used?', a: 'It automates repetitive builds, tests, and deployments; reduces manual errors; and integrates with Git, Docker, Kubernetes, AWS, and many other tools.' },
+			{ q: '4. What is a Jenkins Job?', a: 'A job is a configured task, such as building a Java app, running tests, creating a Docker image, or deploying an application.' },
+			{ q: '5. What is a Jenkins Pipeline?', a: 'A Pipeline is an automated sequence of stages. Example: Checkout → Build → Test → Docker Build → Deploy.' },
+			{ q: '6. What is a Jenkinsfile?', a: "A Jenkinsfile is a text file that defines a Pipeline as code. It is normally stored in the Git repository.\n\n```groovy\npipeline {\n  agent any\n  stages {\n    stage('Build') { steps { sh 'mvn clean package' } }\n    stage('Test')  { steps { sh 'mvn test' } }\n  }\n}\n```" },
+			{ q: '7. Why do we use a Jenkinsfile?', a: 'It keeps the pipeline in Git, gives it version history and code review, allows old versions to be restored, and keeps application and CI/CD configuration together.' },
+			{ q: '8. What is a Jenkins Controller?', a: 'The Controller is the main Jenkins server. It stores configuration, schedules pipelines, manages security and plugins, and assigns work to agents.' },
+			{ q: '9. What is a Jenkins Agent?', a: 'An Agent is a machine that receives work from the Controller and actually runs build, test, or deployment commands.' },
+			{ q: '10. Controller vs Agent?', a: 'Controller: manages Jenkins, schedules builds, stores configuration, and manages agents.\nAgent: provides a workspace and executes the actual build.' },
+		]
+	},
+	{
+		title: '2. Jenkinsfile & Pipeline Syntax',
+		questions: [
+			{ q: '11. Explain a basic Jenkinsfile.', a: "pipeline defines the Pipeline; agent selects where it runs; stages groups phases; stage names one phase; steps contains actions; and sh runs a Linux shell command.\n\n```groovy\npipeline {\n  agent any\n  stages {\n    stage('Build') { steps { sh 'mvn clean package' } }\n    stage('Test')  { steps { sh 'mvn test' } }\n  }\n}\n```" },
+			{ q: '12. What is agent any?', a: 'It allows Jenkins to run the Pipeline on any available agent.\n\n```groovy\npipeline { agent any }\n```' },
+			{ q: '13. What is a stage?', a: 'A stage is a logical phase such as Checkout, Build, Test, Docker Build, or Deploy. Jenkins shows each stage separately in its Pipeline UI.' },
+			{ q: '14. What are steps?', a: "Steps are the commands or actions inside a stage. In `steps { sh 'mvn test' }`, the stage is Test and the step runs Maven tests." },
+			{ q: '15. What is post?', a: "post defines actions after a Pipeline or stage finishes. Common conditions are always, success, failure, unstable, aborted, and changed.\n\n```groovy\npost {\n  success { echo 'Build successful' }\n  failure { echo 'Build failed' }\n  always  { echo 'Pipeline completed' }\n}\n```" },
+		]
+	},
+	{
+		title: '3. Git, Webhooks & Credentials',
+		questions: [
+			{ q: '16. How does Jenkins integrate with Git?', a: 'Jenkins connects to a repository, checks out its source code, builds it, tests it, packages it, and can deploy it. A GitHub webhook can trigger this automatically.' },
+			{ q: '17. What is a webhook?', a: 'A webhook lets GitHub or GitLab notify Jenkins immediately after an event such as a push. Flow: Developer push → GitHub → Webhook → Jenkins → Build.' },
+			{ q: '18. Webhook vs Poll SCM?', a: 'With a webhook, Git tells Jenkins that code changed. With Poll SCM, Jenkins repeatedly checks Git. Webhooks are usually faster and more efficient.' },
+			{ q: '19. What are Jenkins Credentials?', a: 'Credentials securely store passwords, SSH keys, API tokens, username/password pairs, and cloud credentials instead of exposing secrets in source code.' },
+			{ q: "20. Why shouldn't passwords be written in a Jenkinsfile?", a: 'Hardcoded secrets can leak through Git history or console logs. Store them in Jenkins Credentials and refer to them by credential ID.' },
+			{ q: '21. How do you use credentials in a Jenkinsfile?', a: "Use withCredentials and a credential ID.\n\n```groovy\nwithCredentials([usernamePassword(credentialsId: 'docker-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {\n  sh 'docker login -u $USER -p $PASS'\n}\n```" },
+		]
+	},
+	{
+		title: '4. Pipeline Types, Builds & Docker',
+		questions: [
+			{ q: '22. What is a Declarative Pipeline?', a: "A structured, readable Pipeline style that is easiest to learn and maintain.\n\n```groovy\npipeline { agent any; stages { stage('Build') { steps { sh 'mvn package' } } } }\n```" },
+			{ q: '23. What is a Scripted Pipeline?', a: "A flexible Groovy-based Pipeline style for complex programming logic.\n\n```groovy\nnode { stage('Build') { sh 'mvn package' } }\n```" },
+			{ q: '24. Declarative vs Scripted Pipeline?', a: 'Declarative is structured, easier to learn, and preferred for most CI/CD. Scripted is Groovy-based and offers more control for complex logic.' },
+			{ q: '25. What is an Artifact?', a: 'An artifact is a build output, such as target/app.jar, a .war or .zip file, or a Docker image.' },
+			{ q: '26. What is artifact archiving?', a: "It saves build outputs in Jenkins for later download or use.\n\n```groovy\npost { success { archiveArtifacts artifacts: 'target/*.jar' } }\n```" },
+			{ q: '27. How do you execute OS commands in Jenkins?', a: "Use `sh 'command'` on Linux/macOS, for example `sh 'mvn test'`. Use `bat 'dir'` on Windows." },
+			{ q: '28. How does Jenkins work with Docker?', a: "Jenkins can build, tag, push, and deploy Docker images.\n\n```groovy\nstage('Docker Build') { steps { sh 'docker build -t myapp:latest .' } }\n```" },
+			{ q: '29. How would you implement a Docker CI/CD pipeline?', a: 'Developer → GitHub → Jenkins webhook → Checkout → Build → Test → Docker Build → Docker Push → Deployment.' },
+		]
+	},
+	{
+		title: '5. Troubleshooting, Security & Advanced',
+		questions: [
+			{ q: '30. Jenkins agent is offline. What will you check?', a: 'Check that the machine and agent process are running, network/SSH connectivity, Java version, disk and memory, logs, firewall rules, and workspace permissions. Useful commands: `free -h`, `df -h`, `java -version`.' },
+			{ q: '31. Jenkins build failed. How do you troubleshoot?', a: 'Open Console Output → find the first meaningful error → check code and dependencies → check environment and credentials → check the agent → run the failing command manually.' },
+			{ q: '32. Jenkins is running out of disk space. What do you do?', a: 'Check `df -h`, inspect `sudo du -sh /var/lib/jenkins/*`, then safely remove unnecessary old builds, workspaces, artifacts, logs, or unused Docker resources. Inspect Docker usage with `docker system df` first.' },
+			{ q: '33. How do you secure Jenkins?', a: 'Use authentication and authorization/RBAC, HTTPS, least privilege, protected credentials, restricted network access, updates and backups. Avoid root and install only required plugins.' },
+			{ q: '34. What is RBAC?', a: 'Role-Based Access Control gives permissions by role. Example: Developer = Build/View, Tester = Build/Test, DevOps = Configure/Deploy, Admin = full access.' },
+			{ q: '35. What is a Jenkins Shared Library?', a: 'A central Git repository of reusable Pipeline code. It reduces repeated steps such as Docker build/push logic and makes maintenance easier.' },
+			{ q: '36. What is parallel execution?', a: 'It runs independent tasks—such as unit tests, integration tests, and security scans—at the same time to shorten Pipeline duration.' },
+			{ q: '37. How do you prevent simultaneous builds?', a: 'Add `options { disableConcurrentBuilds() }` to a Declarative Pipeline.' },
+			{ q: '38. How do you add parameters?', a: "Declare a parameters block and read values from params.\n\n```groovy\nparameters { string(name: 'ENVIRONMENT', defaultValue: 'dev', description: 'Deployment environment') }\nsteps { echo \"Deploying to ${params.ENVIRONMENT}\" }\n```" },
+			{ q: '39. How do you add approval before production?', a: "Use an input step.\n\n```groovy\nstage('Production Approval') { steps { input message: 'Deploy to production?' } }\n```" },
+			{ q: '40. Explain your Jenkins CI/CD project.', a: 'I created a Jenkins Pipeline for a backend app. A GitHub webhook triggers Jenkins, which checks out code, builds and tests it, creates a Docker image, pushes it to a registry, and deploys it. The Jenkinsfile defines the Pipeline and Jenkins Credentials protects secrets.' },
+		]
+	}
+];
+
+const priorityQuestions = ['What is Jenkins?', 'What is CI/CD?', 'Pipeline', 'Jenkinsfile', 'Job', 'Controller vs Agent', 'agent any', 'stages and steps', 'Declarative vs Scripted', 'Credentials', 'webhook', 'Webhook vs Poll SCM', 'Jenkins with Docker', 'offline agent', 'complete CI/CD project'];
+
+function JenkinsAnswer({ text }) {
+	const parts = text.split(/```(?:groovy)?\n?|```/g);
+	return <div className="space-y-3">{parts.map((part, index) => index % 2 ? (
+		<div key={index} className="rounded-lg overflow-hidden border border-[#333] shadow-lg">
+			<div className="bg-[#252526] px-3 py-1.5 flex items-center justify-between">
+				<div className="flex gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" /><span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" /><span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" /></div>
+				<span className="text-[10px] text-gray-500 font-mono tracking-widest">JENKINSFILE</span>
+			</div>
+			<pre className="bg-[#1e1e1e] px-5 py-3 overflow-x-auto font-mono text-[13px] leading-6 text-sky-300 whitespace-pre m-0">{part.trim()}</pre>
+		</div>
+	) : part.trim() ? <p key={index} className="text-[15px] text-yellow-300/80 leading-relaxed whitespace-pre-line">{part.trim()}</p> : null)}</div>;
+}
+
 const totalOSQuestions = osSections.reduce((s, sec) => s + sec.questions.length, 0);
-const totalQuestions = totalOSQuestions;
+const totalJenkinsQuestions = jenkinsSections.reduce((s, sec) => s + sec.questions.length, 0);
+const totalQuestions = totalOSQuestions + totalJenkinsQuestions;
 
 function DevOpsSheet({ auth, setAuth }) {
 	const navigate = useNavigate();
@@ -175,6 +274,11 @@ function DevOpsSheet({ auth, setAuth }) {
 	const [openAnswers, setOpenAnswers] = useState({});
 	const [osOpen, setOsOpen] = useState(false);
 	const [linuxOpen, setLinuxOpen] = useState(false);
+	const [jenkinsOpen, setJenkinsOpen] = useState(true);
+	const [installOpen, setInstallOpen] = useState(false);
+	const [collapsedJenkinsSections, setCollapsedJenkinsSections] = useState(
+		() => jenkinsSections.reduce((acc, _, i) => ({ ...acc, [i]: i !== 0 }), {})
+	);
 	const [collapsedSections, setCollapsedSections] = useState(
 		() => osSections.reduce((acc, _, i) => ({ ...acc, [i]: true }), {})
 	);
@@ -210,9 +314,14 @@ function DevOpsSheet({ auth, setAuth }) {
 		if (!lastRead) return;
 		const parts = lastRead.key.split('-');
 		const sectionIdx = parseInt(parts[1], 10);
-		setOsOpen(true);
-		setLinuxOpen(true);
-		setCollapsedSections(prev => ({ ...prev, [sectionIdx]: false }));
+		if (parts[0] === 'jenkins') {
+			setJenkinsOpen(true);
+			setCollapsedJenkinsSections(prev => ({ ...prev, [sectionIdx]: false }));
+		} else {
+			setOsOpen(true);
+			setLinuxOpen(true);
+			setCollapsedSections(prev => ({ ...prev, [sectionIdx]: false }));
+		}
 		setOpenAnswers(prev => ({ ...prev, [lastRead.key]: true }));
 		setTimeout(() => {
 			const el = questionRefs.current[lastRead.key];
@@ -240,8 +349,13 @@ function DevOpsSheet({ auth, setAuth }) {
 			)
 			: sec.questions,
 	})).filter(sec => sec.questions.length > 0);
+	const filteredJenkinsSections = jenkinsSections.map(sec => ({
+		...sec,
+		questions: q ? sec.questions.filter(item => `${item.q} ${item.a}`.toLowerCase().includes(q)) : sec.questions,
+	})).filter(sec => sec.questions.length > 0);
 
-	const totalVisible = filteredSections.reduce((s, sec) => s + sec.questions.length, 0);
+	const totalVisible = filteredSections.reduce((s, sec) => s + sec.questions.length, 0)
+		+ filteredJenkinsSections.reduce((s, sec) => s + sec.questions.length, 0);
 
 	const examplesByQuestion = {
 		'pwd': ['pwd', '# /home/ashish'],
@@ -418,13 +532,68 @@ function DevOpsSheet({ auth, setAuth }) {
 				)}
 
 				{/* No results */}
-				{q && filteredSections.length === 0 && (
+				{q && totalVisible === 0 && (
 					<div className="text-center py-16 text-gray-600">
 						<div className="text-4xl mb-3">🔍</div>
 						<p className="text-sm">No questions match <span className="text-gray-400">"{searchQuery}"</span></p>
 						<button onClick={() => setSearchQuery('')} className="mt-3 text-yellow-400 text-xs hover:underline">Clear search</button>
 					</div>
 				)}
+
+				{/* ── JENKINS CI/CD MODULE ── */}
+				{(!q || filteredJenkinsSections.length > 0) && <div className="border border-orange-400/25 rounded-2xl overflow-hidden bg-[#0d0d0d]">
+					<button onClick={() => setJenkinsOpen(v => !v)} className="w-full flex items-center justify-between px-6 py-5 bg-[#111] hover:bg-[#161616] transition-colors">
+						<div className="flex items-center gap-4 text-left">
+							<span className="text-3xl">⚙️</span>
+							<div><p className="text-xl font-bold text-orange-400">CI/CD · Jenkins</p><p className="text-xs text-gray-500 mt-0.5">Linux setup + {totalJenkinsQuestions} interview questions + Pipeline examples</p></div>
+						</div>
+						<svg className={`w-5 h-5 text-orange-400 transition-transform ${jenkinsOpen || q ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+					</button>
+
+					{(jenkinsOpen || q) && <div className="border-t border-[#1f1f1f] p-4 sm:p-5 space-y-5">
+						{!q && <>
+							<div className="rounded-xl border border-sky-400/20 bg-sky-400/[0.04] p-5">
+								<p className="font-bold text-sky-300">Pipeline at a glance</p>
+								<div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center text-xs font-semibold">
+									{['Developer', 'Git push', 'Jenkins', 'Build', 'Test', 'Deploy'].map((step, i) => <div key={step} className="relative rounded-lg border border-sky-400/20 bg-[#101722] px-3 py-3 text-sky-200">{step}{i < 5 && <span className="hidden lg:block absolute -right-2.5 top-3 text-sky-500">→</span>}</div>)}
+								</div>
+							</div>
+
+							<div className="border border-emerald-400/20 rounded-xl overflow-hidden">
+								<button onClick={() => setInstallOpen(v => !v)} className="w-full flex items-center justify-between px-5 py-4 bg-emerald-400/[0.05] hover:bg-emerald-400/[0.08] text-left">
+									<div><p className="font-bold text-emerald-300">🐧 Install Jenkins on Ubuntu / Debian</p><p className="text-xs text-gray-500 mt-1">Run in order · every command has a short meaning</p></div>
+									<span className="text-emerald-400">{installOpen ? '−' : '+'}</span>
+								</button>
+								{installOpen && <div className="p-4 space-y-3">{jenkinsInstallSteps.map((step, i) => <div key={step.command} className="grid sm:grid-cols-[2rem_1fr] gap-2 sm:gap-3 rounded-lg border border-[#252525] bg-[#101010] p-3">
+									<span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-400/10 text-xs font-bold text-emerald-400">{i + 1}</span>
+									<div className="min-w-0"><code className="block overflow-x-auto whitespace-nowrap text-[13px] text-fuchsia-300 pb-1">{step.command}</code><p className="text-sm text-gray-400">{step.meaning}</p></div>
+								</div>)}</div>}
+							</div>
+
+							<div className="rounded-xl border border-yellow-400/20 bg-yellow-400/[0.04] p-5">
+								<p className="font-bold text-yellow-300">⭐ Revise these 15 first</p>
+								<div className="mt-3 flex flex-wrap gap-2">{priorityQuestions.map((item, i) => <span key={item} className="rounded-full border border-yellow-400/20 bg-[#15130b] px-3 py-1.5 text-xs text-yellow-200"><span className="text-yellow-500">{i + 1}.</span> {item}</span>)}</div>
+							</div>
+						</>}
+
+						{filteredJenkinsSections.map((section, sIdx) => {
+							const originalIdx = jenkinsSections.findIndex(s => s.title === section.title);
+							const collapsed = q ? false : collapsedJenkinsSections[originalIdx];
+							return <div key={section.title} className="border border-[#252525] rounded-xl overflow-hidden">
+								<button onClick={() => setCollapsedJenkinsSections(v => ({ ...v, [originalIdx]: !v[originalIdx] }))} className="w-full flex items-center justify-between px-5 py-4 bg-[#101010] hover:bg-[#151515] text-left">
+									<div><p className="font-bold text-orange-300">{section.title}</p><p className="text-xs text-gray-600 mt-0.5">{section.questions.length} questions</p></div><span className="text-orange-400">{collapsed ? '+' : '−'}</span>
+								</button>
+								{!collapsed && <div>{section.questions.map((item, qIdx) => {
+									const key = `jenkins-${originalIdx}-${qIdx}`; const isOpen = openAnswers[key];
+									return <div key={key} ref={el => questionRefs.current[key] = el} className={`border-t border-[#202020] ${isOpen ? 'bg-orange-400/[0.04]' : ''}`}>
+										<button onClick={() => toggleAnswer(key, item.q, section.title)} className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-white/[0.02]"><span className="text-[16px] text-gray-200">{item.q}</span><span className="text-orange-400">{isOpen ? '−' : '+'}</span></button>
+										{isOpen && <div className="px-5 pb-5"><JenkinsAnswer text={item.a} /></div>}
+									</div>;
+								})}</div>}
+							</div>;
+						})}
+					</div>}
+				</div>}
 
 				{/* ── ROADMAP MODULE ── */}
 				<div className="border border-[#2a2a2a] rounded-2xl overflow-hidden bg-[#0d0d0d]">
