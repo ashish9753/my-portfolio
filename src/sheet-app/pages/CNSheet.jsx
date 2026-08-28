@@ -113,35 +113,35 @@ const cnSections = [
     ]
   },
   {
-    title: '📘 Application Layer Protocols',
+    title: '🌐 Protocols – Full Form, Meaning & Example',
     questions: [
       {
-        q: 'What is HTTP and HTTPS? What is the difference?',
-        a: 'HTTP (HyperText Transfer Protocol):\n• Port 80\n• Used to transfer web pages\n• Data is sent in plain text – NOT secure\n\nHTTPS (HTTP Secure):\n• Port 443\n• HTTP + SSL/TLS encryption\n• Data is encrypted – SECURE\n\nReal Example:\n• HTTP = Sending a postcard (anyone can read it)\n• HTTPS = Sending a sealed envelope (only recipient can read)\n\nAlways use HTTPS for banking, login pages, any sensitive data.'
+        q: '🌐 Application Layer Protocols',
+        a: '• HTTP — HyperText Transfer Protocol — Transfers web pages — Example: opening example.com — Port 80\n\n• HTTPS — HyperText Transfer Protocol Secure — Secure, encrypted web communication — Example: online banking — Port 443\n\n• FTP — File Transfer Protocol — Transfers files between client and server — Example: uploading a website file — Ports 20/21\n\n• SFTP — SSH File Transfer Protocol — Secure file transfer over SSH — Example: securely uploading server files — Port 22\n\n• SMTP — Simple Mail Transfer Protocol — Sends outgoing email — Example: Gmail sending an email — Port 25\n\n• POP3 — Post Office Protocol Version 3 — Downloads email to one device — Example: saving server mail on a PC — Port 110\n\n• IMAP — Internet Message Access Protocol — Keeps email on the server and syncs devices — Example: same Gmail inbox on phone and laptop — Port 143\n\n• DNS — Domain Name System — Converts domain name → IP address — Example: google.com → 142.250.x.x — Port 53\n\n• DHCP — Dynamic Host Configuration Protocol — Automatically assigns IP settings — Example: Wi-Fi router gives your laptop an IP — Ports 67/68\n\n• SSH — Secure Shell — Secure encrypted remote login — Example: connecting to a Linux server — Port 22\n\n• Telnet — Teletype Network — Unencrypted remote login; obsolete and unsafe — Example: old remote server access — Port 23\n\n• SNMP — Simple Network Management Protocol — Monitors and manages network devices — Example: checking router health — Ports 161/162'
       },
       {
-        q: 'What is DNS and how does it work?',
-        a: 'DNS = Domain Name System\n\nConverts human-readable domain names to IP addresses.\n\ngoogle.com → 142.250.195.46\n\nDNS Resolution Process:\n1. Browser checks local cache\n2. Asks OS resolver\n3. Asks DNS Resolver (ISP)\n4. Asks Root Name Server → TLD Server → Authoritative Server\n5. Returns IP address\n\nPort: 53\n\nReal Example: DNS is like your phone contacts app.\nInstead of memorizing "Ashish: +91-98765-43210", you just search "Ashish" and it finds the number.'
+        q: '🚚 Transport Layer Protocols',
+        a: '• TCP — Transmission Control Protocol — Reliable, connection-oriented and ordered delivery — Example: web pages, email and file downloads\n\n• UDP — User Datagram Protocol — Fast, connectionless delivery with no delivery or ordering guarantee — Example: gaming, live video and voice calls\n\nMemory: TCP = Reliable ✅ | UDP = Fast ⚡'
       },
       {
-        q: 'What is FTP?',
-        a: 'FTP = File Transfer Protocol\n\nUsed to transfer files between client and server.\n\nPorts:\n• Port 21 – Control connection\n• Port 20 – Data connection\n\nModes:\n• Active Mode: Server connects to client\n• Passive Mode: Client connects to server\n\nSFTP = Secure FTP (uses SSH, Port 22)\n\nReal Example: FTP is like a courier service that picks up and delivers files between two locations.'
+        q: '🌍 Network / Internet Layer Protocols',
+        a: '• IP — Internet Protocol — Provides logical addressing and routing — Example: sending a packet to another IP address\n\n• IPv4 — Internet Protocol Version 4 — Uses 32-bit addresses — Example: 192.168.1.10\n\n• IPv6 — Internet Protocol Version 6 — Uses 128-bit addresses — Example: 2001:db8::1\n\n• ICMP — Internet Control Message Protocol — Carries error and diagnostic messages — Example: ping google.com\n\n• IGMP — Internet Group Management Protocol — Manages IPv4 multicast group membership — Example: IPTV multicast\n\n• ARP — Address Resolution Protocol — Maps IPv4 address → MAC address on a local network — Example: finding the MAC for 192.168.1.5\n\nRemember: ARP = IP → MAC'
       },
       {
-        q: 'What is the difference between SMTP, POP3, and IMAP?',
-        a: 'SMTP (Simple Mail Transfer Protocol):\n• Port 25\n• SENDS email from client to server, or server to server\n• Only for outgoing mail\n\nPOP3 (Post Office Protocol v3):\n• Port 110\n• Downloads email to local device, then deletes from server\n• Access from ONE device only\n\nIMAP (Internet Message Access Protocol):\n• Port 143\n• Emails stay on server, synced across all devices\n• Access from phone, laptop, etc. – all show same inbox\n\nReal Example:\n• SMTP = Post Office sends your letter\n• POP3 = You pick up mail, it\'s removed from the PO Box\n• IMAP = You read a shared mailbox; mail stays for all devices'
+        q: '🔗 Data Link Layer Protocols & Technologies',
+        a: '• Ethernet — Wired LAN technology — Transfers frames using MAC addresses — Example: PC connected to a switch with a cable\n\n• PPP — Point-to-Point Protocol — Connects two endpoints directly — Example: an old dial-up or router link\n\n• HDLC — High-Level Data Link Control — Bit-oriented communication over point-to-point links — Example: router-to-router WAN link\n\n• Wi-Fi / IEEE 802.11 — Wireless LAN technology — Transfers frames over radio waves — Example: laptop connected to a wireless router'
       },
       {
-        q: 'What is SSH and how is it different from Telnet?',
-        a: 'SSH (Secure Shell):\n• Port 22\n• Encrypted remote login to servers\n• Industry standard for server management\n• Uses public-key cryptography\n\nTelnet:\n• Port 23\n• Old remote login protocol\n• Data sent in plain text – NOT secure\n• Obsolete today\n\nReal Example:\n• Telnet = Talking loudly in public (everyone hears you)\n• SSH = Whispering in a private encrypted room\n\nUsage: ssh user@192.168.1.1'
+        q: '🛣️ Routing Protocols',
+        a: '• RIP — Routing Information Protocol — Distance-vector routing using hop count; maximum 15 hops — Example: a small network\n\n• OSPF — Open Shortest Path First — Link-state routing using shortest-path calculation — Example: enterprise internal routing\n\n• BGP — Border Gateway Protocol — Path-vector routing between autonomous systems — Example: ISP ↔ ISP Internet routing\n\n• EIGRP — Enhanced Interior Gateway Routing Protocol — Advanced distance-vector routing inside an organization — Example: Cisco-based enterprise routing'
       },
       {
-        q: 'What is DHCP and how does it work?',
-        a: 'DHCP = Dynamic Host Configuration Protocol\n\nAutomatically assigns IP addresses to devices on a network.\n\nDHCP Process (DORA):\n1. Discover – Client broadcasts "I need an IP!"\n2. Offer – DHCP Server replies "Here, take 192.168.1.50"\n3. Request – Client says "Yes, I want that IP"\n4. Acknowledge – Server confirms\n\nWithout DHCP, you\'d manually assign IPs to every device.\n\nReal Example: Like a hotel receptionist assigning you a room number when you check in. When you leave, the room (IP) becomes available again.'
+        q: '🧠 One-Minute Protocol Revision',
+        a: 'DNS = Find IP\nDHCP = Give IP\nARP = Map IP to MAC\nICMP = Check and report\nTCP = Reliable\nUDP = Fast\nHTTP = Web\nHTTPS = Secure web\nFTP/SFTP = Files\nSMTP = Send email\nPOP3 = Download email\nIMAP = Sync email\nSSH = Secure login\nTelnet = Unsafe old login\nSNMP = Monitor devices\nRIP = Hop count\nOSPF = Shortest path / link state\nBGP = Internet routing\n\nMost-asked examples:\n• DNS → google.com to IP\n• DHCP → router gives laptop an IP\n• ARP → IP to MAC\n• ICMP → ping\n• TCP → accurate file/web delivery\n• UDP → gaming/live calls\n• BGP → ISP-to-ISP routing'
       },
       {
-        q: 'What are the most important port numbers to remember?',
-        a: 'Well-Known Ports (0-1023):\n\nPort 20/21 – FTP\nPort 22 – SSH\nPort 23 – Telnet\nPort 25 – SMTP\nPort 53 – DNS\nPort 80 – HTTP\nPort 110 – POP3\nPort 143 – IMAP\nPort 443 – HTTPS\nPort 3306 – MySQL\nPort 5432 – PostgreSQL\nPort 27017 – MongoDB\nPort 3000 – Node.js (default)\nPort 8080 – HTTP Alternate\n\nMemory Tip:\n53=DNS, 80=HTTP, 443=HTTPS, 22=SSH'
+        q: '🔢 Most Important Port Numbers',
+        a: '20/21 = FTP\n22 = SSH and SFTP\n23 = Telnet\n25 = SMTP\n53 = DNS\n67/68 = DHCP\n80 = HTTP\n110 = POP3\n123 = NTP\n143 = IMAP\n161/162 = SNMP\n443 = HTTPS\n\nPlacement shortcut: 22 SSH, 53 DNS, 80 HTTP, 443 HTTPS'
       },
     ]
   },
