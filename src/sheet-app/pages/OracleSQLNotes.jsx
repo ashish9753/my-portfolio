@@ -98,7 +98,19 @@ const NOTES_HTML = `
   .sqlnotes-root .pill{display:inline-block;background:#101d28;border:1px solid var(--line);border-radius:6px;padding:1px 8px;font-size:12px;color:var(--accent-2);font-family:Menlo,monospace;}
   .sqlnotes-root hr{border:none;border-top:1px solid var(--line);margin:24px 0;}
   .sqlnotes-root .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .sqlnotes-root .join-cheatsheet{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0 28px;}
+  .sqlnotes-root .join-card{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0;}
+  .sqlnotes-root .join-card h4{margin:0 0 4px;color:var(--ink);font-size:14px;}
+  .sqlnotes-root .join-card p{margin:0 0 8px;color:var(--muted);font-size:12.5px;}
+  .sqlnotes-root .join-card svg{display:block;width:100%;height:105px;margin:4px auto 10px;}
+  .sqlnotes-root .join-card pre{margin:0;padding:11px 12px;font-size:11.5px;}
+  .sqlnotes-root .join-set{fill:rgba(255,123,114,.78);}
+  .sqlnotes-root .join-cutout{fill:var(--panel-2);}
+  .sqlnotes-root .join-outline{fill:none;stroke:#94a3b8;stroke-width:2;}
+  .sqlnotes-root .join-label{fill:var(--ink);font:700 15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-anchor:middle;dominant-baseline:middle;}
+  .sqlnotes-root .join-card-wide{grid-column:1/-1;}
   @media(max-width:640px){.sqlnotes-root .grid2{grid-template-columns:1fr;}}
+  @media(max-width:640px){.sqlnotes-root .join-cheatsheet{grid-template-columns:1fr;}.sqlnotes-root .join-card-wide{grid-column:auto;}}
 </style>
 
 <div class="wrap">
@@ -1021,6 +1033,93 @@ const NOTES_HTML = `
       <li>Self Join</li>
       <li>Equi &amp; Non-Equi Join</li>
     </ul>
+
+    <h3>Visual Join Cheat Sheet</h3>
+    <p class="lead">Let <span class="pill">A</span> be the left table and <span class="pill">B</span> be the right table. The red region is what the query returns.</p>
+    <div class="join-cheatsheet">
+      <article class="join-card">
+        <h4>INNER JOIN</h4><p>Only rows matching in both A and B.</p>
+        <svg viewBox="0 0 200 105" role="img" aria-label="Intersection of A and B">
+          <defs><clipPath id="join-inner-b"><circle cx="125" cy="52" r="43"/></clipPath></defs>
+          <circle class="join-set" cx="75" cy="52" r="43" clip-path="url(#join-inner-b)"/>
+          <circle class="join-outline" cx="75" cy="52" r="43"/><circle class="join-outline" cx="125" cy="52" r="43"/>
+          <text class="join-label" x="58" y="52">A</text><text class="join-label" x="142" y="52">B</text>
+        </svg>
+        <pre><code><span class="kw">FROM</span> A <span class="kw">INNER JOIN</span> B
+  <span class="kw">ON</span> A.key = B.key</code></pre>
+      </article>
+
+      <article class="join-card">
+        <h4>LEFT OUTER JOIN</h4><p>All of A, plus matching rows from B.</p>
+        <svg viewBox="0 0 200 105" role="img" aria-label="All of A including its overlap with B">
+          <circle class="join-set" cx="75" cy="52" r="43"/>
+          <circle class="join-outline" cx="75" cy="52" r="43"/><circle class="join-outline" cx="125" cy="52" r="43"/>
+          <text class="join-label" x="58" y="52">A</text><text class="join-label" x="142" y="52">B</text>
+        </svg>
+        <pre><code><span class="kw">FROM</span> A <span class="kw">LEFT JOIN</span> B
+  <span class="kw">ON</span> A.key = B.key</code></pre>
+      </article>
+
+      <article class="join-card">
+        <h4>RIGHT OUTER JOIN</h4><p>All of B, plus matching rows from A.</p>
+        <svg viewBox="0 0 200 105" role="img" aria-label="All of B including its overlap with A">
+          <circle class="join-set" cx="125" cy="52" r="43"/>
+          <circle class="join-outline" cx="75" cy="52" r="43"/><circle class="join-outline" cx="125" cy="52" r="43"/>
+          <text class="join-label" x="58" y="52">A</text><text class="join-label" x="142" y="52">B</text>
+        </svg>
+        <pre><code><span class="kw">FROM</span> A <span class="kw">RIGHT JOIN</span> B
+  <span class="kw">ON</span> A.key = B.key</code></pre>
+      </article>
+
+      <article class="join-card">
+        <h4>FULL OUTER JOIN</h4><p>Every row from A and B, matched where possible.</p>
+        <svg viewBox="0 0 200 105" role="img" aria-label="All of A and B">
+          <circle class="join-set" cx="75" cy="52" r="43"/><circle class="join-set" cx="125" cy="52" r="43"/>
+          <circle class="join-outline" cx="75" cy="52" r="43"/><circle class="join-outline" cx="125" cy="52" r="43"/>
+          <text class="join-label" x="58" y="52">A</text><text class="join-label" x="142" y="52">B</text>
+        </svg>
+        <pre><code><span class="kw">FROM</span> A <span class="kw">FULL OUTER JOIN</span> B
+  <span class="kw">ON</span> A.key = B.key</code></pre>
+      </article>
+
+      <article class="join-card">
+        <h4>LEFT ONLY</h4><p>Rows in A that have no match in B.</p>
+        <svg viewBox="0 0 200 105" role="img" aria-label="Only the non-overlapping part of A">
+          <defs><clipPath id="join-left-only-b"><circle cx="125" cy="52" r="43"/></clipPath></defs>
+          <circle class="join-set" cx="75" cy="52" r="43"/><circle class="join-cutout" cx="75" cy="52" r="43" clip-path="url(#join-left-only-b)"/>
+          <circle class="join-outline" cx="75" cy="52" r="43"/><circle class="join-outline" cx="125" cy="52" r="43"/>
+          <text class="join-label" x="58" y="52">A</text><text class="join-label" x="142" y="52">B</text>
+        </svg>
+        <pre><code><span class="kw">FROM</span> A <span class="kw">LEFT JOIN</span> B <span class="kw">ON</span> A.key = B.key
+<span class="kw">WHERE</span> B.key <span class="kw">IS NULL</span></code></pre>
+      </article>
+
+      <article class="join-card">
+        <h4>RIGHT ONLY</h4><p>Rows in B that have no match in A.</p>
+        <svg viewBox="0 0 200 105" role="img" aria-label="Only the non-overlapping part of B">
+          <defs><clipPath id="join-right-only-a"><circle cx="75" cy="52" r="43"/></clipPath></defs>
+          <circle class="join-set" cx="125" cy="52" r="43"/><circle class="join-cutout" cx="125" cy="52" r="43" clip-path="url(#join-right-only-a)"/>
+          <circle class="join-outline" cx="75" cy="52" r="43"/><circle class="join-outline" cx="125" cy="52" r="43"/>
+          <text class="join-label" x="58" y="52">A</text><text class="join-label" x="142" y="52">B</text>
+        </svg>
+        <pre><code><span class="kw">FROM</span> A <span class="kw">RIGHT JOIN</span> B <span class="kw">ON</span> A.key = B.key
+<span class="kw">WHERE</span> A.key <span class="kw">IS NULL</span></code></pre>
+      </article>
+
+      <article class="join-card join-card-wide">
+        <h4>FULL OUTER — UNMATCHED ONLY</h4><p>Rows unique to either table; the matching intersection is excluded.</p>
+        <svg viewBox="0 0 200 105" role="img" aria-label="Non-overlapping parts of both A and B">
+          <defs><clipPath id="join-full-only-b"><circle cx="125" cy="52" r="43"/></clipPath></defs>
+          <circle class="join-set" cx="75" cy="52" r="43"/><circle class="join-set" cx="125" cy="52" r="43"/>
+          <circle class="join-cutout" cx="75" cy="52" r="43" clip-path="url(#join-full-only-b)"/>
+          <circle class="join-outline" cx="75" cy="52" r="43"/><circle class="join-outline" cx="125" cy="52" r="43"/>
+          <text class="join-label" x="58" y="52">A</text><text class="join-label" x="142" y="52">B</text>
+        </svg>
+        <pre><code><span class="kw">FROM</span> A <span class="kw">FULL OUTER JOIN</span> B <span class="kw">ON</span> A.key = B.key
+<span class="kw">WHERE</span> A.key <span class="kw">IS NULL OR</span> B.key <span class="kw">IS NULL</span></code></pre>
+      </article>
+    </div>
+    <div class="note"><b>Memory trick:</b> the table named immediately after <span class="pill">FROM</span> is the left table. For “only” queries, keep the outer join and test a reliable, non-null key from the opposite table with <span class="pill">IS NULL</span>.</div>
 
     <!-- CROSS -->
     <h3>1) Cross Join</h3>
