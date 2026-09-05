@@ -22,6 +22,7 @@ import CNSheet from './pages/CNSheet';
 import OSSheet from './pages/OSSheet';
 import DBMSSheet from './pages/DBMSSheet';
 import OracleSQLNotes from './pages/OracleSQLNotes';
+import MongoDBNotes from './pages/MongoDBNotes';
 import DevOpsSheet from './pages/DevOpsSheet';
 import OOPSSheet from './pages/OOPSSheet';
 import SoftwareEngineeringSheet from './pages/SoftwareEngineeringSheet';
@@ -354,6 +355,14 @@ function SheetApp() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/DBMS/MongoDBRevision"
+        element={
+          <ProtectedRoute>
+            <MongoDBNotes />
+          </ProtectedRoute>
+        }
+      />
       <Route 
         path="/DevOps" 
         element={
@@ -381,7 +390,7 @@ function SheetApp() {
       <Route path="/HTML" element={<ProtectedRoute><HTMLSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
       <Route path="/CSS" element={<ProtectedRoute><CSSSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
       <Route path="/JavaScript" element={<ProtectedRoute><JSSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
-      <Route path="/MongoDB" element={<ProtectedRoute><MongoDBSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
+      <Route path="/MongoDB" element={<ProtectedRoute><MongoDBNotes /></ProtectedRoute>} />
       <Route path="/React" element={<ProtectedRoute><ReactSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
       <Route path="/NodeJS" element={<ProtectedRoute><NodeJSSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />
       <Route path="/MySQL" element={<ProtectedRoute><MySQLSheet auth={auth} setAuth={setAuth} /></ProtectedRoute>} />

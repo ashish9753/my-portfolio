@@ -2160,6 +2160,25 @@ function DBMSSheet({ auth, setAuth }) {
           </button>
         </section>
 
+        <section className="overflow-hidden rounded-2xl border border-[#2a2a2a]">
+          <button
+            onClick={() => navigate('/sheet/DBMS/MongoDBRevision')}
+            className="group flex w-full items-center justify-between bg-[#111] px-6 py-5 transition-colors hover:bg-[#161616]"
+          >
+            <div className="flex items-center gap-4 text-left">
+              <span className="grid h-11 w-11 place-items-center rounded-xl border border-green-400/25 bg-green-400/10 text-sm font-black text-green-300">MDB</span>
+              <div>
+                <p className="text-xl font-bold text-green-400">MongoDB Commands Quick Revision</p>
+                <p className="mt-0.5 text-xs text-gray-500">CRUD · operators · aggregation · indexes · examples</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-1 text-xs text-gray-500">Open notes</span>
+              <svg className="h-5 w-5 text-green-400/70 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </div>
+          </button>
+        </section>
+
         {q && !noResults && (
           <p className="pt-2 text-center text-xs text-gray-600">{totalVisible} result{totalVisible !== 1 ? 's' : ''} for "{searchQuery}"</p>
         )}
