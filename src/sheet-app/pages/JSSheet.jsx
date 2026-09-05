@@ -419,44 +419,62 @@ Remember: arrays destructure by position, objects by key name.`,
       },
       {
         q: 'What is the spread operator?',
-        a: `The spread operator ( ... ) expands / spreads out the elements of an array or object.
+        a: `The spread operator ( ... ) expands an array or object into individual values.
 
-Common uses: copying, merging, and passing arrays as arguments.
+Use it to combine arrays, copy values, or create an updated object.
 
 \`\`\`
-// Copy an array (shallow)
-const nums = [1, 2, 3];
-const copy = [...nums];
+// Combine arrays
+const numsData1 = [1, 3, 6, 9];
+const numsData2 = [12, 34, 67];
+const newDataSet = [...numsData1, ...numsData2];
 
-// Merge arrays
-const merged = [...nums, 4, 5]; // [1,2,3,4,5]
+console.log(newDataSet); // [1, 3, 6, 9, 12, 34, 67]
 
-// Merge / clone objects
-const a = { x: 1 };
-const b = { ...a, y: 2 };       // { x:1, y:2 }
+// Copy an object and update one property
+const userData = { name: "Anil", city: "Noida", company: "TCS" };
+const userData2 = { ...userData, name: "Anil Sidhu" };
 
-// Spread into a function
-console.log(Math.max(...nums)); // 3
+console.log(userData2);
 \`\`\`
-Remember: spread "unpacks" values OUT; rest (below) "packs" values IN.`,
+\`\`\`output
+{ name: "Anil Sidhu", city: "Noida", company: "TCS" }
+\`\`\`
+Remember: spread "unpacks" values OUT. It comes first here; rest below "packs" values IN.`,
       },
       {
         q: 'What is the rest operator?',
-        a: `The rest operator ( ... ) collects multiple remaining values into a single array. Same symbol as spread, opposite job.
+        a: `The rest operator ( ... ) collects the remaining values into one array or object. It uses the same symbol as spread, but does the opposite job.
 
 \`\`\`
-// Collect all arguments into one array
-function sum(...nums) {
-  return nums.reduce((t, n) => t + n, 0);
+// Rest parameter: collect all remaining function arguments
+function fruits(fruit1, fruit2, ...allFruits) {
+  console.log(fruit1, fruit2);
+  console.log(allFruits);
 }
-console.log(sum(1, 2, 3, 4)); // 10
 
-// Rest in destructuring — grab "the rest"
-const [first, ...others] = [10, 20, 30, 40];
-console.log(first);  // 10
-console.log(others); // [20, 30, 40]
+fruits("apple", "banana", "mango", "grapes");
+
+// Rest with array destructuring
+const [leader, ...otherMembers] = ["Anil", "Sam", "Peter", "Vinay"];
+console.log(leader, otherMembers);
+
+// Rest with object destructuring
+const { name, ...otherData } = {
+  name: "Anil",
+  age: 29,
+  city: "Noida",
+  email: "anil@test.com",
+};
+console.log(name, otherData);
 \`\`\`
-Remember: rest must be the LAST parameter. Spread unpacks, rest gathers.`,
+\`\`\`output
+apple banana
+["mango", "grapes"]
+Anil ["Sam", "Peter", "Vinay"]
+Anil { age: 29, city: "Noida", email: "anil@test.com" }
+\`\`\`
+Remember: rest must be the LAST parameter or destructuring item. Spread unpacks; rest gathers.`,
       },
       {
         q: 'map() vs forEach()?',
