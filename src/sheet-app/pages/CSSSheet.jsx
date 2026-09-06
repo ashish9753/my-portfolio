@@ -94,6 +94,36 @@ const revisionSections = [
       { q: 'CSS reading order?', a: 'Think: selector → property → value.', example: '.title { color: purple; }' },
     ]
   },
+  {
+    title: '6. Tailwind CSS Quick Revision',
+    questions: [
+      { q: 'What is Tailwind CSS?', a: 'A utility-first CSS framework. You style using classes in HTML.', example: '<button class="bg-blue-600 text-white">Save</button>', tailwind: 'button' },
+      { q: 'What is a utility class?', a: 'One small class that does one styling job.', example: '<p class="text-red-500">Hello</p>', tailwind: 'text-color' },
+      { q: 'p-4?', a: 'Adds padding on all four sides.', example: '<div class="p-4">Content</div>', tailwind: 'padding' },
+      { q: 'px-4 and py-2?', a: 'Adds horizontal and vertical padding.', example: '<button class="px-4 py-2">Button</button>', tailwind: 'padding' },
+      { q: 'm-4?', a: 'Adds margin on all four sides.', example: '<div class="m-4">Box</div>', tailwind: 'margin' },
+      { q: 'text-blue-500?', a: 'Changes text to a blue shade.', example: '<p class="text-blue-500">Blue text</p>', tailwind: 'text-color' },
+      { q: 'bg-blue-500?', a: 'Adds a blue background.', example: '<div class="bg-blue-500">Box</div>', tailwind: 'background' },
+      { q: 'text-white?', a: 'Changes text color to white.', example: '<button class="bg-blue-600 text-white">Save</button>', tailwind: 'button' },
+      { q: 'font-bold?', a: 'Makes text bold.', example: '<p class="font-bold">Important</p>', tailwind: 'font' },
+      { q: 'text-xl?', a: 'Makes text extra large.', example: '<h2 class="text-xl">Title</h2>', tailwind: 'font' },
+      { q: 'rounded-lg?', a: 'Adds noticeably rounded corners.', example: '<div class="rounded-lg">Card</div>', tailwind: 'rounded' },
+      { q: 'border?', a: 'Adds a thin border.', example: '<div class="border">Card</div>', tailwind: 'border' },
+      { q: 'shadow-md?', a: 'Adds a medium shadow.', example: '<div class="shadow-md">Card</div>', tailwind: 'shadow' },
+      { q: 'w-full?', a: 'Makes an element use all available width.', example: '<input class="w-full">', tailwind: 'width' },
+      { q: 'flex?', a: 'Turns a parent into a Flexbox layout.', example: '<div class="flex gap-2">...</div>', tailwind: 'flex' },
+      { q: 'justify-center?', a: 'Centers flex items horizontally.', example: '<div class="flex justify-center">...</div>', tailwind: 'flex-center' },
+      { q: 'items-center?', a: 'Centers flex items vertically.', example: '<div class="flex items-center">...</div>', tailwind: 'flex-center' },
+      { q: 'gap-4?', a: 'Adds space between flex or grid items.', example: '<div class="flex gap-4">...</div>', tailwind: 'gap' },
+      { q: 'grid grid-cols-3?', a: 'Creates a grid with three columns.', example: '<div class="grid grid-cols-3 gap-4">...</div>', tailwind: 'grid' },
+      { q: 'hover:bg-blue-700?', a: 'Changes background when the mouse is over the item.', example: '<button class="bg-blue-600 hover:bg-blue-700">Hover</button>', tailwind: 'hover' },
+      { q: 'focus:ring-2?', a: 'Shows a ring when an input is selected.', example: '<input class="focus:ring-2 focus:ring-blue-500">', tailwind: 'focus' },
+      { q: 'md:text-lg?', a: 'Applies larger text on medium screens and above.', example: '<p class="text-sm md:text-lg">Responsive text</p>', tailwind: 'responsive' },
+      { q: 'hidden?', a: 'Hides an element and removes its space.', example: '<div class="hidden">Hidden</div>', tailwind: 'hidden' },
+      { q: 'dark:bg-gray-900?', a: 'Changes the background when dark mode is active.', example: '<div class="bg-white dark:bg-gray-900">...</div>', tailwind: 'dark' },
+      { q: 'Tailwind button pattern?', a: 'Combine utilities to make a complete button.', example: '<button class="rounded-lg bg-blue-600 px-4 py-2 font-bold text-white hover:bg-blue-700">Save</button>', tailwind: 'button' },
+    ]
+  },
 ];
 
 const totalQuestions = revisionSections.reduce((s, sec) => s + sec.questions.length, 0);
@@ -102,6 +132,28 @@ function ExamplePreview({ item }) {
   const label = 'Example text';
   const frame = 'rounded-md border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-gray-200';
   const q = item.q.toLowerCase();
+
+  if (item.tailwind) {
+    const kind = item.tailwind;
+    if (kind === 'button') return <div className={frame}><button className="rounded-lg bg-blue-600 px-4 py-2 font-bold text-white hover:bg-blue-700">Save</button></div>;
+    if (kind === 'text-color') return <div className={frame}><span className="text-red-500">Colored text</span></div>;
+    if (kind === 'padding') return <div className={frame}><span className="inline-block rounded bg-sky-500/25 p-4">Padded box</span></div>;
+    if (kind === 'margin') return <div className={frame}><span className="m-4 inline-block rounded bg-sky-500/25 p-2">Outside space</span></div>;
+    if (kind === 'background') return <div className={frame}><span className="inline-block rounded bg-blue-500 px-3 py-2 text-white">Blue box</span></div>;
+    if (kind === 'font') return <div className={frame}><span className="text-xl font-bold">Large, bold text</span></div>;
+    if (kind === 'rounded') return <div className={frame}><span className="inline-block rounded-lg bg-violet-500/30 px-4 py-2">Rounded card</span></div>;
+    if (kind === 'border') return <div className={frame}><span className="inline-block rounded border border-sky-400 px-4 py-2">Bordered card</span></div>;
+    if (kind === 'shadow') return <div className={frame}><span className="inline-block rounded bg-gray-800 px-4 py-2 shadow-md">Shadow card</span></div>;
+    if (kind === 'width') return <div className={frame}><div className="w-full rounded bg-sky-500/40 px-3 py-2">Full width</div></div>;
+    if (kind === 'flex' || kind === 'gap') return <div className={`${frame} flex gap-4`}><span className="rounded bg-sky-500/25 px-3 py-2">1</span><span className="rounded bg-sky-500/25 px-3 py-2">2</span><span className="rounded bg-sky-500/25 px-3 py-2">3</span></div>;
+    if (kind === 'flex-center') return <div className={`${frame} flex h-14 items-center justify-center`}><span className="rounded bg-sky-500/25 px-3 py-2">Centered</span></div>;
+    if (kind === 'grid') return <div className={`${frame} grid grid-cols-3 gap-2`}><span className="rounded bg-violet-500/25 p-2 text-center">1</span><span className="rounded bg-violet-500/25 p-2 text-center">2</span><span className="rounded bg-violet-500/25 p-2 text-center">3</span></div>;
+    if (kind === 'hover') return <div className={frame}><button className="rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700">Hover me</button></div>;
+    if (kind === 'focus') return <div className={frame}><input aria-label="Tailwind focus example" placeholder="Click here" className="rounded border border-gray-500 bg-transparent px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500" /></div>;
+    if (kind === 'responsive') return <div className={frame}><span className="text-sm md:text-lg">Resize the screen to enlarge me</span></div>;
+    if (kind === 'hidden') return <div className={frame}><span className="text-gray-400">The element is hidden.</span></div>;
+    if (kind === 'dark') return <div className="rounded-md bg-white px-4 py-3 text-sm text-gray-900 dark:bg-gray-900 dark:text-white">Light or dark background</div>;
+  }
 
   if (q.includes('text-decoration')) {
     return <div className={`${frame} flex flex-wrap gap-4`}>
@@ -234,7 +286,7 @@ function CSSSheet({ auth, setAuth }) {
             </Link>
             <div>
               <h1 className="text-2xl font-bold leading-tight">
-                <span className="text-sky-400">CSS</span> Quick Revision
+                <span className="text-sky-400">CSS + Tailwind</span> Quick Revision
               </h1>
               <p className="text-xs text-gray-500">{totalQuestions} short definitions with examples</p>
             </div>
