@@ -98,6 +98,63 @@ const revisionSections = [
 
 const totalQuestions = revisionSections.reduce((s, sec) => s + sec.questions.length, 0);
 
+function ExamplePreview({ item }) {
+  const label = 'Example text';
+  const frame = 'rounded-md border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-gray-200';
+  const q = item.q.toLowerCase();
+
+  if (q.includes('text-decoration')) {
+    return <div className={`${frame} flex flex-wrap gap-4`}>
+      <span className="underline">Underline</span><span className="overline">Overline</span><span className="line-through">Line-through</span>
+    </div>;
+  }
+  if (q.includes('color?') || q.includes('background-color')) {
+    return <div className={`${frame} flex items-center gap-3`}><span className="font-semibold text-blue-500">Blue text</span><span className="rounded bg-yellow-200 px-2 py-1 text-gray-900">Yellow background</span></div>;
+  }
+  if (q.includes('font-size') || q.includes('font-weight') || q.includes('font-family') || q.includes('line-height') || q.includes('text-align')) {
+    const style = q.includes('font-size') ? { fontSize: '20px' } : q.includes('font-weight') ? { fontWeight: 700 } : q.includes('font-family') ? { fontFamily: 'Georgia, serif' } : q.includes('line-height') ? { lineHeight: 2 } : { textAlign: 'center' };
+    return <div className={frame} style={style}>{q.includes('line-height') ? <>Two lines of text<br />with extra space</> : label}</div>;
+  }
+  if (q.includes('width and height') || q.includes('padding') || q.includes('margin') || q.includes('border?') || q.includes('border-radius') || q.includes('box-shadow') || q.includes('box-sizing')) {
+    const style = q.includes('padding') ? { padding: '14px 24px' } : q.includes('margin') ? { margin: '10px auto', width: '55%' } : q.includes('border?') ? { border: '2px solid #38bdf8' } : q.includes('border-radius') ? { borderRadius: '18px' } : q.includes('box-shadow') ? { boxShadow: '0 5px 12px #0008' } : q.includes('width and height') ? { width: '130px', height: '55px' } : { boxSizing: 'border-box', width: '100%', border: '1px solid #38bdf8', padding: '8px' };
+    return <div className={frame}><span className="inline-block rounded bg-sky-500/20 px-3 py-2" style={style}>Box</span></div>;
+  }
+  if (q.includes('display: flex') || q.includes('flex-direction') || q.includes('justify-content') || q.includes('align-items') || q.includes('gap?') || q.includes('flex-wrap') || q.includes('center an item')) {
+    const column = q.includes('flex-direction');
+    const style = { display: 'flex', flexDirection: column ? 'column' : 'row', gap: q.includes('gap?') ? '20px' : '8px', justifyContent: q.includes('justify') || q.includes('center an item') ? 'center' : 'flex-start', alignItems: q.includes('align') || q.includes('center an item') ? 'center' : 'stretch', flexWrap: q.includes('flex-wrap') ? 'wrap' : 'nowrap', minHeight: '52px' };
+    return <div className={frame} style={style}>{['1', '2', '3'].map(n => <span key={n} className="rounded bg-sky-500/25 px-3 py-1.5 text-sky-200">{n}</span>)}</div>;
+  }
+  if (q.includes('display: grid') || q.includes('grid-template') || q.includes('fr?') || q.includes('minmax') || q.includes('responsive card grid')) {
+    return <div className={`${frame} grid grid-cols-3 gap-2`}>{['Card 1', 'Card 2', 'Card 3'].map(n => <span key={n} className="rounded bg-violet-500/20 p-2 text-center text-violet-200">{n}</span>)}</div>;
+  }
+  if (q.includes('@media') || q.includes('rem?') || q.includes('vw and vh')) {
+    return <div className={frame}><span className="rounded bg-emerald-500/20 px-3 py-2 text-emerald-200">Adapts to screen size</span></div>;
+  }
+  if (q.includes(':hover') || q.includes('transition')) {
+    return <div className={frame}><button className="rounded bg-sky-500 px-3 py-2 font-medium text-white transition hover:scale-105 hover:bg-sky-400">Hover me</button></div>;
+  }
+  if (q.includes(':focus')) {
+    return <div className={frame}><input aria-label="Example input" placeholder="Click here" className="rounded border border-gray-500 bg-transparent px-3 py-2 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/30" /></div>;
+  }
+  if (q.includes('transform')) {
+    return <div className={frame}><span className="inline-block rounded bg-pink-500/25 px-3 py-2 transition hover:scale-110 hover:rotate-3">Hover me</span></div>;
+  }
+  if (q.includes('opacity')) return <div className={frame}><span className="rounded bg-orange-400 px-3 py-2 text-gray-900 opacity-50">50% visible</span></div>;
+  if (q.includes('cursor')) return <div className={frame}><button className="cursor-pointer rounded bg-sky-500/25 px-3 py-2">Pointer cursor</button></div>;
+  if (q.includes('object-fit') || q.includes('responsive?')) return <div className={frame}><div className="h-12 w-32 rounded bg-gradient-to-r from-sky-400 to-violet-500" /></div>;
+  if (q.includes('display: none')) return <div className={frame}><span className="text-gray-400">Only this text remains — the hidden item has no space.</span></div>;
+  if (q.includes('visibility')) return <div className={`${frame} flex gap-2`}><span className="rounded bg-sky-500/25 px-3 py-1">Visible</span><span className="invisible rounded bg-sky-500/25 px-3 py-1">Hidden</span><span className="rounded bg-sky-500/25 px-3 py-1">Visible</span></div>;
+  if (q.includes('position') || q.includes('z-index') || q.includes('overflow')) return <div className={`${frame} relative h-14 overflow-hidden`}><span className="absolute left-4 top-3 rounded bg-violet-500/30 px-3 py-1">Layer 1</span><span className="absolute left-16 top-5 rounded bg-sky-500/40 px-3 py-1">Layer 2</span></div>;
+  if (q.includes('remove bullets')) return <div className={frame}><div className="flex gap-4"><span>Home</span><span>About</span><span>Contact</span></div></div>;
+  if (q.includes('calc')) return <div className={frame}><div className="h-3 w-[calc(100%-32px)] rounded bg-sky-400" /></div>;
+  if (q.includes('variable')) return <div className={frame}><button className="rounded bg-blue-600 px-3 py-2 text-white">Brand button</button></div>;
+  if (q.includes('simple button')) return <div className={frame}><button className="cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-white">Save</button></div>;
+  if (q.includes('center a block')) return <div className={frame}><div className="mx-auto w-32 rounded bg-sky-500/25 p-2 text-center">Centered</div></div>;
+  if (q.includes('selector') || q.includes('specificity') || q.includes('!important')) return <div className={frame}><p className="text-red-400">This paragraph is styled</p><h3 className="font-bold text-gray-100">This heading is different</h3></div>;
+  if (q.includes('comment') || q.includes('external css') || q.includes('rule format') || q.includes('css?') || q.includes('reading order')) return <div className={frame}><span className="font-semibold text-blue-400">Styled HTML result</span></div>;
+  return <div className={frame}><span className="rounded bg-sky-500/20 px-3 py-2 text-sky-100">{label}</span></div>;
+}
+
 function CSSSheet({ auth, setAuth }) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -321,6 +378,10 @@ function CSSSheet({ auth, setAuth }) {
                                 <pre className="whitespace-pre-wrap break-words font-mono text-sm leading-relaxed text-gray-300">{item.example}</pre>
                               </div>
                             )}
+                            <div className="mx-2 mt-3">
+                              <p className="mb-1.5 text-xs font-medium text-emerald-400">Example result</p>
+                              <ExamplePreview item={item} />
+                            </div>
                           </div>
                         )}
                       </div>
