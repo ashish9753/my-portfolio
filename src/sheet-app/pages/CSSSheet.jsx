@@ -5,128 +5,93 @@ import ThemeToggle from '../components/ThemeToggle';
 
 const revisionSections = [
   {
-    title: '1. CSS Basics (1-20)',
+    title: '1. CSS Basics',
     questions: [
-      { q: 'What is CSS?', a: 'Styles HTML elements.' },
-      { q: 'CSS stands for?', a: 'Cascading Style Sheets.' },
-      { q: 'Types of CSS?', a: 'Inline, Internal, External.' },
-      { q: 'Inline CSS?', a: 'Inside tag (style="").' },
-      { q: 'Internal CSS?', a: 'Inside <style>.' },
-      { q: 'External CSS?', a: 'Separate .css file.' },
-      { q: 'Selector?', a: 'Targets elements.' },
-      { q: 'Class selector?', a: '.class' },
-      { q: 'ID selector?', a: '#id' },
-      { q: 'Universal selector?', a: '*' },
-      { q: 'Element selector?', a: 'p, h1' },
-      { q: 'Group selector?', a: 'h1, p' },
-      { q: 'Specificity?', a: 'Priority of styles.' },
-      { q: 'Inline vs ID vs Class?', a: 'Inline > ID > Class.' },
-      { q: 'Box model?', a: 'margin, border, padding, content.' },
-      { q: 'Margin?', a: 'Outer space.' },
-      { q: 'Padding?', a: 'Inner space.' },
-      { q: 'Border?', a: 'Edge of element.' },
-      { q: 'Display property?', a: 'block, inline, none.' },
-      { q: 'Position?', a: 'static, relative, absolute, fixed.' },
+      { q: 'What is CSS?', a: 'It makes HTML look good.', example: 'p { color: blue; }' },
+      { q: 'CSS rule format?', a: 'Selector + property + value.', example: 'h1 { font-size: 32px; }' },
+      { q: 'External CSS?', a: 'CSS written in a separate .css file.', example: '<link rel="stylesheet" href="style.css">' },
+      { q: 'Element selector?', a: 'Selects every tag of one type.', example: 'p { color: red; }' },
+      { q: 'Class selector?', a: 'Selects elements with the same class.', example: '.card { padding: 16px; }' },
+      { q: 'ID selector?', a: 'Selects one unique element.', example: '#header { background: black; }' },
+      { q: 'Universal selector?', a: 'Selects all elements.', example: '* { box-sizing: border-box; }' },
+      { q: 'Group selector?', a: 'Applies one style to many selectors.', example: 'h1, h2 { color: navy; }' },
+      { q: 'Descendant selector?', a: 'Selects an element inside another.', example: '.card p { color: gray; }' },
+      { q: 'What is a comment?', a: 'A note ignored by the browser.', example: '/* Button styles */' },
+      { q: 'Specificity?', a: 'The stronger selector wins.', example: '#title { color: red; } /* beats .title */' },
+      { q: '!important?', a: 'Forces a style; avoid it when possible.', example: 'color: red !important;' },
     ]
   },
   {
-    title: '2. CSS Layout and Flexbox (21-40)',
+    title: '2. Text, Colors & Box Model',
     questions: [
-      { q: 'Flexbox?', a: '1D layout system.' },
-      { q: 'display: flex?', a: 'Enables flexbox.' },
-      { q: 'justify-content?', a: 'Horizontal alignment.' },
-      { q: 'align-items?', a: 'Vertical alignment.' },
-      { q: 'flex-direction?', a: 'row/column.' },
-      { q: 'gap?', a: 'Space between items.' },
-      { q: 'Grid?', a: '2D layout.' },
-      { q: 'display: grid?', a: 'Enables grid.' },
-      { q: 'grid-template-columns?', a: 'Define columns.' },
-      { q: 'grid-template-rows?', a: 'Define rows.' },
-      { q: 'z-index?', a: 'Layer order.' },
-      { q: 'overflow?', a: 'Handle extra content.' },
-      { q: 'float?', a: 'Align left/right.' },
-      { q: 'clear?', a: 'Clear float.' },
-      { q: 'visibility?', a: 'Hide/show.' },
-      { q: 'opacity?', a: 'Transparency.' },
-      { q: 'max-width?', a: 'Maximum width.' },
-      { q: 'min-height?', a: 'Minimum height.' },
-      { q: 'vh/vw?', a: 'Viewport units.' },
-      { q: 'Responsive design?', a: 'Works on all screens.' },
+      { q: 'color?', a: 'Changes text color.', example: 'color: #2563eb;' },
+      { q: 'background-color?', a: 'Changes an element background.', example: 'background-color: lightyellow;' },
+      { q: 'font-size?', a: 'Changes text size.', example: 'font-size: 18px;' },
+      { q: 'font-weight?', a: 'Changes text thickness.', example: 'font-weight: bold;' },
+      { q: 'font-family?', a: 'Chooses the text font.', example: 'font-family: Arial, sans-serif;' },
+      { q: 'text-align?', a: 'Aligns text horizontally.', example: 'text-align: center;' },
+      { q: 'line-height?', a: 'Controls space between text lines.', example: 'line-height: 1.6;' },
+      { q: 'text-decoration?', a: 'Adds or removes text lines.', example: 'text-decoration: none;' },
+      { q: 'width and height?', a: 'Set element size.', example: 'width: 200px; height: 100px;' },
+      { q: 'padding?', a: 'Space inside the border.', example: 'padding: 12px 20px;' },
+      { q: 'margin?', a: 'Space outside the border.', example: 'margin: 20px auto;' },
+      { q: 'border?', a: 'Draws an element edge.', example: 'border: 1px solid #ddd;' },
+      { q: 'border-radius?', a: 'Rounds corners.', example: 'border-radius: 8px;' },
+      { q: 'box-shadow?', a: 'Adds a shadow.', example: 'box-shadow: 0 4px 12px #0002;' },
+      { q: 'box-sizing: border-box?', a: 'Includes padding and border in width.', example: '* { box-sizing: border-box; }' },
     ]
   },
   {
-    title: '3. CSS Advanced (41-60)',
+    title: '3. Display, Position & Flexbox',
     questions: [
-      { q: 'Pseudo-class?', a: ':hover, :focus.' },
-      { q: 'Pseudo-element?', a: '::before, ::after.' },
-      { q: 'position: absolute?', a: 'Relative to parent.' },
-      { q: 'position: fixed?', a: 'Fixed on screen.' },
-      { q: 'position: sticky?', a: 'Sticky scroll.' },
-      { q: 'transition?', a: 'Smooth change.' },
-      { q: 'transform?', a: 'Rotate/scale/move.' },
-      { q: 'animation?', a: 'Keyframe animation.' },
-      { q: '@media?', a: 'Responsive rules.' },
-      { q: 'rem vs em?', a: 'Root vs parent size.' },
-      { q: 'overflow: hidden?', a: 'Hide overflow.' },
-      { q: 'display: none?', a: 'Remove element.' },
-      { q: 'inline-block?', a: 'Inline + size.' },
-      { q: 'cursor?', a: 'Pointer style.' },
-      { q: 'object-fit?', a: 'Image fitting.' },
-      { q: 'box-sizing?', a: 'border-box/content-box.' },
-      { q: 'calc()?', a: 'Dynamic values.' },
-      { q: 'var()?', a: 'CSS variables.' },
-      { q: 'filter?', a: 'Blur/brightness.' },
-      { q: 'backdrop-filter?', a: 'Blur background.' },
+      { q: 'display: block?', a: 'Takes the full available row.', example: 'display: block;' },
+      { q: 'display: inline?', a: 'Stays in the same text line.', example: 'display: inline;' },
+      { q: 'display: none?', a: 'Hides and removes the element space.', example: 'display: none;' },
+      { q: 'position: relative?', a: 'Keeps normal place; can be shifted.', example: 'position: relative; top: 10px;' },
+      { q: 'position: absolute?', a: 'Positions relative to nearest positioned parent.', example: 'position: absolute; right: 0;' },
+      { q: 'position: fixed?', a: 'Stays in one screen position while scrolling.', example: 'position: fixed; bottom: 20px;' },
+      { q: 'z-index?', a: 'Controls which positioned item is on top.', example: 'z-index: 10;' },
+      { q: 'overflow?', a: 'Controls extra content.', example: 'overflow: auto;' },
+      { q: 'display: flex?', a: 'Turns a parent into a flex layout.', example: '.row { display: flex; }' },
+      { q: 'flex-direction?', a: 'Sets main direction.', example: 'flex-direction: column;' },
+      { q: 'justify-content?', a: 'Aligns items on the main axis.', example: 'justify-content: center;' },
+      { q: 'align-items?', a: 'Aligns items across the main axis.', example: 'align-items: center;' },
+      { q: 'gap?', a: 'Adds equal space between items.', example: 'gap: 16px;' },
+      { q: 'flex-wrap?', a: 'Lets items move to the next line.', example: 'flex-wrap: wrap;' },
     ]
   },
   {
-    title: '4. Tailwind CSS (61-80)',
+    title: '4. Grid, Responsive & Effects',
     questions: [
-      { q: 'Tailwind CSS?', a: 'Utility-first framework.' },
-      { q: 'Utility class?', a: 'Small reusable class.' },
-      { q: 'Example?', a: 'p-4, bg-blue-500.' },
-      { q: 'Flex in Tailwind?', a: 'flex.' },
-      { q: 'Centering?', a: 'justify-center items-center.' },
-      { q: 'Padding in Tailwind?', a: 'p-4.' },
-      { q: 'Margin in Tailwind?', a: 'm-4.' },
-      { q: 'Text color in Tailwind?', a: 'text-red-500.' },
-      { q: 'Background in Tailwind?', a: 'bg-green-500.' },
-      { q: 'Border radius in Tailwind?', a: 'rounded.' },
-      { q: 'Shadow in Tailwind?', a: 'shadow-lg.' },
-      { q: 'Width in Tailwind?', a: 'w-full.' },
-      { q: 'Height in Tailwind?', a: 'h-screen.' },
-      { q: 'Grid in Tailwind?', a: 'grid grid-cols-3.' },
-      { q: 'Gap in Tailwind?', a: 'gap-4.' },
-      { q: 'Responsive in Tailwind?', a: 'md:text-lg.' },
-      { q: 'Hover in Tailwind?', a: 'hover:bg-red-500.' },
-      { q: 'Focus in Tailwind?', a: 'focus:outline-none.' },
-      { q: 'Dark mode in Tailwind?', a: 'dark:bg-black.' },
-      { q: 'Font size in Tailwind?', a: 'text-xl.' },
+      { q: 'display: grid?', a: 'Turns a parent into a row-and-column layout.', example: '.grid { display: grid; }' },
+      { q: 'grid-template-columns?', a: 'Sets the number and size of columns.', example: 'grid-template-columns: repeat(3, 1fr);' },
+      { q: 'fr?', a: 'A fraction of available grid space.', example: 'grid-template-columns: 1fr 2fr;' },
+      { q: 'minmax()?', a: 'Sets a minimum and maximum track size.', example: 'grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));' },
+      { q: '@media?', a: 'Applies CSS at a screen size.', example: '@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }' },
+      { q: 'rem?', a: 'A size based on the root font size.', example: 'padding: 1rem;' },
+      { q: 'vw and vh?', a: 'Units based on viewport width and height.', example: 'min-height: 100vh;' },
+      { q: ':hover?', a: 'Styles an item when the mouse is over it.', example: 'button:hover { background: navy; }' },
+      { q: ':focus?', a: 'Styles an input when it is selected.', example: 'input:focus { outline: 2px solid blue; }' },
+      { q: 'transition?', a: 'Makes a change smooth.', example: 'transition: background 0.2s ease;' },
+      { q: 'transform?', a: 'Moves, scales, or rotates an item.', example: 'transform: scale(1.05);' },
+      { q: 'opacity?', a: 'Controls transparency from 0 to 1.', example: 'opacity: 0.5;' },
+      { q: 'cursor?', a: 'Changes the mouse cursor.', example: 'cursor: pointer;' },
+      { q: 'object-fit?', a: 'Controls how an image fits its box.', example: 'object-fit: cover;' },
     ]
   },
   {
-    title: '5. CSS vs Tailwind (81-100)',
+    title: '5. Useful CSS Patterns',
     questions: [
-      { q: 'CSS vs Tailwind?', a: 'CSS = custom, Tailwind = utility classes.' },
-      { q: 'Speed?', a: 'Tailwind faster.' },
-      { q: 'Flexbox CSS?', a: 'display: flex.' },
-      { q: 'Flexbox Tailwind?', a: 'flex.' },
-      { q: 'Center CSS?', a: 'justify-content: center.' },
-      { q: 'Center Tailwind?', a: 'justify-center.' },
-      { q: 'Padding CSS?', a: 'padding: 16px.' },
-      { q: 'Padding Tailwind?', a: 'p-4.' },
-      { q: 'Color CSS?', a: 'color: red.' },
-      { q: 'Color Tailwind?', a: 'text-red-500.' },
-      { q: 'Responsive CSS?', a: '@media.' },
-      { q: 'Responsive Tailwind?', a: 'md:, lg:.' },
-      { q: 'Hover CSS?', a: ':hover.' },
-      { q: 'Hover Tailwind?', a: 'hover:.' },
-      { q: 'Reusability?', a: 'Tailwind higher.' },
-      { q: 'Customization?', a: 'CSS more flexible.' },
-      { q: 'File size?', a: 'Tailwind optimized.' },
-      { q: 'Learning curve?', a: 'Tailwind easier.' },
-      { q: 'Best for?', a: 'Tailwind = fast UI.' },
-      { q: 'When use CSS?', a: 'Complex custom design.' },
+      { q: 'Center an item with Flexbox?', a: 'Use flex alignment on the parent.', example: '.center { display: flex; justify-content: center; align-items: center; }' },
+      { q: 'Center a block horizontally?', a: 'Give it a width and automatic side margins.', example: '.box { width: 300px; margin: 0 auto; }' },
+      { q: 'Make a simple button?', a: 'Add color, spacing, and a pointer cursor.', example: '.btn { background: #2563eb; color: white; padding: 10px 16px; border: 0; border-radius: 6px; cursor: pointer; }' },
+      { q: 'Make a responsive card grid?', a: 'Use auto-fit grid columns.', example: '.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }' },
+      { q: 'Create a CSS variable?', a: 'Store a reusable value.', example: ':root { --brand: #2563eb; }\nbutton { background: var(--brand); }' },
+      { q: 'Hide but keep its space?', a: 'Use visibility: hidden.', example: 'visibility: hidden;' },
+      { q: 'Remove bullets from a list?', a: 'Remove the list style and default padding.', example: 'ul { list-style: none; padding: 0; }' },
+      { q: 'Make an image responsive?', a: 'Keep it inside its parent width.', example: 'img { max-width: 100%; height: auto; }' },
+      { q: 'Use calc()?', a: 'Calculate a CSS value.', example: 'width: calc(100% - 32px);' },
+      { q: 'CSS reading order?', a: 'Think: selector → property → value.', example: '.title { color: purple; }' },
     ]
   },
 ];
@@ -212,9 +177,9 @@ function CSSSheet({ auth, setAuth }) {
             </Link>
             <div>
               <h1 className="text-2xl font-bold leading-tight">
-                <span className="text-sky-400">CSS + TailwindCSS</span> Revision
+                <span className="text-sky-400">CSS</span> Quick Revision
               </h1>
-              <p className="text-xs text-gray-500">{totalQuestions} questions · {revisionSections.length} sections</p>
+              <p className="text-xs text-gray-500">{totalQuestions} short definitions with examples</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -232,7 +197,7 @@ function CSSSheet({ auth, setAuth }) {
           </svg>
           <input
             type="text"
-            placeholder="Search any question or keyword..."
+            placeholder="Search a CSS property or topic..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="w-full bg-[#141414] border border-[#2a2a2a] rounded-xl px-5 py-4 pl-12 pr-11 text-white placeholder-gray-600 focus:outline-none focus:border-sky-400/60 transition-colors text-base"
@@ -347,9 +312,15 @@ function CSSSheet({ auth, setAuth }) {
                         </div>
                         {isOpen && (
                           <div className="px-1 pb-5 pt-2">
-                            <p className="text-[16px] text-sky-300/80 px-2 pb-1 leading-relaxed">
-                              <span className="text-sky-500 mr-1">Answer:</span>{item.a}
+                            <p className="text-[16px] text-sky-300/80 px-2 pb-3 leading-relaxed">
+                              <span className="text-sky-500 mr-1">Meaning:</span>{item.a}
                             </p>
+                            {item.example && (
+                              <div className="mx-2 rounded-lg border border-sky-400/15 bg-black/30 px-3 py-2.5">
+                                <p className="mb-1.5 text-xs font-medium text-sky-400">Example</p>
+                                <pre className="whitespace-pre-wrap break-words font-mono text-sm leading-relaxed text-gray-300">{item.example}</pre>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
