@@ -9,6 +9,14 @@ const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
 const DEFAULT_QUESTIONS_PER_TOPIC = 2;
 
 const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
+const toStoredQuestion = (question) => ({
+  id: question._id,
+  name: question.name,
+  topic: question.topic,
+  difficulty: question.difficulty,
+  leetcodeLink: question.leetcodeLink || '',
+  gfgLink: question.gfgLink || ''
+});
 
 function RandomPracticeSheet({ auth, setAuth }) {
   const navigate = useNavigate();
@@ -17,9 +25,11 @@ function RandomPracticeSheet({ auth, setAuth }) {
   const [questionsPerTopic, setQuestionsPerTopic] = useState(DEFAULT_QUESTIONS_PER_TOPIC);
   const [practiceQuestions, setPracticeQuestions] = useState([]);
   const [seenQuestionIds, setSeenQuestionIds] = useState([]);
+  const [practicedQuestions, setPracticedQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const storageKey = `dsa-random-practice-seen-${auth.user?._id || auth.user?.id || auth.user?.username || 'guest'}`;
+  const historyStorageKey = `dsa-random-practice-history-${auth.user?._id || auth.user?.id || auth.user?.username || 'guest'}`;
 
   const getAuthHeaders = () => ({
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -36,8 +46,14 @@ function RandomPracticeSheet({ auth, setAuth }) {
     try {
       const savedIds = JSON.parse(localStorage.getItem(storageKey) || '[]');
       setSeenQuestionIds(Array.isArray(savedIds) ? savedIds : []);
+
+      const savedHistory = JSON.parse(localStorage.getItem(historyStorageKey) || '[]');
+      setPracticedQuestions(
+        Array.isArray(savedHistory) ? savedHistory.filter((question) => question?.id && question?.name) : []
+      );
     } catch {
       setSeenQuestionIds([]);
+      setPracticedQuestions([]);
     }
 
     const fetchQuestions = async () => {
@@ -55,6 +71,21 @@ function RandomPracticeSheet({ auth, setAuth }) {
     fetchQuestions();
   }, []);
 
+  // Upgrade history created before question details were stored locally.
+  useEffect(() => {
+    if (!allQuestions.length || practicedQuestions.length || !seenQuestionIds.length) return;
+
+    const restoredHistory = seenQuestionIds
+      .map((id) => allQuestions.find((question) => question._id === id))
+      .filter(Boolean)
+      .map(toStoredQuestion);
+
+    if (restoredHistory.length) {
+      setPracticedQuestions(restoredHistory);
+      localStorage.setItem(historyStorageKey, JSON.stringify(restoredHistory));
+    }
+  }, [allQuestions, practicedQuestions.length, seenQuestionIds, historyStorageKey]);
+
   const topics = useMemo(
     () => [...new Set(allQuestions.map((question) => question.topic).filter(Boolean))].sort(),
     [allQuestions]
@@ -71,8 +102,14 @@ function RandomPracticeSheet({ auth, setAuth }) {
     setPracticeQuestions(nextQuestions);
     if (nextQuestions.length) {
       const nextSeenIds = [...new Set([...seenQuestionIds, ...nextQuestions.map((question) => question._id)])];
+      const nextHistory = [
+        ...nextQuestions.map(toStoredQuestion),
+        ...practicedQuestions.filter((question) => !nextQuestions.some((nextQuestion) => nextQuestion._id === question.id))
+      ];
       setSeenQuestionIds(nextSeenIds);
+      setPracticedQuestions(nextHistory);
       localStorage.setItem(storageKey, JSON.stringify(nextSeenIds));
+      localStorage.setItem(historyStorageKey, JSON.stringify(nextHistory));
     }
   };
 
@@ -84,8 +121,26 @@ function RandomPracticeSheet({ auth, setAuth }) {
     if (!shouldReset) return;
 
     localStorage.removeItem(storageKey);
+    localStorage.removeItem(historyStorageKey);
     setSeenQuestionIds([]);
+    setPracticedQuestions([]);
     setPracticeQuestions([]);
+  };
+
+  const removePracticedQuestion = (question) => {
+    const shouldRemove = window.confirm(
+      `Do you want to remove “${question.name}” from your local practice history? It can appear again in a future set.`
+    );
+
+    if (!shouldRemove) return;
+
+    const nextSeenIds = seenQuestionIds.filter((id) => id !== question.id);
+    const nextHistory = practicedQuestions.filter((savedQuestion) => savedQuestion.id !== question.id);
+    localStorage.setItem(storageKey, JSON.stringify(nextSeenIds));
+    localStorage.setItem(historyStorageKey, JSON.stringify(nextHistory));
+    setSeenQuestionIds(nextSeenIds);
+    setPracticedQuestions(nextHistory);
+    setPracticeQuestions((currentQuestions) => currentQuestions.filter((currentQuestion) => currentQuestion._id !== question.id));
   };
 
   const selectedTopicCount = selectedTopic === 'all' ? topics.length : 1;
@@ -155,6 +210,38 @@ function RandomPracticeSheet({ auth, setAuth }) {
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                     <div><p className="text-xs uppercase tracking-wider text-[#00ff00] mb-1">{question.topic}</p><h3 className="font-medium text-white">{index + 1}. {question.name}</h3></div>
                     <span className={`w-fit text-sm px-3 py-1 rounded-full ${question.difficulty === 'Easy' ? 'bg-green-500/20 text-green-400' : question.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}`}>{question.difficulty}</span>
+                  </div>
+                  <div className="flex space-x-4 mt-3">
+                    {question.leetcodeLink && <a href={question.leetcodeLink} target="_blank" rel="noopener noreferrer" className="text-sm text-orange-400 hover:text-orange-300 transition-colors">LeetCode →</a>}
+                    {question.gfgLink && <a href={question.gfgLink} target="_blank" rel="noopener noreferrer" className="text-sm text-green-400 hover:text-green-300 transition-colors">GFG →</a>}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {practicedQuestions.length > 0 && (
+          <section className="mt-10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+              <div>
+                <h2 className="text-xl font-bold">Practiced questions</h2>
+                <p className="text-sm text-gray-400 mt-1">Saved on this device until you remove them or reset the local history.</p>
+              </div>
+              <span className="text-sm text-[#00ff00]">{practicedQuestions.length} saved</span>
+            </div>
+            <div className="space-y-3">
+              {practicedQuestions.map((question) => (
+                <article key={question.id} className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-[#00ff00] mb-1">{question.topic}</p>
+                      <h3 className="font-medium text-white">{question.name}</h3>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`w-fit text-sm px-3 py-1 rounded-full ${question.difficulty === 'Easy' ? 'bg-green-500/20 text-green-400' : question.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}`}>{question.difficulty}</span>
+                      <button onClick={() => removePracticedQuestion(question)} className="text-sm text-red-400 hover:text-red-300 transition-colors">Remove</button>
+                    </div>
                   </div>
                   <div className="flex space-x-4 mt-3">
                     {question.leetcodeLink && <a href={question.leetcodeLink} target="_blank" rel="noopener noreferrer" className="text-sm text-orange-400 hover:text-orange-300 transition-colors">LeetCode →</a>}
