@@ -642,415 +642,6 @@ ETL Process: Extract (from OLTP) → Transform (clean/format) → Load (into war
   },
 ];
 
-// ─── SQL Commands Data (existing) ────────────────────────────────────────────
-const sqlSections = [
-  {
-    title: 'Step 1: Database Basics',
-    items: [
-      {
-        q: '1. What is a Database?',
-        a: 'A Database is a collection of data stored digitally so it can be accessed, searched, updated, and managed easily.',
-        bullets: ['Student records', 'Employee details', 'Bank accounts'],
-        tip: 'A software used to manage a database is called a DBMS, such as MySQL, Oracle, or PostgreSQL.',
-      },
-      {
-        q: '2. Types of Database',
-        a: 'Databases are commonly divided into relational and non-relational databases.',
-        table: {
-          headers: ['Type', 'How data is stored', 'Query Style', 'Examples'],
-          rows: [
-            ['Relational Database', 'Tables with rows and columns', 'SQL', 'MySQL, Oracle, SQL Server'],
-            ['Non-Relational Database', 'Documents, key-value, graph', 'NoSQL', 'MongoDB, Redis'],
-          ],
-        },
-      },
-      {
-        q: '3. What is SQL?',
-        a: 'SQL (Structured Query Language) is used to interact with relational databases — Create, Read, Update, Delete.',
-        table: {
-          headers: ['Type', 'Full Form', 'Commands'],
-          rows: [
-            ['DDL', 'Data Definition Language', 'CREATE, ALTER, DROP'],
-            ['DML', 'Data Manipulation Language', 'INSERT, UPDATE, DELETE'],
-            ['DQL', 'Data Query Language', 'SELECT'],
-            ['DCL', 'Data Control Language', 'GRANT, REVOKE'],
-            ['TCL', 'Transaction Control Language', 'COMMIT, ROLLBACK'],
-          ],
-        },
-      },
-    ],
-  },
-  {
-    title: 'Step 2: Create Database & Table',
-    items: [
-      {
-        q: '4. Create, Use, Drop Database',
-        a: 'These commands create a database, select it for work, and permanently delete it.',
-        code: `CREATE DATABASE college;
-
-USE college;
-
-DROP DATABASE college;`,
-        tip: 'DROP DATABASE permanently deletes the database and all its tables.',
-      },
-      {
-        q: '5. Create Table',
-        a: 'CREATE TABLE defines the table name, columns, datatypes, and constraints.',
-        code: `CREATE TABLE student (
-    rollno  INT          PRIMARY KEY,
-    name    VARCHAR(50)  NOT NULL,
-    marks   INT,
-    city    VARCHAR(20)  DEFAULT 'Unknown'
-);`,
-      },
-      {
-        q: '6. SQL Datatypes',
-        a: 'Datatypes tell SQL what kind of value a column can store.',
-        table: {
-          headers: ['Datatype', 'Meaning'],
-          rows: [
-            ['INT', 'Integer numbers'],
-            ['VARCHAR(n)', 'Variable length string up to n chars'],
-            ['CHAR(n)', 'Fixed size string'],
-            ['FLOAT / DECIMAL', 'Decimal values'],
-            ['DATE', 'Date values (YYYY-MM-DD)'],
-            ['BOOLEAN', 'True or false'],
-          ],
-        },
-      },
-    ],
-  },
-  {
-    title: 'Step 3: Insert & Read Data',
-    items: [
-      {
-        q: '7. INSERT Data',
-        a: 'INSERT INTO adds new rows into a table.',
-        code: `INSERT INTO student (rollno, name, marks, city)
-VALUES
-    (101, 'Ashish', 90, 'Indore'),
-    (102, 'Rahul',  85, 'Delhi'),
-    (103, 'Riya',   95, 'Mumbai'),
-    (104, 'Aman',   70, 'Pune');`,
-      },
-      {
-        q: '8. SELECT Query',
-        a: 'SELECT fetches data from a table.',
-        code: `-- All columns
-SELECT * FROM student;
-
--- Specific columns
-SELECT name, marks FROM student;
-
--- With condition
-SELECT * FROM student
-WHERE marks > 80;`,
-      },
-      {
-        q: '9. WHERE Clause & Operators',
-        a: 'WHERE filters rows by condition. Combine with operators for powerful queries.',
-        code: `-- Comparison: =  !=  >  <  >=  <=
-SELECT * FROM student WHERE marks >= 90;
-
--- AND: both conditions true
-SELECT * FROM student
-WHERE marks > 80 AND city = 'Delhi';
-
--- OR: either condition true
-SELECT * FROM student
-WHERE city = 'Delhi' OR city = 'Mumbai';
-
--- BETWEEN: inclusive range
-SELECT * FROM student WHERE marks BETWEEN 80 AND 95;
-
--- IN: match list of values
-SELECT * FROM student WHERE city IN ('Delhi', 'Mumbai');
-
--- LIKE: pattern match  %=any chars  _=one char
-SELECT * FROM student WHERE name LIKE 'A%';`,
-      },
-    ],
-  },
-  {
-    title: 'Step 4: Sort, Filter, Aggregate',
-    items: [
-      {
-        q: '10. ORDER BY & LIMIT',
-        a: 'ORDER BY sorts results. LIMIT controls how many rows are returned.',
-        code: `-- Sort by marks descending
-SELECT * FROM student ORDER BY marks DESC;
-
--- Sort ascending (default)
-SELECT * FROM student ORDER BY name ASC;
-
--- Top 3 students
-SELECT * FROM student
-ORDER BY marks DESC
-LIMIT 3;`,
-      },
-      {
-        q: '11. Aggregate Functions',
-        a: 'Aggregate functions perform calculations across multiple rows.',
-        table: {
-          headers: ['Function', 'What it does'],
-          rows: [
-            ['COUNT(*)', 'Total number of rows'],
-            ['MAX(col)', 'Maximum value'],
-            ['MIN(col)', 'Minimum value'],
-            ['SUM(col)', 'Total sum'],
-            ['AVG(col)', 'Average value'],
-          ],
-        },
-        code: `SELECT COUNT(*) FROM student;       -- total students
-SELECT MAX(marks) FROM student;    -- highest marks
-SELECT MIN(marks) FROM student;    -- lowest marks
-SELECT AVG(marks) FROM student;    -- average marks
-SELECT SUM(marks) FROM student;    -- total marks`,
-      },
-      {
-        q: '12. GROUP BY & HAVING',
-        a: 'GROUP BY groups same values. HAVING filters grouped results (like WHERE but for groups).',
-        code: `-- Count students per city
-SELECT city, COUNT(*)
-FROM student
-GROUP BY city;
-
--- Cities where average marks > 85
-SELECT city, AVG(marks)
-FROM student
-GROUP BY city
-HAVING AVG(marks) > 85;`,
-        tip: 'WHERE filters before grouping. HAVING filters after grouping.',
-      },
-    ],
-  },
-  {
-    title: 'Step 5: Update, Delete, Alter',
-    items: [
-      {
-        q: '13. UPDATE & DELETE',
-        a: 'UPDATE modifies existing rows. DELETE removes selected rows.',
-        code: `-- Update marks for one student
-UPDATE student
-SET marks = 95
-WHERE rollno = 101;
-
--- Update multiple columns
-UPDATE student
-SET marks = 88, city = 'Pune'
-WHERE rollno = 102;
-
--- Delete one student
-DELETE FROM student WHERE rollno = 101;
-
--- Delete all rows (table stays)
-TRUNCATE TABLE student;`,
-        tip: 'Always use WHERE with UPDATE and DELETE, or you will affect every row.',
-      },
-      {
-        q: '14. ALTER TABLE',
-        a: 'ALTER TABLE changes the structure of an existing table.',
-        code: `-- Add a column
-ALTER TABLE student ADD age INT;
-
--- Drop a column
-ALTER TABLE student DROP COLUMN age;
-
--- Rename the table
-ALTER TABLE student RENAME TO students;
-
--- Modify a column type
-ALTER TABLE student MODIFY marks FLOAT;`,
-      },
-    ],
-  },
-  {
-    title: 'Step 6: Keys & Constraints',
-    items: [
-      {
-        q: '15. Constraints in SQL',
-        a: 'Constraints enforce rules on column data.',
-        table: {
-          headers: ['Constraint', 'Meaning'],
-          rows: [
-            ['NOT NULL', 'Column cannot be empty'],
-            ['UNIQUE', 'No duplicate values allowed'],
-            ['PRIMARY KEY', 'Unique + NOT NULL — identifies each row'],
-            ['FOREIGN KEY', 'Links to primary key of another table'],
-            ['DEFAULT', 'Sets a default value if none provided'],
-            ['CHECK', 'Validates a condition before insert/update'],
-          ],
-        },
-        code: `CREATE TABLE student (
-    rollno  INT          PRIMARY KEY,
-    name    VARCHAR(50)  NOT NULL,
-    email   VARCHAR(100) UNIQUE,
-    age     INT          CHECK(age >= 18),
-    city    VARCHAR(20)  DEFAULT 'Unknown'
-);`,
-      },
-      {
-        q: '16. Foreign Key',
-        a: 'A Foreign Key creates a link between two tables using the primary key of the referenced table.',
-        code: `CREATE TABLE department (
-    dept_id   INT         PRIMARY KEY,
-    dept_name VARCHAR(50)
-);
-
-CREATE TABLE student (
-    rollno  INT PRIMARY KEY,
-    name    VARCHAR(50),
-    dept_id INT,
-    FOREIGN KEY (dept_id) REFERENCES department(dept_id)
-);`,
-        tip: 'A student cannot have a dept_id that does not exist in the department table.',
-      },
-    ],
-  },
-  {
-    title: 'Step 7: Joins',
-    items: [
-      {
-        q: '17. INNER JOIN',
-        a: 'Returns only rows that have MATCHING values in BOTH tables.',
-        code: `SELECT student.name, department.dept_name
-FROM student
-INNER JOIN department
-ON student.dept_id = department.dept_id;`,
-      },
-      {
-        q: '18. LEFT, RIGHT & FULL JOIN',
-        a: 'LEFT JOIN: all from left + matches from right. RIGHT JOIN: opposite. FULL JOIN: all from both.',
-        code: `-- LEFT JOIN: all students, even if no department
-SELECT s.name, d.dept_name
-FROM student s
-LEFT JOIN department d ON s.dept_id = d.dept_id;
-
--- RIGHT JOIN: all departments, even if no students
-SELECT s.name, d.dept_name
-FROM student s
-RIGHT JOIN department d ON s.dept_id = d.dept_id;
-
--- FULL JOIN (MySQL: simulate with UNION)
-SELECT s.name, d.dept_name FROM student s
-LEFT JOIN department d ON s.dept_id = d.dept_id
-UNION
-SELECT s.name, d.dept_name FROM student s
-RIGHT JOIN department d ON s.dept_id = d.dept_id;`,
-      },
-      {
-        q: '19. SELF JOIN & UNION',
-        a: 'SELF JOIN joins a table with itself. UNION combines results of two SELECT queries.',
-        code: `-- SELF JOIN: find employee and their manager
-SELECT e.name AS Employee, m.name AS Manager
-FROM employee e
-JOIN employee m ON e.manager_id = m.id;
-
--- UNION: combine student and teacher names (no duplicates)
-SELECT name FROM student
-UNION
-SELECT name FROM teacher;
-
--- UNION ALL: include duplicates
-SELECT name FROM student
-UNION ALL
-SELECT name FROM teacher;`,
-      },
-    ],
-  },
-  {
-    title: 'Step 8: Advanced SQL',
-    items: [
-      {
-        q: '20. Subqueries',
-        a: 'A subquery is a query nested inside another query.',
-        code: `-- Students scoring above average
-SELECT name
-FROM student
-WHERE marks > (SELECT AVG(marks) FROM student);
-
--- Students in same city as Ashish
-SELECT name FROM student
-WHERE city = (SELECT city FROM student WHERE name = 'Ashish');`,
-      },
-      {
-        q: '21. Views',
-        a: 'A View is a virtual table based on a SELECT query. It does not store data itself.',
-        code: `-- Create a view of top students
-CREATE VIEW top_students AS
-SELECT name, marks
-FROM student
-WHERE marks > 90;
-
--- Use the view like a table
-SELECT * FROM top_students;
-
--- Drop the view
-DROP VIEW top_students;`,
-        tip: 'Views help simplify complex queries and restrict access to sensitive columns.',
-      },
-    ],
-  },
-  {
-    title: 'Step 9: Practice & Interview',
-    items: [
-      {
-        q: '22. Full Practice Setup',
-        a: 'Run this complete setup, then practice queries on the student table.',
-        code: `CREATE DATABASE college;
-USE college;
-
-CREATE TABLE student (
-    rollno INT PRIMARY KEY,
-    name   VARCHAR(50),
-    marks  INT,
-    grade  VARCHAR(2),
-    city   VARCHAR(20)
-);
-
-INSERT INTO student (rollno, name, marks, grade, city)
-VALUES
-    (101, 'Ashish', 90, 'A', 'Indore'),
-    (102, 'Rahul',  85, 'B', 'Delhi'),
-    (103, 'Riya',   95, 'A', 'Mumbai'),
-    (104, 'Aman',   70, 'C', 'Pune');`,
-      },
-      {
-        q: '23. DELETE vs TRUNCATE vs DROP',
-        a: 'Three different ways to remove data at different levels.',
-        table: {
-          headers: ['Command', 'Removes', 'Table Structure', 'Rollback?', 'Type'],
-          rows: [
-            ['DELETE', 'Selected rows (WHERE)', 'Stays', 'Yes (DML)', 'DML'],
-            ['TRUNCATE', 'All rows', 'Stays', 'No (DDL)', 'DDL'],
-            ['DROP', 'All data + table', 'Gone', 'No (DDL)', 'DDL'],
-          ],
-        },
-      },
-      {
-        q: '24. WHERE vs HAVING',
-        a: 'WHERE filters individual rows. HAVING filters grouped results after GROUP BY.',
-        code: `-- WHERE: filter before grouping
-SELECT * FROM student WHERE marks > 80;
-
--- HAVING: filter after grouping
-SELECT city, AVG(marks)
-FROM student
-GROUP BY city
-HAVING AVG(marks) > 85;`,
-        table: {
-          headers: ['WHERE', 'HAVING'],
-          rows: [
-            ['Used before GROUP BY', 'Used after GROUP BY'],
-            ['Filters individual rows', 'Filters grouped rows'],
-            ['Cannot use aggregate functions', 'Can use aggregate functions'],
-          ],
-        },
-      },
-    ],
-  },
-];
-
 // ─── SQL Oracle Commands Quick Revision Data ─────────────────────────────────
 // Classic EMP / DEPT dataset reference (Oracle-style) for fast exam revision.
 const oracleSections = [
@@ -1778,10 +1369,9 @@ function renderDBMSAnswer(text) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const totalDbmsQ = dbmsSections.reduce((s, sec) => s + sec.questions.length, 0);
-const totalSqlNotes = sqlSections.reduce((s, sec) => s + sec.items.length, 0);
 const totalOracleNotes = oracleSections.reduce((s, sec) => s + sec.items.length, 0);
-const totalNotes = totalDbmsQ + totalSqlNotes + totalOracleNotes;
-const totalSections = dbmsSections.length + sqlSections.length + oracleSections.length;
+const totalNotes = totalDbmsQ + totalOracleNotes;
+const totalSections = dbmsSections.length + oracleSections.length;
 
 function DBMSSheet({ auth, setAuth }) {
   const navigate = useNavigate();
@@ -1789,14 +1379,10 @@ function DBMSSheet({ auth, setAuth }) {
 
   // All panels closed by default
   const [dbmsOpen, setDbmsOpen] = useState(false);
-  const [sqlOpen, setSqlOpen] = useState(false);
 
   const [openAnswers, setOpenAnswers] = useState({});
   const [collapsedDbms, setCollapsedDbms] = useState(
     () => dbmsSections.reduce((acc, _, i) => ({ ...acc, [i]: true }), {})
-  );
-  const [collapsedSql, setCollapsedSql] = useState(
-    () => sqlSections.reduce((acc, _, i) => ({ ...acc, [i]: true }), {})
   );
   const questionRefs = useRef({});
 
@@ -1830,13 +1416,12 @@ function DBMSSheet({ auth, setAuth }) {
     if (!lastRead) return;
     const [, panel, sIdx] = lastRead.key.split('-');
     const sectionIdx = parseInt(sIdx, 10);
-    if (panel === 'dbms') {
-      setDbmsOpen(true);
-      setCollapsedDbms(prev => ({ ...prev, [sectionIdx]: false }));
-    } else {
-      setSqlOpen(true);
-      setCollapsedSql(prev => ({ ...prev, [sectionIdx]: false }));
+    if (panel !== 'dbms') {
+      clearLastRead();
+      return;
     }
+    setDbmsOpen(true);
+    setCollapsedDbms(prev => ({ ...prev, [sectionIdx]: false }));
     setOpenAnswers(prev => ({ ...prev, [lastRead.key]: true }));
     setTimeout(() => {
       const el = questionRefs.current[lastRead.key];
@@ -1858,17 +1443,9 @@ function DBMSSheet({ auth, setAuth }) {
     ) : sec.questions,
   })).filter(sec => sec.questions.length > 0), [q]);
 
-  const filteredSql = useMemo(() => sqlSections.map(sec => ({
-    ...sec,
-    items: q ? sec.items.filter(item =>
-      JSON.stringify(item).toLowerCase().includes(q)
-    ) : sec.items,
-  })).filter(sec => sec.items.length > 0), [q]);
+  const totalVisible = filteredDbms.reduce((s, sec) => s + sec.questions.length, 0);
 
-  const totalVisible = filteredDbms.reduce((s, sec) => s + sec.questions.length, 0)
-    + filteredSql.reduce((s, sec) => s + sec.items.length, 0);
-
-  const noResults = q && filteredDbms.length === 0 && filteredSql.length === 0;
+  const noResults = q && filteredDbms.length === 0;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -1884,7 +1461,7 @@ function DBMSSheet({ auth, setAuth }) {
               <h1 className="text-2xl font-bold leading-tight">
                 <span className="text-yellow-400">DBMS</span> – Theory & SQL Notes
               </h1>
-              <p className="text-xs text-gray-500">{totalDbmsQ} theory Q&A · {totalSqlNotes} SQL notes · {totalOracleNotes} Oracle revision · {totalSections} sections</p>
+              <p className="text-xs text-gray-500">{totalDbmsQ} theory Q&A · {totalOracleNotes} Oracle revision · {totalSections} sections</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -1917,7 +1494,7 @@ function DBMSSheet({ auth, setAuth }) {
           </svg>
           <input
             type="text"
-            placeholder="Search theory, SQL command, or keyword..."
+            placeholder="Search DBMS theory or keyword..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="w-full rounded-xl border border-[#2a2a2a] bg-[#141414] px-5 py-4 pl-12 pr-11 text-base text-white placeholder-gray-600 transition-colors focus:border-yellow-400/60 focus:outline-none"
@@ -2036,97 +1613,6 @@ function DBMSSheet({ auth, setAuth }) {
                                 </div>
                               )}
                             </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </section>
-
-        {/* ── SQL Commands Accordion ── */}
-        <section className="overflow-hidden rounded-2xl border border-[#2a2a2a]">
-          <button
-            onClick={() => setSqlOpen(p => !p)}
-            className="group flex w-full items-center justify-between bg-[#111] px-6 py-5 transition-colors hover:bg-[#161616]"
-          >
-            <div className="flex items-center gap-4 text-left">
-              <span className="grid h-11 w-11 place-items-center rounded-xl border border-yellow-400/25 bg-yellow-400/10 text-sm font-black text-yellow-300">SQL</span>
-              <div>
-                <p className="text-xl font-bold text-yellow-400">SQL Commands & Practice</p>
-                <p className="mt-0.5 text-xs text-gray-500">{sqlSections.length} sections · {totalSqlNotes} notes</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-3 py-1 text-xs text-gray-500">{totalSqlNotes} topics</span>
-              <svg className={`h-5 w-5 text-yellow-400/70 transition-transform duration-300 ${sqlOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </button>
-
-          {(sqlOpen || (q && filteredSql.length > 0)) && (
-            <div className="border-t border-[#1f1f1f] bg-[#0d0d0d] px-4 py-4 space-y-0">
-              {filteredSql.map((section, sIdx) => {
-                const origIdx = sqlSections.findIndex(s => s.title === section.title);
-                const isCollapsed = q ? false : collapsedSql[origIdx];
-                return (
-                  <div key={sIdx}>
-                    <button onClick={() => setCollapsedSql(p => ({ ...p, [origIdx]: !p[origIdx] }))} className="w-full flex items-center justify-between py-4 group">
-                      <div className="flex items-center gap-3">
-                        <span className="text-yellow-400 font-bold text-lg">{section.title}</span>
-                        <span className="text-sm text-gray-500 bg-[#1a1a1a] px-2.5 py-0.5 rounded-full">{section.items.length} notes</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="h-px w-20 bg-[#1f1f1f] hidden sm:block" />
-                        <svg className={`w-4 h-4 text-yellow-400/60 transition-transform duration-200 ${isCollapsed ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </button>
-                    <div className="h-px bg-[#1f1f1f] mb-2" />
-                    {!isCollapsed && (
-                      <div>
-                        {section.items.map((item, iIdx) => {
-                          const key = `sql-${origIdx}-${iIdx}`;
-                          const isOpen = openAnswers[key];
-                          const isLastRead = lastRead?.key === key;
-                          return (
-                            <article key={key} ref={el => questionRefs.current[key] = el}
-                              className={`border-b transition-all rounded-sm ${isOpen ? 'bg-yellow-400/[0.06] border-yellow-400/20' : isLastRead ? 'border-yellow-400/15' : 'border-[#161616]'}`}>
-                              <div className="flex items-center gap-1">
-                                <button onClick={() => toggleAnswer(key, item.q, section.title)}
-                                  className="flex flex-1 items-center justify-between rounded px-2 py-5 text-left transition-colors hover:bg-white/[0.03]">
-                                  <div className="flex min-w-0 items-center gap-2">
-                                    {isLastRead && <span className="text-yellow-400 text-xs flex-shrink-0">📌</span>}
-                                    <span className={`text-[17px] leading-snug ${isLastRead ? 'text-yellow-200' : 'text-gray-200'}`}>{item.q}</span>
-                                  </div>
-                                  <svg className={`ml-3 h-3.5 w-3.5 flex-shrink-0 text-gray-600 transition-transform duration-200 ${isOpen ? 'rotate-180 text-yellow-400' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                </button>
-                                <a href={`https://chatgpt.com/?q=${encodeURIComponent(`${item.q} in SQL DBMS, explain with example`)}`}
-                                  target="_blank" rel="noopener noreferrer" title="Ask ChatGPT"
-                                  className="mr-1 flex-shrink-0 rounded p-2 text-gray-500 hover:text-gray-300 hover:scale-125 transition-all duration-300 animate-spin [animation-duration:6s]"
-                                  onClick={e => e.stopPropagation()}>
-                                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.648zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.843-3.371 2.019-1.168a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.4-.679zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.496 4.496 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.603 1.497v2.999l-2.597 1.5-2.603-1.495z"/>
-                                  </svg>
-                                </a>
-                                <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${item.q} SQL explained`)}`}
-                                  target="_blank" rel="noopener noreferrer" title="Search on YouTube"
-                                  className="mr-1 flex-shrink-0 rounded p-2 text-red-500 hover:text-red-400 hover:scale-125 transition-all duration-300"
-                                  onClick={e => e.stopPropagation()}>
-                                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                                  </svg>
-                                </a>
-                              </div>
-                              {isOpen && <AnswerContent item={item} />}
-                            </article>
                           );
                         })}
                       </div>
