@@ -77,6 +77,12 @@ function RandomPracticeSheet({ auth, setAuth }) {
   };
 
   const resetHistory = () => {
+    const shouldReset = window.confirm(
+      'Do you want to reset your local question history? Previously shown questions may appear again.'
+    );
+
+    if (!shouldReset) return;
+
     localStorage.removeItem(storageKey);
     setSeenQuestionIds([]);
     setPracticeQuestions([]);
@@ -105,7 +111,7 @@ function RandomPracticeSheet({ auth, setAuth }) {
               <Link to="/sheet" className="text-[#00ff00] hover:text-[#00ff00]/80 transition-colors" aria-label="Back to dashboard">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
               </Link>
-              <h1 className="text-2xl font-bold"><span className="text-[#00ff00]">Random</span> Practice</h1>
+              <h1 className="text-2xl font-bold"><span className="text-[#00ff00]">DPP</span> — Daily Practice Program</h1>
             </div>
             <div className="flex items-center space-x-4">
               <ThemeToggle />
