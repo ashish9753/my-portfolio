@@ -9,13 +9,14 @@ const API_URL = 'https://dsa-sheet-backend-7r7i.onrender.com/api/questions';
 const DEFAULT_QUESTIONS_PER_TOPIC = 2;
 
 const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
-const toStoredQuestion = (question) => ({
+const toStoredQuestion = (question, savedAt = Date.now()) => ({
   id: question._id,
   name: question.name,
   topic: question.topic,
   difficulty: question.difficulty,
   leetcodeLink: question.leetcodeLink || '',
-  gfgLink: question.gfgLink || ''
+  gfgLink: question.gfgLink || '',
+  savedAt
 });
 
 function RandomPracticeSheet({ auth, setAuth }) {
@@ -26,6 +27,7 @@ function RandomPracticeSheet({ auth, setAuth }) {
   const [practiceQuestions, setPracticeQuestions] = useState([]);
   const [seenQuestionIds, setSeenQuestionIds] = useState([]);
   const [practicedQuestions, setPracticedQuestions] = useState([]);
+  const [isPracticeHistoryOpen, setIsPracticeHistoryOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const storageKey = `dsa-random-practice-seen-${auth.user?._id || auth.user?.id || auth.user?.username || 'guest'}`;
@@ -102,10 +104,11 @@ function RandomPracticeSheet({ auth, setAuth }) {
     setPracticeQuestions(nextQuestions);
     if (nextQuestions.length) {
       const nextSeenIds = [...new Set([...seenQuestionIds, ...nextQuestions.map((question) => question._id)])];
+      const savedAt = Date.now();
       const nextHistory = [
-        ...nextQuestions.map(toStoredQuestion),
+        ...nextQuestions.map((question, index) => toStoredQuestion(question, savedAt + index)),
         ...practicedQuestions.filter((question) => !nextQuestions.some((nextQuestion) => nextQuestion._id === question.id))
-      ];
+      ].sort((firstQuestion, secondQuestion) => (secondQuestion.savedAt || 0) - (firstQuestion.savedAt || 0));
       setSeenQuestionIds(nextSeenIds);
       setPracticedQuestions(nextHistory);
       localStorage.setItem(storageKey, JSON.stringify(nextSeenIds));
@@ -223,14 +226,23 @@ function RandomPracticeSheet({ auth, setAuth }) {
 
         {practicedQuestions.length > 0 && (
           <section className="mt-10">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <button
+              type="button"
+              onClick={() => setIsPracticeHistoryOpen((isOpen) => !isOpen)}
+              aria-expanded={isPracticeHistoryOpen}
+              className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-5 hover:border-[#00ff00]/60 transition-colors"
+            >
               <div>
-                <h2 className="text-xl font-bold">Practiced questions</h2>
+                <h2 className="text-xl font-bold flex items-center gap-3">
+                  Practiced questions
+                  <svg className={`w-5 h-5 text-[#00ff00] transition-transform duration-300 ${isPracticeHistoryOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m6 9 6 6 6-6" /></svg>
+                </h2>
                 <p className="text-sm text-gray-400 mt-1">Saved on this device until you remove them or reset the local history.</p>
               </div>
-              <span className="text-sm text-[#00ff00]">{practicedQuestions.length} saved</span>
-            </div>
-            <div className="space-y-3">
+              <span className="text-sm text-[#00ff00]">{practicedQuestions.length} saved · {isPracticeHistoryOpen ? 'Close' : 'Open'}</span>
+            </button>
+            {isPracticeHistoryOpen && (
+            <div className="space-y-3 mt-4">
               {practicedQuestions.map((question) => (
                 <article key={question.id} className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-4">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
@@ -250,6 +262,7 @@ function RandomPracticeSheet({ auth, setAuth }) {
                 </article>
               ))}
             </div>
+            )}
           </section>
         )}
 
