@@ -579,6 +579,14 @@ function HomePage({ auth, setAuth }) {
 
   const topics = [
     {
+      name: 'RandomPractice',
+      title: 'Random Practice',
+      description: 'Choose a topic or practise every topic with fresh random questions',
+      color: 'text-[#22c55e]',
+      borderColor: 'border-[#22c55e]',
+      hoverBg: 'hover:bg-[#22c55e]/10'
+    },
+    {
       name: 'Sorting',
       description: 'Master sorting algorithms and techniques',
       color: 'text-[#ff00ff]',
@@ -1322,7 +1330,7 @@ function HomePage({ auth, setAuth }) {
               className={`bg-[#1a1a1a] rounded-lg p-6 border-2 ${topic.borderColor} ${topic.hoverBg} hover:scale-105 transition-all duration-300`}
             >
               <h2 className={`text-2xl font-bold mb-2 ${topic.color}`}>
-                {topic.name}
+                {topic.title || topic.name}
               </h2>
               <p className="text-gray-400">
                 {topic.description}

@@ -34,6 +34,7 @@ import ReactSheet from './pages/ReactSheet';
 import NodeJSSheet from './pages/NodeJSSheet';
 import MySQLSheet from './pages/MySQLSheet';
 import PostgreSQLSheet from './pages/PostgreSQLSheet';
+import RandomPracticeSheet from './pages/RandomPracticeSheet';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import SupportModal from './components/SupportModal';
@@ -210,6 +211,14 @@ function SheetApp() {
             <ArraySheet auth={auth} setAuth={setAuth} />
           </ProtectedRoute>
         } 
+      />
+      <Route
+        path="/RandomPractice"
+        element={
+          <ProtectedRoute>
+            <RandomPracticeSheet auth={auth} setAuth={setAuth} />
+          </ProtectedRoute>
+        }
       />
       <Route 
         path="/Binary Search" 
