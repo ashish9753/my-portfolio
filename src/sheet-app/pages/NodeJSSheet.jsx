@@ -5,130 +5,430 @@ import ThemeToggle from '../components/ThemeToggle';
 
 const revisionSections = [
   {
-    title: '1. Node.js Basics (1-20)',
-    questions: [
-      { q: 'What is Node.js?', a: 'Runs JavaScript outside the browser. Example: make an API server.' },
-      { q: 'Built on?', a: 'Chrome’s V8 JavaScript engine. Example: it converts JS into fast machine code.' },
-      { q: 'Why Node.js?', a: 'Good for many I/O requests. Example: chat app or API.' },
-      { q: 'Single-threaded?', a: 'JS runs on one main thread; Node uses an event loop and workers for I/O.' },
-      { q: 'Blocking vs Non-blocking?', a: 'Blocking waits; non-blocking continues. Example: readFileSync vs readFile.' },
-      { q: 'Event-driven?', a: 'Code reacts to events. Example: server runs code when a request arrives.' },
-      { q: 'NPM?', a: 'Node Package Manager. Example: npm install express.' },
-      { q: 'Package.json?', a: 'Project details and dependencies. Example: lists express version.' },
-      { q: 'Module?', a: 'Reusable file of code. Example: math.js exports add().' },
-      { q: 'Built-in modules?', a: 'Modules included with Node. Example: fs, http, path.' },
-      { q: 'require()?', a: 'Imports a CommonJS module. Example: const fs = require("fs").' },
-      { q: 'module.exports?', a: 'Exports from a CommonJS file. Example: module.exports = add.' },
-      { q: 'REPL?', a: 'Node’s interactive JS shell. Example: type node, then 2 + 2.' },
-      { q: 'Global objects?', a: 'Available without importing. Example: process, __dirname, console.' },
-      { q: 'process?', a: 'Info/control for the running app. Example: process.env.PORT.' },
-      { q: '__dirname?', a: 'Current file’s folder path. Example: path.join(__dirname, "file.txt").' },
-      { q: '__filename?', a: 'Current file’s full path. Example: log __filename for debugging.' },
-      { q: 'Environment variables?', a: 'External config values. Example: PORT=3000.' },
-      { q: '.env file?', a: 'Local file for environment values. Example: DB_URL=...; keep it private.' },
-      { q: 'console.log()?', a: 'Prints a value to the terminal. Example: console.log("Server started").' },
+    "title": "1. Node.js Basics",
+    "questions": [
+      {
+        "q": "What is Node.js?",
+        "a": "Node.js is a JavaScript runtime environment that allows us to run JavaScript outside the browser, mainly on the server side."
+      },
+      {
+        "q": "Node.js is built on?",
+        "a": "Node.js is built on Chrome's V8 JavaScript Engine."
+      },
+      {
+        "q": "Why do we use Node.js?",
+        "a": "- Fast execution. - Non-blocking I/O. - Handles multiple requests. - Good for APIs and real-time applications."
+      },
+      {
+        "q": "Is Node.js single-threaded?",
+        "a": "Yes, its JavaScript execution is primarily single-threaded, but it uses background threads for certain operations."
+      },
+      {
+        "q": "What is blocking vs non-blocking?",
+        "a": "- Blocking: Waits for an operation to finish before executing the next operation. - Non-blocking: Allows other operations to continue without waiting."
+      },
+      {
+        "q": "What is event-driven architecture?",
+        "a": "An architecture where execution depends on events, such as requests, clicks, or completed operations."
+      },
+      {
+        "q": "What is NPM?",
+        "a": "NPM (Node Package Manager) is used to install and manage Node.js packages. Example: npm install express"
+      },
+      {
+        "q": "What is package.json?",
+        "a": "It stores project information, dependencies, scripts, and project configuration."
+      },
+      {
+        "q": "What is a module?",
+        "a": "A module is a reusable block of code that can be imported into another file."
+      },
+      {
+        "q": "What are built-in modules?",
+        "a": "Modules provided by Node.js without installing external packages. Examples: fs, http, path, os, crypto."
+      },
+      {
+        "q": "What is require()?",
+        "a": "It is used to import modules in CommonJS. const fs = require(\"fs\");"
+      },
+      {
+        "q": "What is module.exports?",
+        "a": "It is used to export functions, objects, or variables from a module. module.exports = myFunction;"
+      },
+      {
+        "q": "What is REPL?",
+        "a": "REPL stands for Read, Evaluate, Print, Loop. It allows us to execute JavaScript commands directly in the terminal."
+      },
+      {
+        "q": "What are global objects?",
+        "a": "Objects available throughout a Node.js application without importing them. Examples: console, process, setTimeout, Buffer."
+      },
+      {
+        "q": "What is process?",
+        "a": "It provides information and control over the currently running Node.js process. console.log(process.env.PORT);"
+      },
+      {
+        "q": "What is __dirname?",
+        "a": "It gives the absolute directory path of the current file (in CommonJS)."
+      },
+      {
+        "q": "What is __filename?",
+        "a": "It gives the absolute path of the current file (in CommonJS)."
+      },
+      {
+        "q": "What are environment variables?",
+        "a": "Variables used to store configuration values, such as database URLs, ports, and API keys."
+      },
+      {
+        "q": "What is a .env file?",
+        "a": "A file used to store environment variables. Example: PORT=5000 MONGO_URI=mongodb://localhost:27017/test"
+      },
+      {
+        "q": "What is console.log()?",
+        "a": "It is used to print messages or values to the console."
+      }
     ]
   },
   {
-    title: '2. Core Concepts (21-40)',
-    questions: [
-      { q: 'Event loop?', a: 'Lets Node handle async work without waiting. Example: serve another request while a file loads.' },
-      { q: 'Callback?', a: 'Function called after a task. Example: fs.readFile(file, callback).' },
-      { q: 'Callback hell?', a: 'Hard-to-read nested callbacks. Fix: use Promises or async/await.' },
-      { q: 'Promise?', a: 'Object for a future async result. Example: fetchUser().then(...).' },
-      { q: 'States of Promise?', a: 'Pending → fulfilled or rejected. Example: request is pending, then succeeds/fails.' },
-      { q: 'Async/await?', a: 'Readable Promise syntax. Example: const user = await getUser().' },
-      { q: 'Error handling?', a: 'Catch failures safely. Example: try { await work(); } catch (err) {}' },
-      { q: 'Stream?', a: 'Processes data piece by piece. Example: stream a large video file.' },
-      { q: 'Types of streams?', a: 'Readable, Writable, Duplex, Transform. Example: file read stream is Readable.' },
-      { q: 'Buffer?', a: 'Temporary binary-data memory. Example: image bytes from a file.' },
-      { q: 'fs module?', a: 'Works with files. Example: fs.readFile("note.txt", ...).' },
-      { q: 'http module?', a: 'Creates an HTTP server. Example: http.createServer(handler).' },
-      { q: 'path module?', a: 'Safely builds file paths. Example: path.join("src", "app.js").' },
-      { q: 'os module?', a: 'Gives operating-system info. Example: os.cpus().' },
-      { q: 'url module?', a: 'Reads/builds URLs. Example: new URL("https://site.com?a=1").' },
-      { q: 'Middleware?', a: 'Function between request and response. Example: logs every request.' },
-      { q: 'Thread pool?', a: 'Worker threads used for some heavy async tasks. Example: filesystem work.' },
-      { q: 'Cluster?', a: 'Multiple Node processes share server load. Example: use all CPU cores.' },
-      { q: 'Child process?', a: 'Starts another system process. Example: run a shell command with exec().' },
-      { q: 'Worker threads?', a: 'Run CPU-heavy JS in parallel. Example: image calculation off the main thread.' },
+    "title": "2. Node.js Core Concepts",
+    "questions": [
+      {
+        "q": "What is the Event Loop?",
+        "a": "The Event Loop manages asynchronous operations and allows Node.js to handle multiple tasks without blocking the main JavaScript thread. Simplified flow JavaScript Code Call Stack Event Loop Callback Queue / Microtask Queue"
+      },
+      {
+        "q": "What is a callback?",
+        "a": "A function passed as an argument to another function and executed later. setTimeout(() => { console.log(\"Hello\"); }, 1000);"
+      },
+      {
+        "q": "What is callback hell?",
+        "a": "Nested callbacks that make code difficult to read and maintain."
+      },
+      {
+        "q": "What is a Promise?",
+        "a": "A Promise represents the eventual success or failure of an asynchronous operation."
+      },
+      {
+        "q": "What are the three states of a Promise?",
+        "a": "1. Pending 2. Fulfilled 3. Rejected"
+      },
+      {
+        "q": "What is async/await?",
+        "a": "It is a cleaner way to handle Promises and write asynchronous code. const data = await fetchData();"
+      },
+      {
+        "q": "How do you handle errors in Node.js?",
+        "a": "Using try...catch, .catch(), and Express error-handling middleware. try { const data = await getData(); } catch (error) { console.log(error.message); }"
+      },
+      {
+        "q": "What is a Stream?",
+        "a": "A stream processes data in small chunks instead of loading everything into memory."
+      },
+      {
+        "q": "What are the types of streams?",
+        "a": "- Readable – Reads data. - Writable – Writes data. - Duplex – Reads and writes data. - Transform – Modifies data while processing."
+      },
+      {
+        "q": "What is Buffer?",
+        "a": "Buffer is used to handle binary data, such as images, files, and network packets."
+      },
+      {
+        "q": "What is the fs module?",
+        "a": "The File System module is used to read, write, update, and delete files."
+      },
+      {
+        "q": "What is the http module?",
+        "a": "It is a built-in module used to create HTTP servers and handle requests and responses."
+      },
+      {
+        "q": "What is the path module?",
+        "a": "It helps work with file and directory paths."
+      },
+      {
+        "q": "What is the os module?",
+        "a": "It provides information about the operating system, CPU, and memory."
+      },
+      {
+        "q": "What is the url module?",
+        "a": "It helps parse and work with URLs."
+      },
+      {
+        "q": "What is the Thread Pool?",
+        "a": "A group of background threads used by Node.js (through libuv) for certain operations like file system tasks and cryptographic operations."
+      },
+      {
+        "q": "What is Cluster?",
+        "a": "Cluster allows us to create multiple Node.js processes that can share server ports and utilize multiple CPU cores."
+      },
+      {
+        "q": "What is Child Process?",
+        "a": "It allows Node.js to create and communicate with other processes."
+      },
+      {
+        "q": "What are Worker Threads?",
+        "a": "They allow JavaScript to run in parallel threads, especially for CPU-intensive tasks."
+      },
+      {
+        "q": "Difference between Worker Threads and Cluster?",
+        "a": "Worker Threads\tCluster Multiple threads\tMultiple processes Share memory when configured\tSeparate process memory Useful for CPU-heavy tasks\tUseful for scaling servers"
+      }
     ]
   },
   {
-    title: '3. Express.js (41-65)',
-    questions: [
-      { q: 'Express.js?', a: 'A Node framework for web servers/APIs. Example: app.get("/users", ...).' },
-      { q: 'Why Express?', a: 'Makes routes and middleware simple. Example: app.post("/login", handler).' },
-      { q: 'App?', a: 'Main Express application object. Example: const app = express().' },
-      { q: 'app.listen()?', a: 'Starts the server on a port. Example: app.listen(3000).' },
-      { q: 'Routing?', a: 'Maps URL + method to code. Example: GET /products.' },
-      { q: 'GET method?', a: 'Reads data. Example: GET /users.' },
-      { q: 'POST method?', a: 'Creates/sends data. Example: POST /users.' },
-      { q: 'PUT method?', a: 'Replaces or updates data. Example: PUT /users/7.' },
-      { q: 'DELETE method?', a: 'Removes data. Example: DELETE /users/7.' },
-      { q: 'Middleware?', a: 'Runs before the route response. Example: authenticate user first.' },
-      { q: 'Types of middleware?', a: 'Built-in, custom, third-party, error. Example: express.json() is built-in.' },
-      { q: 'req object?', a: 'Incoming request details. Example: req.body or req.params.id.' },
-      { q: 'res object?', a: 'Sends the response. Example: res.json({ ok: true }).' },
-      { q: 'next()?', a: 'Passes control to next middleware. Example: logger calls next().' },
-      { q: 'Router?', a: 'Groups related routes. Example: router.get("/users", ...).' },
-      { q: 'express.json()?', a: 'Reads JSON request bodies. Example: POST body {"name":"A"}.' },
-      { q: 'Static files?', a: 'Files served directly. Example: app.use(express.static("public")).' },
-      { q: 'Error middleware?', a: 'Central place to send errors. Example: (err, req, res, next) => res.status(500).' },
-      { q: 'CORS?', a: 'Controls which origins may call an API. Example: allow your frontend domain.' },
-      { q: 'Body parser?', a: 'Middleware that reads the request body. Example: express.json() replaces it for JSON.' },
-      { q: 'REST API?', a: 'Resource-based HTTP API. Example: GET /users, POST /users.' },
-      { q: 'Status codes?', a: 'HTTP result numbers. Example: 200 OK, 404 Not Found, 500 Server Error.' },
-      { q: 'Query params?', a: 'Optional URL filters. Example: /products?category=books → req.query.category.' },
-      { q: 'Route params?', a: 'Values inside a route path. Example: /users/:id → req.params.id.' },
-      { q: 'Headers?', a: 'Request metadata. Example: req.headers.authorization.' },
+    "title": "3. Express.js",
+    "questions": [
+      {
+        "q": "What is Express.js?",
+        "a": "Express.js is a lightweight Node.js framework used to build web servers and REST APIs."
+      },
+      {
+        "q": "Why do we use Express.js?",
+        "a": "It simplifies routing, middleware, request handling, and API development."
+      },
+      {
+        "q": "What is an Express application?",
+        "a": "It is an application instance created using express(). const app = express();"
+      },
+      {
+        "q": "What is app.listen()?",
+        "a": "It starts the Express server on a specified port. app.listen(5000);"
+      },
+      {
+        "q": "What is routing?",
+        "a": "Routing defines how an application responds to different URLs and HTTP methods."
+      },
+      {
+        "q": "What is GET?",
+        "a": "Used to retrieve data from the server."
+      },
+      {
+        "q": "What is POST?",
+        "a": "Used to send data and commonly create new resources."
+      },
+      {
+        "q": "What is PUT?",
+        "a": "Used to replace an existing resource."
+      },
+      {
+        "q": "What is PATCH?",
+        "a": "Used to partially update an existing resource."
+      },
+      {
+        "q": "What is DELETE?",
+        "a": "Used to delete a resource."
+      },
+      {
+        "q": "What is middleware?",
+        "a": "Middleware is a function that executes during the request-response cycle. It can access req, res, and next."
+      },
+      {
+        "q": "What are the types of middleware?",
+        "a": "- Application-level middleware. - Router-level middleware. - Built-in middleware. - Third-party middleware. - Error-handling middleware."
+      },
+      {
+        "q": "What is req?",
+        "a": "req represents the incoming client request and contains data such as body, params, query, and headers."
+      },
+      {
+        "q": "What is res?",
+        "a": "res represents the server response and is used to send data back to the client."
+      },
+      {
+        "q": "What is next()?",
+        "a": "It passes control to the next middleware in the request-response cycle."
+      },
+      {
+        "q": "What is Express Router?",
+        "a": "It helps organize routes into separate files and modules. const router = express.Router();"
+      },
+      {
+        "q": "What is express.json()?",
+        "a": "It is built-in middleware that parses incoming JSON request data and makes it available in req.body. app.use(express.json());"
+      },
+      {
+        "q": "What is express.urlencoded()?",
+        "a": "It parses incoming URL-encoded form data. app.use(express.urlencoded({ extended: true }));"
+      },
+      {
+        "q": "What are static files?",
+        "a": "Files such as images, CSS, JavaScript, and PDFs that are served directly to clients. app.use(express.static(\"public\"));"
+      },
+      {
+        "q": "What is error-handling middleware?",
+        "a": "Middleware used to handle application errors centrally. app.use((err, req, res, next) => { res.status(500).json({ message: err.message }); });"
+      },
+      {
+        "q": "What is CORS?",
+        "a": "CORS (Cross-Origin Resource Sharing) controls whether a browser allows requests from different origins."
+      },
+      {
+        "q": "What is Body Parser?",
+        "a": "Body-parser is middleware used to parse incoming request bodies. Express now provides built-in JSON and URL-encoded parsers."
+      },
+      {
+        "q": "What is a REST API?",
+        "a": "REST API is an architectural style for communication between clients and servers using HTTP methods."
+      },
+      {
+        "q": "What are HTTP status codes?",
+        "a": "Code\tMeaning 200\tOK 201\tCreated 400\tBad Request 401\tUnauthorized 403\tForbidden 404\tNot Found 500\tInternal Server Error"
+      },
+      {
+        "q": "What are req.params, req.query, req.body, headers, and cookies?",
+        "a": "Property\tPurpose\tExample req.params\tURL path data\t/users/10 req.query\tURL query data\t/users?page=1 req.body\tRequest body data\tEmail, password req.headers\tRequest metadata\tAuthorization token req.cookies\tBrowser cookies\tSession token"
+      }
     ]
   },
   {
-    title: '4. Database and Auth (66-85)',
-    questions: [
-      { q: 'MongoDB?', a: 'NoSQL document database. Example: user stored as { name: "Asha" }.' },
-      { q: 'Mongoose?', a: 'MongoDB object-modeling library for Node. Example: User.find().' },
-      { q: 'Schema?', a: 'Rules for document shape. Example: name must be a String.' },
-      { q: 'Model?', a: 'Mongoose object used to query a collection. Example: User.create(data).' },
-      { q: 'CRUD?', a: 'Create, Read, Update, Delete. Example: create user, find user, edit, remove.' },
-      { q: 'find()?', a: 'Gets matching documents. Example: User.find({ role: "admin" }).' },
-      { q: 'save()?', a: 'Saves one document. Example: await new User(data).save().' },
-      { q: 'updateOne()?', a: 'Updates first matching document. Example: User.updateOne({ _id }, { name }).' },
-      { q: 'deleteOne()?', a: 'Deletes first matching document. Example: User.deleteOne({ _id }).' },
-      { q: 'Indexing?', a: 'Speeds up searches. Example: index email when users log in by email.' },
-      { q: 'Authentication?', a: 'Proves who the user is. Example: login checks email and password.' },
-      { q: 'Authorization?', a: 'Checks permission. Example: only admin can delete a user.' },
-      { q: 'JWT?', a: 'Signed token carrying user claims. Example: send token in Authorization header.' },
-      { q: 'bcrypt?', a: 'Secure password-hashing library. Example: bcrypt.hash(password, 10).' },
-      { q: 'Session?', a: 'Server stores login state; client holds session ID. Example: express-session.' },
-      { q: 'Cookies?', a: 'Small browser-stored values sent with requests. Example: session ID cookie.' },
-      { q: 'Secure cookies?', a: 'Protect cookies with flags. Example: httpOnly, secure, sameSite.' },
-      { q: 'Helmet?', a: 'Express security-header middleware. Example: app.use(helmet()).' },
-      { q: 'Rate limiting?', a: 'Limits repeated requests. Example: 100 API requests per 15 minutes.' },
-      { q: 'Env security?', a: 'Keep secrets outside code. Example: put JWT_SECRET in .env, not Git.' },
+    "title": "4. Database & Authentication",
+    "questions": [
+      {
+        "q": "What is MongoDB?",
+        "a": "MongoDB is a NoSQL database that stores data in flexible, JSON-like documents (BSON format)."
+      },
+      {
+        "q": "What is Mongoose?",
+        "a": "Mongoose is an ODM (Object Data Modeling) library used to interact with MongoDB in Node.js."
+      },
+      {
+        "q": "What is a Schema?",
+        "a": "A schema defines the structure, fields, and validation rules of a document. const userSchema = new mongoose.Schema({ name: String, email: String });"
+      },
+      {
+        "q": "What is a Model?",
+        "a": "A model is created from a schema and provides methods to interact with a MongoDB collection. const User = mongoose.model(\"User\", userSchema);"
+      },
+      {
+        "q": "What is CRUD?",
+        "a": "CRUD represents four basic database operations: - Create – Insert data. - Read – Fetch data. - Update – Modify data. - Delete – Remove data."
+      },
+      {
+        "q": "What is find()?",
+        "a": "It retrieves multiple documents matching a condition. User.find({ name: \"Ashish\" });"
+      },
+      {
+        "q": "What is findOne()?",
+        "a": "It retrieves the first document matching a condition."
+      },
+      {
+        "q": "What is findById()?",
+        "a": "It retrieves a document using its MongoDB ID."
+      },
+      {
+        "q": "What is save()?",
+        "a": "It saves a new document or persists changes to an existing Mongoose document. const user = new User({ name: \"Ashish\" }); await user.save();"
+      },
+      {
+        "q": "What is updateOne()?",
+        "a": "It updates the first document matching a given condition."
+      },
+      {
+        "q": "What is deleteOne()?",
+        "a": "It deletes the first document matching a given condition."
+      },
+      {
+        "q": "What is indexing in MongoDB?",
+        "a": "Indexing improves query performance by helping MongoDB find data faster."
+      },
+      {
+        "q": "What is Authentication?",
+        "a": "Authentication verifies the identity of a user. Example: Login using email and password."
+      },
+      {
+        "q": "What is Authorization?",
+        "a": "Authorization determines what an authenticated user is allowed to access. Example: Only admins can delete users."
+      },
+      {
+        "q": "What is JWT?",
+        "a": "JWT (JSON Web Token) is a token used to securely transmit claims between parties. It is commonly used for authentication."
+      },
+      {
+        "q": "What are the parts of JWT?",
+        "a": "JWT has three parts: 1. Header 2. Payload 3. Signature"
+      },
+      {
+        "q": "What is bcrypt?",
+        "a": "Bcrypt is a library used to securely hash passwords before storing them in a database. const hashedPassword = await bcrypt.hash(password, 10);"
+      },
+      {
+        "q": "What is Session-based authentication?",
+        "a": "The server stores session information and usually sends a session ID to the client through a cookie."
+      },
+      {
+        "q": "What are Cookies?",
+        "a": "Cookies are small pieces of data stored in the browser and sent with matching HTTP requests."
+      },
+      {
+        "q": "What is a Secure Cookie?",
+        "a": "A cookie with the Secure flag is sent only over HTTPS. Other important cookie flags: - HttpOnly: Prevents JavaScript from accessing the cookie. - SameSite: Controls cross-site cookie sending."
+      }
     ]
   },
   {
-    title: '5. Advanced Node (86-100)',
-    questions: [
-      { q: 'Why Node is fast?', a: 'It avoids waiting on I/O. Example: many users can wait for DB results together.' },
-      { q: 'Scalability?', a: 'Ability to handle more users/load. Example: add instances behind a load balancer.' },
-      { q: 'Microservices?', a: 'Small independent services. Example: separate payment and email services.' },
-      { q: 'Monolith?', a: 'One application contains all features. Example: API, auth, and payments in one project.' },
-      { q: 'Logging?', a: 'Records useful app events. Example: log request errors with timestamp.' },
-      { q: 'PM2?', a: 'Node process manager. Example: restarts app after a crash.' },
-      { q: 'Clustering?', a: 'Runs Node in several processes. Example: one worker per CPU core.' },
-      { q: 'EventEmitter?', a: 'Object that emits/listens for events. Example: emitter.on("done", handler).' },
-      { q: 'Streams vs Buffer?', a: 'Stream handles data gradually; Buffer holds data in memory. Example: video stream vs image bytes.' },
-      { q: 'Security best practices?', a: 'Validate input, hash passwords, use HTTPS, limit requests. Example: reject invalid email.' },
-      { q: 'Error handling?', a: 'Handle errors once in Express. Example: error middleware sends a safe 500 response.' },
-      { q: 'Async best practice?', a: 'Use async APIs; avoid CPU work on main thread. Example: use worker_threads for heavy calculation.' },
-      { q: 'API testing?', a: 'Send test requests and check results. Example: use Postman or automated tests.' },
-      { q: 'Deployment?', a: 'Put app on a hosting platform. Example: set env vars on Render or AWS.' },
-      { q: 'Node vs PHP?', a: 'Both build backends; Node uses JS and event-driven I/O. Example: choose based on team and project.' },
+    "title": "5. Advanced Node.js & Backend Concepts",
+    "questions": [
+      {
+        "q": "Why is Node.js fast?",
+        "a": "Because it uses Google's V8 engine, asynchronous I/O, and an event-driven architecture."
+      },
+      {
+        "q": "What is Scalability?",
+        "a": "Scalability is the ability of an application to handle increasing users and workloads."
+      },
+      {
+        "q": "What are Microservices?",
+        "a": "An architecture where an application is divided into small, independent services."
+      },
+      {
+        "q": "What is Monolithic Architecture?",
+        "a": "An architecture where all application components are developed and deployed as one unit."
+      },
+      {
+        "q": "What is Logging?",
+        "a": "Logging means recording application activities, errors, and important events for debugging and monitoring. Examples: Winston, Morgan."
+      },
+      {
+        "q": "What is PM2?",
+        "a": "PM2 is a process manager used to run, monitor, and restart Node.js applications."
+      },
+      {
+        "q": "What is EventEmitter?",
+        "a": "EventEmitter is a built-in Node.js class used to create, emit, and listen for custom events. const EventEmitter = require(\"events\"); const event = new EventEmitter(); event.on(\"message\", () => { console.log(\"Event received\"); }); event.emit(\"message\");"
+      },
+      {
+        "q": "Difference between Stream and Buffer?",
+        "a": "Stream\tBuffer Processes data in chunks\tStores binary data Memory efficient for large files\tHolds data in memory Useful for file streaming\tUseful for binary data"
+      },
+      {
+        "q": "What are Node.js security best practices?",
+        "a": "- Validate user input. - Hash passwords using bcrypt. - Use HTTPS. - Keep secrets in environment variables. - Use Helmet and rate limiting. - Prevent SQL/NoSQL injection."
+      },
+      {
+        "q": "How should we handle errors in asynchronous code?",
+        "a": "Use try...catch with async/await and forward errors to centralized error middleware."
+      },
+      {
+        "q": "What are asynchronous best practices?",
+        "a": "- Avoid unnecessary blocking operations. - Use async/await. - Handle Promise rejections. - Use Promise.all() for independent parallel operations."
+      },
+      {
+        "q": "What is API Testing?",
+        "a": "API testing checks whether APIs work correctly, including responses, status codes, validation, and errors. Tools: Postman, Thunder Client, Jest, Supertest."
+      },
+      {
+        "q": "What is Deployment?",
+        "a": "Deployment means making an application available on a server so users can access it. Examples: VPS, AWS, Render."
+      },
+      {
+        "q": "What is the difference between Node.js and PHP?",
+        "a": "Node.js\tPHP JavaScript runtime\tServer-side programming language Uses V8 engine\tUses PHP runtime Event-driven, non-blocking I/O\tSupports different execution models Commonly used with Express\tCommonly used with Laravel"
+      },
+      {
+        "q": "What is the difference between Node.js and Express.js?",
+        "a": "- Node.js is a JavaScript runtime environment. - Express.js is a framework built on Node.js for developing web applications and APIs."
+      }
     ]
-  },
+  }
 ];
 
 const totalQuestions = revisionSections.reduce((s, sec) => s + sec.questions.length, 0);
